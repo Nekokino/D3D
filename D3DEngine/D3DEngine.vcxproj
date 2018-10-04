@@ -26,26 +26,26 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -71,24 +71,44 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+    <TargetExt>.lib</TargetExt>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\Bin\;..\FMOD\lib\</LibraryPath>
+    <TargetName>$(ProjectName)D32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+    <TargetExt>.lib</TargetExt>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;..\Bin\;..\FMOD\lib\</LibraryPath>
+    <TargetName>$(ProjectName)D64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+    <TargetExt>.lib</TargetExt>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\Bin\;..\FMOD\lib\</LibraryPath>
+    <TargetName>$(ProjectName)R32</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\Bin\</OutDir>
+    <TargetExt>.lib</TargetExt>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;..\Bin\;..\FMOD\lib\</LibraryPath>
+    <TargetName>$(ProjectName)R64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>PreCom.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,12 +117,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>PreCom.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -112,13 +132,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>PreCom.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,13 +150,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <PrecompiledHeaderFile>PreCom.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,6 +166,131 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="DirectXTex.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CustomMacro.h" />
+    <ClInclude Include="DebugFunc.h" />
+    <ClInclude Include="DirectHeader.h" />
+    <ClInclude Include="DirectValueHeader.h" />
+    <ClInclude Include="DirectXTex.h" />
+    <ClInclude Include="FW1CompileSettings.h" />
+    <ClInclude Include="FW1FontWrapper.h" />
+    <ClInclude Include="InputSystem.h" />
+    <ClInclude Include="MathSystem.h" />
+    <ClInclude Include="NT2DCollision.h" />
+    <ClInclude Include="NT2DCollisionBase.h" />
+    <ClInclude Include="NT2DCollisionSystem.h" />
+    <ClInclude Include="NTBlend.h" />
+    <ClInclude Include="NTCamera.h" />
+    <ClInclude Include="NTCollisionComponent.h" />
+    <ClInclude Include="NTColorMeshRenderer.h" />
+    <ClInclude Include="NTComponent.h" />
+    <ClInclude Include="NTDevice.h" />
+    <ClInclude Include="NTFileStream.h" />
+    <ClInclude Include="NTFont.h" />
+    <ClInclude Include="NTFontRenderer.h" />
+    <ClInclude Include="NTImage.h" />
+    <ClInclude Include="NTLogic.h" />
+    <ClInclude Include="NTMaterial.h" />
+    <ClInclude Include="NTMesh.h" />
+    <ClInclude Include="NTNameTag.h" />
+    <ClInclude Include="NTObject.h" />
+    <ClInclude Include="NTObjectParent.h" />
+    <ClInclude Include="NTPixelShader.h" />
+    <ClInclude Include="NTReadStream.h" />
+    <ClInclude Include="NTRenderer.h" />
+    <ClInclude Include="NTRenderSystem.h" />
+    <ClInclude Include="NTResource.h" />
+    <ClInclude Include="NTSampler.h" />
+    <ClInclude Include="NTScene.h" />
+    <ClInclude Include="NTSceneParent.h" />
+    <ClInclude Include="NTSceneSystem.h" />
+    <ClInclude Include="NTSecondUVRenderer.h" />
+    <ClInclude Include="NTShader.h" />
+    <ClInclude Include="NTSound.h" />
+    <ClInclude Include="NTSoundDevice.h" />
+    <ClInclude Include="NTSoundPlayer.h" />
+    <ClInclude Include="NTSpFrameAnimator.h" />
+    <ClInclude Include="NTSpRenderer.h" />
+    <ClInclude Include="NTStCom.h" />
+    <ClInclude Include="NTSubTransform.h" />
+    <ClInclude Include="NTSwitcher.h" />
+    <ClInclude Include="NTTexture.h" />
+    <ClInclude Include="NTTransform.h" />
+    <ClInclude Include="NTTypeParent.h" />
+    <ClInclude Include="NTVertexShader.h" />
+    <ClInclude Include="NTWindow.h" />
+    <ClInclude Include="NTWinParent.h" />
+    <ClInclude Include="NTWinShortCut.h" />
+    <ClInclude Include="NTWriteStream.h" />
+    <ClInclude Include="PreCom.h" />
+    <ClInclude Include="RefNAutoptr.h" />
+    <ClInclude Include="ResourceSystem.h" />
+    <ClInclude Include="StlAssist.h" />
+    <ClInclude Include="TimeSystem.h" />
+    <ClInclude Include="WinCore.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DebugFunc.cpp" />
+    <ClCompile Include="DirectHeader.cpp" />
+    <ClCompile Include="InputSystem.cpp" />
+    <ClCompile Include="MathSystem.cpp" />
+    <ClCompile Include="NT2DCollision.cpp" />
+    <ClCompile Include="NT2DCollisionBase.cpp" />
+    <ClCompile Include="NT2DCollisionSystem.cpp" />
+    <ClCompile Include="NTBlend.cpp" />
+    <ClCompile Include="NTCamera.cpp" />
+    <ClCompile Include="NTCollisionComponent.cpp" />
+    <ClCompile Include="NTColorMeshRenderer.cpp" />
+    <ClCompile Include="NTComponent.cpp" />
+    <ClCompile Include="NTDevice.cpp" />
+    <ClCompile Include="NTFileStream.cpp" />
+    <ClCompile Include="NTFont.cpp" />
+    <ClCompile Include="NTFontRenderer.cpp" />
+    <ClCompile Include="NTImage.cpp" />
+    <ClCompile Include="NTLogic.cpp" />
+    <ClCompile Include="NTMaterial.cpp" />
+    <ClCompile Include="NTMesh.cpp" />
+    <ClCompile Include="NTObject.cpp" />
+    <ClCompile Include="NTPixelShader.cpp" />
+    <ClCompile Include="NTReadStream.cpp" />
+    <ClCompile Include="NTRenderer.cpp" />
+    <ClCompile Include="NTRenderSystem.cpp" />
+    <ClCompile Include="NTResource.cpp" />
+    <ClCompile Include="NTSampler.cpp" />
+    <ClCompile Include="NTScene.cpp" />
+    <ClCompile Include="NTSceneSystem.cpp" />
+    <ClCompile Include="NTSecondUVRenderer.cpp" />
+    <ClCompile Include="NTShader.cpp" />
+    <ClCompile Include="NTSound.cpp" />
+    <ClCompile Include="NTSoundDevice.cpp" />
+    <ClCompile Include="NTSoundPlayer.cpp" />
+    <ClCompile Include="NTSpFrameAnimator.cpp" />
+    <ClCompile Include="NTSpRenderer.cpp" />
+    <ClCompile Include="NTStCom.cpp" />
+    <ClCompile Include="NTSubTransform.cpp" />
+    <ClCompile Include="NTSwitcher.cpp" />
+    <ClCompile Include="NTTexture.cpp" />
+    <ClCompile Include="NTTransform.cpp" />
+    <ClCompile Include="NTVertexShader.cpp" />
+    <ClCompile Include="NTWindow.cpp" />
+    <ClCompile Include="NTWinShortCut.cpp" />
+    <ClCompile Include="NTWriteStream.cpp" />
+    <ClCompile Include="PreCom.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">PreCom.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">PreCom.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PreCom.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PreCom.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="RefNAutoptr.cpp" />
+    <ClCompile Include="ResourceSystem.cpp" />
+    <ClCompile Include="TimeSystem.cpp" />
+    <ClCompile Include="WinCore.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
