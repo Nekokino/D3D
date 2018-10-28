@@ -1,5 +1,5 @@
 #pragma once
-#include <unordered_map>
+#include <map>
 #include <set>
 #include <list>
 #include "RefNAutoptr.h"
@@ -27,10 +27,10 @@ private:
 	std::set<int>::iterator GroupStartIter;
 	std::set<int>::iterator GroupEndIter;
 
-	std::unordered_map<int, std::list<Autoptr<NTRenderer>>> RendererMap;
-	std::unordered_map<int, std::list<Autoptr<NTRenderer>>>::iterator GroupFindIter;
-	std::unordered_map<int, std::list<Autoptr<NTRenderer>>>::iterator MapStartIter;
-	std::unordered_map<int, std::list<Autoptr<NTRenderer>>>::iterator MapEndIter;
+	std::map<int, std::list<Autoptr<NTRenderer>>> RendererMap;
+	std::map<int, std::list<Autoptr<NTRenderer>>>::iterator GroupFindIter;
+	std::map<int, std::list<Autoptr<NTRenderer>>>::iterator MapStartIter;
+	std::map<int, std::list<Autoptr<NTRenderer>>>::iterator MapEndIter;
 	std::list<Autoptr<NTRenderer>>::iterator ListStartIter;
 	std::list<Autoptr<NTRenderer>>::iterator ListEndIter;
 

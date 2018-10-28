@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "ChildView.h"
+#include "NTSplitWindow.h"
 
 class CMainFrame : public CFrameWnd
 {
@@ -32,7 +32,7 @@ public:
 	virtual void Dump(CDumpContext& dc) const;
 #endif
 
-	CChildView    m_wndView;
+	NTSplitWindow MainWindow;
 
 // 생성된 메시지 맵 함수
 protected:

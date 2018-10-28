@@ -8,17 +8,13 @@
 #include "D3DTool.h"
 #include "MainFrm.h"
 
+#include <WinCore.h>
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-
-// CD3DToolApp
-
-BEGIN_MESSAGE_MAP(CD3DToolApp, CWinApp)
-	ON_COMMAND(ID_APP_ABOUT, &CD3DToolApp::OnAppAbout)
-END_MESSAGE_MAP()
 
 
 // CD3DToolApp 생성
@@ -92,44 +88,19 @@ int CD3DToolApp::ExitInstance()
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
-class CAboutDlg : public CDialogEx
-{
-public:
-	CAboutDlg();
-
-// 대화 상자 데이터입니다.
-#ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_ABOUTBOX };
-#endif
-
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
-
-// 구현입니다.
-protected:
-	DECLARE_MESSAGE_MAP()
-};
-
-CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX)
-{
-}
-
-void CAboutDlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialogEx::DoDataExchange(pDX);
-}
-
-BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
-END_MESSAGE_MAP()
-
-// 대화 상자를 실행하기 위한 응용 프로그램 명령입니다.
-void CD3DToolApp::OnAppAbout()
-{
-	CAboutDlg aboutDlg;
-	aboutDlg.DoModal();
-}
 
 // CD3DToolApp 메시지 처리기
 
 
 
+
+
+BOOL CD3DToolApp::OnIdle(LONG lCount)
+{
+	lCount = 0;
+
+	WinCore::Progress();
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+
+	return CWinApp::OnIdle(lCount);
+}

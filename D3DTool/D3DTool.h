@@ -28,8 +28,7 @@ public:
 // 구현입니다.
 
 public:
-	afx_msg void OnAppAbout();
-	DECLARE_MESSAGE_MAP()
+	virtual BOOL OnIdle(LONG lCount);
 };
 
 extern CD3DToolApp theApp;

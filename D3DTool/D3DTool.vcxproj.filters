@@ -1,29 +1,104 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClInclude Include="MainFrm.h">
+      <Filter>01 Base</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DTool.h">
+      <Filter>01 Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>01 Base</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>01 Base</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>01 Base</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSplitWindow.h">
+      <Filter>02 SubBase</Filter>
+    </ClInclude>
+    <ClInclude Include="LeftView.h">
+      <Filter>03 View</Filter>
+    </ClInclude>
+    <ClInclude Include="RightView.h">
+      <Filter>03 View</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuDlg.h">
+      <Filter>04 Dlg</Filter>
+    </ClInclude>
+    <ClInclude Include="TabDlgBase.h">
+      <Filter>04 Dlg\01 Base</Filter>
+    </ClInclude>
+    <ClInclude Include="DlgShortCut.h">
+      <Filter>05 Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolBuilder.h">
+      <Filter>06 ToolCore</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChildView.h" />
-    <ClInclude Include="D3DTool.h" />
-    <ClInclude Include="MainFrm.h" />
-    <ClInclude Include="Resource.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>01 Base</Filter>
+    </ClCompile>
+    <ClCompile Include="D3DTool.cpp">
+      <Filter>01 Base</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>01 Base</Filter>
+    </ClCompile>
+    <ClCompile Include="NTSplitWindow.cpp">
+      <Filter>02 SubBase</Filter>
+    </ClCompile>
+    <ClCompile Include="LeftView.cpp">
+      <Filter>03 View</Filter>
+    </ClCompile>
+    <ClCompile Include="RightView.cpp">
+      <Filter>03 View</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuDlg.cpp">
+      <Filter>04 Dlg</Filter>
+    </ClCompile>
+    <ClCompile Include="TabDlgBase.cpp">
+      <Filter>04 Dlg\01 Base</Filter>
+    </ClCompile>
+    <ClCompile Include="DlgShortCut.cpp">
+      <Filter>05 Helper</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolBuilder.cpp">
+      <Filter>06 ToolCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChildView.cpp" />
-    <ClCompile Include="D3DTool.cpp" />
-    <ClCompile Include="MainFrm.cpp" />
-    <ClCompile Include="stdafx.cpp" />
+    <Filter Include="01 Base">
+      <UniqueIdentifier>{93aa75fd-e243-4ab8-be14-f810e232e096}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02 SubBase">
+      <UniqueIdentifier>{4bb10412-0604-443d-958a-4a1689f4934e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03 View">
+      <UniqueIdentifier>{764dbd70-e32e-47a2-b743-c5a113b039ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Dlg">
+      <UniqueIdentifier>{dccf7ec9-e7f9-4767-90ef-57e9926695ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Dlg\01 Base">
+      <UniqueIdentifier>{300fd9eb-3b06-4a90-986c-5d3ec878b665}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Helper">
+      <UniqueIdentifier>{1f956511-8f69-45da-b631-e5d154daff9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06 ToolCore">
+      <UniqueIdentifier>{e79c80ae-bfa8-46c1-8da8-9859f3f58849}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ETC">
+      <UniqueIdentifier>{c288d0b5-dae1-4685-830c-5703f14844a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\D3DTool.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="D3DTool.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="res\D3DTool.rc2" />
+    <Text Include="ReadMe.txt">
+      <Filter>01 Base</Filter>
+    </Text>
   </ItemGroup>
 </Project>

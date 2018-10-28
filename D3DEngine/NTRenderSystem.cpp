@@ -78,7 +78,7 @@ void NTRenderSystem::PushRenderer(NTRenderer* _Renderer, int _Order)
 
 	if (GroupFindIter == RendererMap.end())
 	{
-		RendererMap.insert(std::unordered_map<int, std::list<Autoptr<NTRenderer>>>::value_type(_Order, std::list<Autoptr<NTRenderer>>()));
+		RendererMap.insert(std::map<int, std::list<Autoptr<NTRenderer>>>::value_type(_Order, std::list<Autoptr<NTRenderer>>()));
 		GroupFindIter = RendererMap.find(_Order);
 	}
 
@@ -93,7 +93,7 @@ void NTRenderSystem::PushOverRenderer(Autoptr<NTRenderer> _Renderer)
 
 	if (GroupFindIter == RendererMap.end())
 	{
-		RendererMap.insert(std::unordered_map<int, std::list<Autoptr<NTRenderer>>>::value_type(_Renderer->GetOrder(), std::list<Autoptr<NTRenderer>>()));
+		RendererMap.insert(std::map<int, std::list<Autoptr<NTRenderer>>>::value_type(_Renderer->GetOrder(), std::list<Autoptr<NTRenderer>>()));
 		GroupFindIter = RendererMap.find(_Renderer->GetOrder());
 	}
 
@@ -126,7 +126,7 @@ void NTRenderSystem::Release()
 
 Autoptr<NTRenderer> NTRenderSystem::GetRenderer(const wchar_t* _Name, int _Order)
 {
-	std::unordered_map<int, std::list<Autoptr<NTRenderer>>>::iterator FindIter = RendererMap.find(_Order);
+	std::map<int, std::list<Autoptr<NTRenderer>>>::iterator FindIter = RendererMap.find(_Order);
 
 	if (FindIter == RendererMap.end())
 	{
