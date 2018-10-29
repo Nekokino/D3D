@@ -35,10 +35,10 @@ void NTSecondUVRenderer::Render(const NTMAT & _VP)
 
 	SubTranformUpdate();
 
-	GetNTWindow()->GetDevice().SetData<NTMAT>(L"TRANS", (GetSubWorldMat() * _VP).RTranspose(), NTShader::STYPE::ST_VS);
-	GetNTWindow()->GetDevice().SetData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
-	GetNTWindow()->GetDevice().SetData<NTVEC>(L"IMGUV", Image->GetUv(ImgIndex), NTShader::STYPE::ST_PX);
-	GetNTWindow()->GetDevice().SetData<NTVEC>(L"SECONDUV", SecondUV, NTShader::ST_PX);
+	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _VP).RTranspose(), NTShader::STYPE::ST_VS);
+	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
+	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"IMGUV", Image->GetUv(ImgIndex), NTShader::STYPE::ST_PX);
+	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"SECONDUV", SecondUV, NTShader::ST_PX);
 
 	Material->Update();
 	Image->GetSamp()->Update();

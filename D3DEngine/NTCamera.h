@@ -45,10 +45,29 @@ public:
 
 public:
 	bool Init() override;
+
 	void SetSMode(SIZEMODE _SMode)
 	{
 		SMode = _SMode;
 	}
+
+	void SetPMode(PROJMODE _Mode)
+	{
+		PMode = _Mode;
+	}
+
+	void ChangePMode()
+	{
+		if (PMode == PROJMODE::CPM_ORTHOGRAPHIC)
+		{
+			PMode = PROJMODE::CPM_PERSPECTIVE;
+		}
+		else
+		{
+			PMode = PROJMODE::CPM_ORTHOGRAPHIC;
+		}
+	}
+
 	void SetCustomSize(NTVEC2 _Size)
 	{
 		if (SMode != CSM_CUSTOM)

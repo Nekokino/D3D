@@ -202,15 +202,6 @@
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\D3DTool\D3DUnity.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\D3DTool\res\D3DUnity.rc2" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\D3DTool\res\D3DUnity.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="D3DClientUnity.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -220,6 +211,18 @@
     <ClCompile Include="D3DEngineUnity.cpp" />
     <ClCompile Include="D3DMakerUnity.cpp" />
     <ClCompile Include="D3DToolUnity.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\D3DTool\res\D3DTool.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\D3DTool\D3DTool.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\D3DTool\res\D3DTool.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\D3DTool\resource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -498,3 +498,52 @@ bool NTDevice::DefaultInit()
 
 	return true;
 }
+
+bool NTDevice::Default3DInit()
+{
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+
+	Vtx3D Arr3DVtx[4] = {};
+
+	Arr3DVtx[0].Pos = NTVEC(-0.5f, 0.5f, 0.0f, 1.0f);
+	Arr3DVtx[1].Pos = NTVEC(0.5f, 0.5f, 0.0f, 1.0f);
+	Arr3DVtx[2].Pos = NTVEC(-0.5f, -0.5f, 0.0f, 1.0f);
+	Arr3DVtx[3].Pos = NTVEC(0.5f, -0.5f, 0.0f, 1.0f);
+
+	Arr3DVtx[0].Color = NTVEC(1.0f, 1.0f, 1.0f, 1.0f);
+	Arr3DVtx[1].Color = NTVEC(1.0f, 1.0f, 1.0f, 1.0f);
+	Arr3DVtx[2].Color = NTVEC(1.0f, 1.0f, 1.0f, 1.0f);
+	Arr3DVtx[3].Color = NTVEC(1.0f, 1.0f, 1.0f, 1.0f);
+
+	Arr3DVtx[0].Uv = NTVEC2(0.0f, 0.0f);
+	Arr3DVtx[1].Uv = NTVEC2(1.0f, 0.0f);
+	Arr3DVtx[2].Uv = NTVEC2(0.0f, 1.0f);
+	Arr3DVtx[3].Uv = NTVEC2(1.0f, 1.0f);
+
+	Arr3DVtx[0].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
+	Arr3DVtx[1].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
+	Arr3DVtx[2].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
+	Arr3DVtx[3].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
+
+	IDX16 ArrColorIdx[2] = {};
+
+	ArrColorIdx[0] = IDX16(0, 3, 2);
+	ArrColorIdx[1] = IDX16(0, 1, 3);
+
+	ResourceSystem<NTMesh>::Create(L"Rect3DMesh", 4, (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, Arr3DVtx, 6, (UINT)IDX16::MemberSize(), D3D11_USAGE_DYNAMIC, ArrColorIdx, IDX16::GetFormat());
+
+	Autoptr<NTVertexShader> Rect3DVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"Rect3DVtx", L"Shader", L"Rect3D.fx", "VS_Rect3D");
+	Rect3DVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Rect3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	Rect3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Rect3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> Rect3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Rect3DPix", L"Shader", L"Rect3D.fx", "PS_Rect3D");
+
+	Autoptr<NTMaterial> Rect3DMat = ResourceSystem<NTMaterial>::Create(L"Rect3DMat");
+	Rect3DMat->SetVertexShader(L"Rect3DVtx");
+	Rect3DMat->SetPixelShader(L"Rect3DPix");
+	Rect3DMat->SetBlend(L"AlphaBlend");
+
+	return true;
+} 

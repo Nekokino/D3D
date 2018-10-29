@@ -126,12 +126,12 @@ public:
 	NTVEC GetWorldUp() { return LocalAxis[AX_UP]; }
 	NTVEC GetLocalRight() { return LocalAxis[AX_RIGHT]; }
 	NTVEC GetWorldRight() { return LocalAxis[AX_RIGHT]; }
-	NTVEC GetLocalBack() { return LocalAxis[AX_FORWARD] * -1.0f; }
-	NTVEC GetWorldBack() { return LocalAxis[AX_FORWARD] * -1.0f; }
-	NTVEC GetLocalDown() { return LocalAxis[AX_UP] * -1.0f; }
-	NTVEC GetWorldDown() { return LocalAxis[AX_UP] * -1.0f; }
-	NTVEC GetLocalLeft() { return LocalAxis[AX_RIGHT] * -1.0f; }
-	NTVEC GetWorldLeft() { return LocalAxis[AX_RIGHT] * -1.0f; }
+	NTVEC GetLocalBack() { return -LocalAxis[AX_FORWARD]; }
+	NTVEC GetWorldBack() { return -LocalAxis[AX_FORWARD]; }
+	NTVEC GetLocalDown() { return -LocalAxis[AX_UP]; }
+	NTVEC GetWorldDown() { return -LocalAxis[AX_UP]; }
+	NTVEC GetLocalLeft() { return -LocalAxis[AX_RIGHT]; }
+	NTVEC GetWorldLeft() { return -LocalAxis[AX_RIGHT]; }
 
 	NTMAT GetWorldMatrix() const
 	{

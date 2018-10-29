@@ -2,6 +2,7 @@
 #include "InputSystem.h"
 #include "TimeSystem.h"
 #include <Windows.h>
+#include "NTWinShortCut.h"
 
 //////////////////////////////////////////////////////// Àü¿ª
 
@@ -17,6 +18,11 @@ const char InputSystem::KeyData::RBinaryUp		= (char)0b11111110;
 const char InputSystem::KeyData::RBinaryIdle	= (char)0b11111101;
 const char InputSystem::KeyData::RBinaryDown	= (char)0b11111011;
 const char InputSystem::KeyData::RBinaryPressed = (char)0b11110111;
+
+POINT InputSystem::Point;
+NTVEC2 InputSystem::MousePos;
+NTVEC2 InputSystem::LastMousePos;
+NTVEC2 InputSystem::MouseDir;
 
 const char InputSystem::ERROR_MSG[KEY_MAX][256] =
 {
@@ -97,6 +103,15 @@ void InputSystem::KeyData::Update()
 			Data &= RBinaryPressed;
 		}
 	}
+
+	GetCursorPos(&Point);
+	ScreenToClient(NTWinShortCut::GetMainWindow().GetHWND(), &Point);
+
+	LastMousePos = MousePos;
+	MousePos.Vec.x = (float)Point.x;
+	MousePos.Vec.y = (float)Point.y;
+
+	MouseDir = MousePos - LastMousePos;
 }
 
 bool InputSystem::KeyData::IsUp()
@@ -226,4 +241,16 @@ bool InputSystem::IsOverRepeat(const wchar_t* _Name, float _Time)
 	}
 
 	return Key->IsOverRepeat(_Time);
+}
+
+bool InputSystem::IsKey(const wchar_t * _Name)
+{
+	Autoptr<KeyData> Key = MapFind<Autoptr<KeyData>>(KeyMap, _Name);
+
+	if (nullptr == Key)
+	{
+		return false;
+	}
+
+	return true;
 }

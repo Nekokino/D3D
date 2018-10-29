@@ -223,5 +223,8 @@ bool NTWindow::InitDevice()
 {
 	bool Return = Device.Init();
 
-	return Device.DefaultInit();
+	Device.DefaultInit();
+	Device.Default3DInit();
+
+	return Return;
 }

@@ -197,6 +197,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BasicDlg.h" />
     <ClInclude Include="D3DTool.h" />
     <ClInclude Include="DlgShortCut.h" />
     <ClInclude Include="LeftView.h" />
@@ -211,6 +212,7 @@
     <ClInclude Include="ToolBuilder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BasicDlg.cpp" />
     <ClCompile Include="D3DTool.cpp" />
     <ClCompile Include="DlgShortCut.cpp" />
     <ClCompile Include="LeftView.cpp" />
@@ -232,12 +234,21 @@
       <Project>{f2dfead3-650d-4720-be3c-314b39cd87a9}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="res\D3DTool.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="D3DTool.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\D3DTool.ico" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="D3DTool.rc" />
+      <UserProperties RESOURCE_FILE="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

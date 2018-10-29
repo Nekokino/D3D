@@ -26,7 +26,8 @@ void NTSceneSystem::ChangeScene(const wchar_t* _Name)
 
 Autoptr<NTScene> NTSceneSystem::FindScene(const wchar_t* _Name)
 {
-	return MapFind<Autoptr<NTScene>>(SceneMap, _Name);
+	Autoptr<NTScene> Return = MapFind<Autoptr<NTScene>>(SceneMap, _Name);
+	return Return;
 }
 
 void NTSceneSystem::Progress()

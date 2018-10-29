@@ -48,17 +48,21 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	//	TRACE0("뷰 창을 만들지 못했습니다.\n");
 	//	return -1;
 	//}
-
-	MainWindow.Unlock();
-
 	MainWindow.CreateStatic(this, 1, 2, WS_CHILD | WS_VISIBLE);
-
 	MainWindow.CreateView(0, 0, RUNTIME_CLASS(LeftView), SIZE{ 1280, 800 }, nullptr);
-	MainWindow.CreateView(0, 1, RUNTIME_CLASS(RightView), SIZE{ 600, 800 }, nullptr);
 
 	CWnd* Wnd = MainWindow.GetPane(0, 0);
-
 	WinCore::Start<ToolBuilder>(AfxGetInstanceHandle(), L"ToolMainWindow", Wnd->m_hWnd);
+
+	MainWindow.CreateView(0, 1, RUNTIME_CLASS(RightView), SIZE{ 600, 800 }, nullptr);
+	
+	MainWindow.Unlock();
+
+	
+
+	
+
+	
 
 	RECT Tmp = { 0, 0, 2000, 800 };
 

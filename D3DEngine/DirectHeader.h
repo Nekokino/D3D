@@ -385,10 +385,16 @@ public:
 
 		return Return;
 	}
+
 	NTVEC& operator=(const NTVEC& _Other)
 	{
 		DVec = _Other.DVec;
 		return *this;
+	}
+
+	NTVEC operator -()
+	{
+		return NTVEC(-x, -y, -z, -w);
 	}
 
 	NTVEC& operator=(const DirectX::XMVECTOR& _Other)
@@ -579,4 +585,13 @@ class DirectHelper
 {
 public:
 	static UINT GetFormatSize(DXGI_FORMAT _Format);
+};
+
+class MatrixData
+{
+public:
+	NTMAT World;
+	NTMAT View;
+	NTMAT Projection;
+	NTMAT WVP;
 };

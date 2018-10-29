@@ -78,6 +78,14 @@ bool NTVertexShader::AddLayout(LPCSTR _SementicName, UINT _SementicIndex, DXGI_F
 	return true;
 }
 
+bool NTVertexShader::AddLayoutClose(LPCSTR _SementicName, UINT _SementicIndex, DXGI_FORMAT _Format, UINT _InputSlot, D3D11_INPUT_CLASSIFICATION _InputSlotClass, UINT _InstanceDateStepRate)
+{
+	AddLayout(_SementicName, _SementicIndex, _Format, _InputSlot, _InputSlotClass, _InstanceDateStepRate);
+	CreateLayout();
+
+	return true;
+}
+
 bool NTVertexShader::CreateLayout()
 {
 	tassert(nullptr == Shader);

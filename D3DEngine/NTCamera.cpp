@@ -43,10 +43,7 @@ void NTCamera::MainUpdate()
 
 void NTCamera::FinalUpdate()
 {
-	if (true == Transform->IsWorldUpdated())
-	{
-		View.ViewToLH(Transform->GetWorldPosition(), Transform->GetWorldForward(), Transform->GetWorldUp());
-	}
+	View.ViewToLH(Transform->GetWorldPosition(), Transform->GetWorldForward(), Transform->GetWorldUp());
 
 	switch (SMode)
 	{

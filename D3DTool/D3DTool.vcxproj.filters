@@ -37,6 +37,9 @@
     <ClInclude Include="ToolBuilder.h">
       <Filter>06 ToolCore</Filter>
     </ClInclude>
+    <ClInclude Include="BasicDlg.h">
+      <Filter>04 Dlg\02 Dlg</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainFrm.cpp">
@@ -69,6 +72,9 @@
     <ClCompile Include="ToolBuilder.cpp">
       <Filter>06 ToolCore</Filter>
     </ClCompile>
+    <ClCompile Include="BasicDlg.cpp">
+      <Filter>04 Dlg\02 Dlg</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01 Base">
@@ -95,10 +101,28 @@
     <Filter Include="ETC">
       <UniqueIdentifier>{c288d0b5-dae1-4685-830c-5703f14844a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="04 Dlg\02 Dlg">
+      <UniqueIdentifier>{e69e3431-f0b5-4511-af1b-b1c2d74e114c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt">
       <Filter>01 Base</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\D3DTool.rc2">
+      <Filter>ETC</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="D3DTool.rc">
+      <Filter>ETC</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\D3DTool.ico">
+      <Filter>ETC</Filter>
+    </Image>
   </ItemGroup>
 </Project>

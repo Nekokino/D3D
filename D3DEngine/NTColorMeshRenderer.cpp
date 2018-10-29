@@ -33,8 +33,8 @@ void NTColorMeshRenderer::Render(const NTMAT & _VP)
 	SubTranformUpdate();
 
 	NTMAT aa = GetSubWorldMat();
-	GetNTWindow()->GetDevice().SetData<NTMAT>(L"TRANS", (GetSubWorldMat() * _VP).RTranspose(), NTShader::STYPE::ST_VS);
-	GetNTWindow()->GetDevice().SetData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
+	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _VP).RTranspose(), NTShader::STYPE::ST_VS);
+	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
 
 	Material->Update();
 	Mesh->Update();

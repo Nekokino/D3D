@@ -2,7 +2,7 @@
 #include "NTStCom.h"
 
 
-NTStCom::NTStCom()
+NTStCom::NTStCom() : Transform(nullptr)
 {
 }
 

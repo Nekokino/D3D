@@ -88,7 +88,7 @@ public:
 	}
 
 	template<typename T>
-	void SetData(const wchar_t* _Name, const T& _Data, NTShader::STYPE _Stype)
+	void SetCBData(const wchar_t* _Name, const T& _Data, NTShader::STYPE _Stype)
 	{
 		Autoptr<NTConstBuffer> Buf = FindConstBuffer(_Name);
 
@@ -126,7 +126,9 @@ public:
 	bool CreateView();
 	bool CreateViewPort();
 	bool CreateRasterizerState();
+
 	bool DefaultInit();
+	bool Default3DInit();
 
 private:
 	void ClearTarget();

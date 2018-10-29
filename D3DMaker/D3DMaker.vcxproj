@@ -171,10 +171,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Dummy.h" />
+    <ClInclude Include="NTFreeCamera.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Dummy.cpp" />
+    <ClCompile Include="NTFreeCamera.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

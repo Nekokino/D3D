@@ -13,18 +13,21 @@
     <ClCompile Include="D3DToolUnity.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\D3DTool\res\D3DUnity.rc2">
-      <Filter>리소스 파일</Filter>
-    </None>
+    <ClInclude Include="..\D3DTool\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\D3DTool\D3DUnity.rc">
+    <Image Include="..\D3DTool\res\D3DTool.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\D3DTool\D3DTool.rc">
       <Filter>리소스 파일</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\D3DTool\res\D3DUnity.ico">
+    <None Include="..\D3DTool\res\D3DTool.rc2">
       <Filter>리소스 파일</Filter>
-    </Image>
+    </None>
   </ItemGroup>
 </Project>

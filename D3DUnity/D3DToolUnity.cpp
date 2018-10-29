@@ -1,3 +1,4 @@
+#include "BasicDlg.cpp"
 #include "D3DTool.cpp"
 #include "DlgShortCut.cpp"
 #include "LeftView.cpp"

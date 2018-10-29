@@ -11,7 +11,7 @@ class NTWinShortCut
 public:
 	friend WinCore;
 
-private:
+public:
 	static Autoptr<NTWindow> MainWindow;
 	static void SetMainWindow(const wchar_t* _Name);
 

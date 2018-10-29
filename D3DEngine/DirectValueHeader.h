@@ -19,6 +19,17 @@ public:
 	TypeS(ColVtx)
 };
 
+class Vtx3D
+{
+public:
+	NTVEC Pos;
+	NTVEC2 Uv;
+	NTVEC Color;
+	NTVEC Normal;
+
+	TypeS(Vtx3D);
+};
+
 class TexVtx // ÅØ½ºÃÄ
 {
 public:

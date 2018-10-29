@@ -104,9 +104,27 @@ public:
 	static bool IsPressed(const wchar_t* _Name);
 	static bool IsOver(const wchar_t* _Name, float _Time);
 	static bool IsOverRepeat(const wchar_t* _Name, float _Time);
+	static bool IsKey(const wchar_t* _Name);
 
 private:
 	static void Update();
+
+private:
+	static POINT Point;
+	static NTVEC2 MousePos;
+	static NTVEC2 LastMousePos;
+	static NTVEC2 MouseDir;
+
+public:
+	static NTVEC2 GetMousePos()
+	{
+		return MousePos;
+	}
+
+	static NTVEC2 GetMouseDir()
+	{
+		return MouseDir;
+	}
 public:
 	InputSystem();
 	~InputSystem();

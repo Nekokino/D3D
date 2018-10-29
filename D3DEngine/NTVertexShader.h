@@ -16,6 +16,7 @@ public:
 	void Update() override;
 
 	bool AddLayout(LPCSTR _SementicName, UINT _SementicIndex, DXGI_FORMAT _Format, UINT _InputSlot, D3D11_INPUT_CLASSIFICATION _InputSlotClass = D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, UINT _InstanceDateStepRate = 0);
+	bool AddLayoutClose(LPCSTR _SementicName, UINT _SementicIndex, DXGI_FORMAT _Format, UINT _InputSlot, D3D11_INPUT_CLASSIFICATION _InputSlotClass = D3D11_INPUT_CLASSIFICATION::D3D11_INPUT_PER_VERTEX_DATA, UINT _InstanceDateStepRate = 0);
 	bool CreateLayout();
 	void SetLayout();
 

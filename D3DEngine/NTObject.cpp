@@ -8,7 +8,7 @@
 #include "NT2DCollision.h"
 #include "NTRenderer.h"
 
-NTObject::NTObject()
+NTObject::NTObject() : Transform(nullptr), Parent(nullptr)
 {
 }
 

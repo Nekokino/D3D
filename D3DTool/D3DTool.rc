@@ -63,16 +63,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-//IDR_MAINFRAME           ICON                    "res\\D3DTool.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Menu
 //
 
@@ -167,9 +157,17 @@ BEGIN
     IDD_MENU, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 303
+        RIGHTMARGIN, 385
         TOPMARGIN, 7
-        BOTTOMMARGIN, 169
+        BOTTOMMARGIN, 316
+    END
+
+    IDD_BASICDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 273
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 209
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -180,9 +178,16 @@ END
 // Dialog
 //
 
-IDD_MENU DIALOGEX 0, 0, 310, 176
+IDD_MENU DIALOGEX 0, 0, 392, 323
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_MENUTAB,"SysTabControl32",0x0,0,0,385,316
+END
+
+IDD_BASICDLG DIALOGEX 0, 0, 280, 216
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 9, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
 END
 
@@ -193,6 +198,11 @@ END
 //
 
 IDD_MENU AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_BASICDLG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -289,7 +299,7 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 LANGUAGE 18, 1
-//#include "res\D3DTool.rc2"  // Microsoft Visual C++ 이외의 다른 도구에서 편집한 리소스입니다.
+#include "res\D3DTool.rc2"  // Microsoft Visual C++ 이외의 다른 도구에서 편집한 리소스입니다.
 #include "l.KOR\afxres.rc"      // 표준 구성 요소
 #endif
 
