@@ -72,6 +72,12 @@ void NTDevice::ResetContext()
 	Context->PSSetShader(nullptr, nullptr, 0);
 }
 
+void NTDevice::ResetDepthStencil()
+{
+	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView);
+	Context->OMSetDepthStencilState(DepthStencilState, 1);
+}
+
 bool NTDevice::Init()
 {
 	bInit = false;
@@ -214,7 +220,27 @@ bool NTDevice::CreateView() // 스왑체인에 사용할 텍스쳐 생성단계
 		return false;
 	}
 
+	DepthState.DepthEnable = TRUE;
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DepthState.DepthFunc = D3D11_COMPARISON_LESS;
+	DepthState.StencilEnable = FALSE;
+	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	const D3D11_DEPTH_STENCILOP_DESC DefaultStencilOp = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
+
+	DepthState.FrontFace = DefaultStencilOp;
+	DepthState.BackFace = DefaultStencilOp;
+
+	Device->CreateDepthStencilState(&DepthState, &DepthStencilState);
+
+	if (nullptr == DepthStencilState)
+	{
+		tassert(true);
+	}
+
 	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView); // 렌더타겟뷰와, 뎁스스텐실 뷰를 OM단계에 전달
+	Context->OMSetDepthStencilState(DepthStencilState, 1);
 
 	return true;
 }

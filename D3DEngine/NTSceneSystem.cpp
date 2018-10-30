@@ -1,6 +1,7 @@
 #include "PreCom.h"
 #include "NTSceneSystem.h"
 #include "StlAssist.h"
+#include "NTWindow.h"
 
 
 NTSceneSystem::NTSceneSystem(NTWindow* _Window)
@@ -57,7 +58,10 @@ void NTSceneSystem::Render()
 	if (nullptr != CurScene && true == CurScene->IsUpdate())
 	{
 		CurScene->Render();
+		// 폰트 라이브러리가 뎁스 스텐실 스테이트를 변경해서 만져줘야 하는 부분.
 		CurScene->DbgRender();
+
+		GetNTWindow()->GetDevice().ResetDepthStencil();
 	}
 }
 

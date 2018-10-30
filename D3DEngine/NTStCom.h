@@ -5,7 +5,13 @@
 class NTStCom : public NTComponent
 {
 protected:
-	Autoptr<NTTransform> Transform;
+	NTTransform* Transform;
+
+public:
+	NTTransform* GetTransform()
+	{
+		return Transform;
+	}
 
 public:
 	virtual void InitComponent() override;

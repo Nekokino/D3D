@@ -33,6 +33,9 @@ private:
 	NTCOLOR Color;
 	bool bInit;
 
+	D3D11_DEPTH_STENCIL_DESC DepthState;
+	ID3D11DepthStencilState* DepthStencilState;
+
 	ID3D11RasterizerState* m_ArrRs[(UINT)RS_TYPE::MAX];
 
 public:
@@ -144,6 +147,7 @@ public:
 public:
 	void Release();
 	void ResetContext();
+	void ResetDepthStencil();
 
 public:
 	NTDevice(NTWindow* _Win);
