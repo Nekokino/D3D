@@ -9,7 +9,8 @@
 #include <NTWinShortCut.h>
 #include <NTFreeCamera.h>
 #include <NT3DRectRenderer.h>
-#include <NTColorMeshRenderer.h>
+#include <NT3DGrid.h>
+
 
 
 // BasicDlg 대화 상자입니다.
@@ -69,8 +70,13 @@ BOOL BasicDlg::OnInitDialog()
 	TabScene->GetMainCamera()->AddComponent<NTFreeCamera>();
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -500.0f));
 
+	Autoptr<NTObject> GridObj = TabScene->CreateObject(L"Grid", 0);
+	GridObj->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
+	GridObj->GetTransform()->SetWorldScale(NTVEC(10000.0f, 10000.0f, 1.0f));
+	GridObj->AddComponent<NT3DGrid>();
+
 	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
-	Obj01->GetTransform()->SetLocalScale(NTVEC(100.0f, 100.0f, 100.0f));
+	Obj01->GetTransform()->SetLocalScale(NTVEC(100.0f, 10000.0f, 100.0f));
 	Autoptr<NT3DRectRenderer> TT = Obj01->AddComponent<NT3DRectRenderer>();
 	
 

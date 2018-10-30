@@ -22,7 +22,7 @@ private:
 public:
 	bool Init(int _Order = 0) override;
 	bool Init(const wchar_t* _FontName, int _Order = 0);
-	void Render(const NTMAT& _VP) override;
+	void Render(Autoptr<NTCamera> _Camera) override;
 
 	void SetString(const wchar_t* _String)
 	{

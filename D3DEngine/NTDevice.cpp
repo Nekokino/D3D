@@ -543,7 +543,23 @@ bool NTDevice::Default3DInit()
 	Autoptr<NTMaterial> Rect3DMat = ResourceSystem<NTMaterial>::Create(L"Rect3DMat");
 	Rect3DMat->SetVertexShader(L"Rect3DVtx");
 	Rect3DMat->SetPixelShader(L"Rect3DPix");
-	Rect3DMat->SetBlend(L"AlphaBlend");
+	//Rect3DMat->SetBlend(L"AlphaBlend");
+
+	////////////////////////////////////////////////////////////////// 그리드 시작
+
+	Autoptr<NTVertexShader> Grid3DVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"Grid3DVtx", L"Shader", L"Grid3D.fx", "VS_Grid3D");
+	Grid3DVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Grid3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	Grid3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Grid3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> Grid3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Grid3DPix", L"Shader", L"Grid3D.fx", "PS_Grid3D");
+
+	Autoptr<NTMaterial> Grid3DMat = ResourceSystem<NTMaterial>::Create(L"Grid3DMat");
+	Grid3DMat->SetVertexShader(L"Grid3DVtx");
+	Grid3DMat->SetPixelShader(L"Grid3DPix");
+
+	////////////////////////////////////////////////////////////////// 그리드 끝
 
 	return true;
 } 

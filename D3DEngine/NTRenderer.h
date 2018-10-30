@@ -4,6 +4,7 @@
 #include "NTBlend.h"
 #include "NTSubTransform.h"
 
+class NTCamera;
 class NTRenderer : public NTSubTransform
 {
 protected:
@@ -23,7 +24,7 @@ public:
 
 public:
 	virtual bool Init(int _Order = 0);
-	virtual void Render(const NTMAT& _VP) = 0;
+	virtual void Render(Autoptr<NTCamera> _Camera) = 0;
 
 public:
 	NTRenderer();

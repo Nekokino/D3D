@@ -28,12 +28,12 @@ bool NTColorMeshRenderer::Init(int _Order)
 	return true;
 }
 
-void NTColorMeshRenderer::Render(const NTMAT & _VP)
+void NTColorMeshRenderer::Render(Autoptr<NTCamera> _Camera)
 {
 	SubTranformUpdate();
 
 	NTMAT aa = GetSubWorldMat();
-	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _VP).RTranspose(), NTShader::STYPE::ST_VS);
+	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _Camera->GetVP()).RTranspose(), NTShader::STYPE::ST_VS);
 	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
 
 	Material->Update();

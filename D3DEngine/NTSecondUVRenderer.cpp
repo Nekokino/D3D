@@ -20,7 +20,7 @@ void NTSecondUVRenderer::SetImage(const wchar_t * _ImageName)
 	tassert(nullptr == Image);
 }
 
-void NTSecondUVRenderer::Render(const NTMAT & _VP)
+void NTSecondUVRenderer::Render(Autoptr<NTCamera> _Camera)
 {
 	tassert(nullptr == Transform);
 	if (nullptr == Transform)
@@ -35,7 +35,7 @@ void NTSecondUVRenderer::Render(const NTMAT & _VP)
 
 	SubTranformUpdate();
 
-	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _VP).RTranspose(), NTShader::STYPE::ST_VS);
+	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _Camera->GetVP()).RTranspose(), NTShader::STYPE::ST_VS);
 	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
 	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"IMGUV", Image->GetUv(ImgIndex), NTShader::STYPE::ST_PX);
 	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"SECONDUV", SecondUV, NTShader::ST_PX);

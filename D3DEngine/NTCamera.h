@@ -1,8 +1,7 @@
 #pragma once
 
 #include "NTStCom.h"
-
-#include <set>
+#include <vector>
 
 class NTTransform;
 class NTRenderSystem;
@@ -35,9 +34,19 @@ private:
 	float Near;
 	float Far;
 private:
-	std::set<int> RenderGroup;
+	std::vector<int> RenderGroup;
 
 public:
+	const NTMAT& GetView() const
+	{
+		return View;
+	}
+
+	const NTMAT& GetProjection() const
+	{
+		return Projection;
+	}
+
 	const NTMAT& GetVP() const
 	{
 		return VP;
@@ -94,7 +103,7 @@ private:
 	template<typename ...Rest>
 	void PushLayer(int _Data, Rest... Arg)
 	{
-		RenderGroup.insert(_Data);
+		RenderGroup.push_back(_Data);
 		PushLayer(Arg...);
 	}
 

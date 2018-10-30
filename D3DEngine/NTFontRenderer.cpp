@@ -38,7 +38,7 @@ bool NTFontRenderer::Init(const wchar_t* _FontName, int _Order)
 	return true;
 }
 
-void NTFontRenderer::Render(const NTMAT & _VP)
+void NTFontRenderer::Render(Autoptr<NTCamera> _Camera)
 {
 	if (Mode == RM_MAX)
 	{

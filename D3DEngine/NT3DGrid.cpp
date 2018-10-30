@@ -1,19 +1,19 @@
 #include "PreCom.h"
-#include "NT3DRectRenderer.h"
-#include "NTWindow.h"
+#include "NT3DGrid.h"
 #include "NTTransform.h"
+#include "NTWindow.h"
 
 
-NT3DRectRenderer::NT3DRectRenderer()
+NT3DGrid::NT3DGrid()
 {
 }
 
 
-NT3DRectRenderer::~NT3DRectRenderer()
+NT3DGrid::~NT3DGrid()
 {
 }
 
-void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
+void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
 {
 	tassert(nullptr == Transform);
 
@@ -36,11 +36,11 @@ void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
 	Mesh->Render();
 }
 
-bool NT3DRectRenderer::Init(int _Order)
+bool NT3DGrid::Init(int _Order)
 {
 	NTRenderer::Init(_Order);
 
-	if (false == SetMaterial(L"Rect3DMat"))
+	if (false == SetMaterial(L"Grid3DMat"))
 	{
 		return false;
 	}

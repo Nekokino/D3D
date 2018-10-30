@@ -181,6 +181,7 @@
     <ClInclude Include="NT2DCollision.h" />
     <ClInclude Include="NT2DCollisionBase.h" />
     <ClInclude Include="NT2DCollisionSystem.h" />
+    <ClInclude Include="NT3DGrid.h" />
     <ClInclude Include="NT3DRectRenderer.h" />
     <ClInclude Include="NTBlend.h" />
     <ClInclude Include="NTCamera.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="NT2DCollision.cpp" />
     <ClCompile Include="NT2DCollisionBase.cpp" />
     <ClCompile Include="NT2DCollisionSystem.cpp" />
+    <ClCompile Include="NT3DGrid.cpp" />
     <ClCompile Include="NT3DRectRenderer.cpp" />
     <ClCompile Include="NTBlend.cpp" />
     <ClCompile Include="NTCamera.cpp" />

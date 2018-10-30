@@ -10,7 +10,7 @@ protected:
 	NTCOLOR Color;
 	size_t ImgIndex;
 public:
-	void Render(const NTMAT& _VP) override;
+	void Render(Autoptr<NTCamera> _Camera) override;
 
 	size_t GetImageIndex()
 	{

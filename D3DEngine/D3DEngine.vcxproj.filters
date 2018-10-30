@@ -187,6 +187,9 @@
     <ClInclude Include="NT3DRectRenderer.h">
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClInclude>
+    <ClInclude Include="NT3DGrid.h">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -340,6 +343,9 @@
       <Filter>05 Object\Component\EngineComponent\02 Render\2D</Filter>
     </ClCompile>
     <ClCompile Include="NT3DRectRenderer.cpp">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NT3DGrid.cpp">
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClCompile>
   </ItemGroup>

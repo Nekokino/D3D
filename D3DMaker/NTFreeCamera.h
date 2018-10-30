@@ -8,7 +8,9 @@ private:
 	Autoptr<NTCamera> Camera;
 	NTVEC2 LastMPoint;
 	NTVEC2 Rotation;
-	float Speed;
+	float RotSpeed;
+	float MoveSpeed;
+	float Boost;
 
 public:
 	bool Init() override;

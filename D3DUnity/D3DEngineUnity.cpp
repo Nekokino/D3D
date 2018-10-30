@@ -5,6 +5,7 @@
 #include "NT2DCollision.cpp"
 #include "NT2DCollisionBase.cpp"
 #include "NT2DCollisionSystem.cpp"
+#include "NT3DGrid.cpp"
 #include "NT3DRectRenderer.cpp"
 #include "NTBlend.cpp"
 #include "NTCamera.cpp"

@@ -55,6 +55,40 @@ void NTTransform::FinalUpdate()
 			LocalAxis[i].Normalize();
 		}
 
+		if (nullptr != GetNTObject()->GetParent())
+		{
+			WorldRotation = GetNTObject()->GetTransform()->GetWorldRotation() + LocalRotation;
+
+			NTMAT WorldRotationMat;
+			NTMAT TempRotationX;
+			NTMAT TempRotationY;
+			NTMAT TempRotationZ;
+
+			TempRotationX.RotationX(WorldRotation.x);
+			TempRotationY.RotationY(WorldRotation.y);
+			TempRotationZ.RotationZ(WorldRotation.z);
+
+			WorldRotationMat = TempRotationX * TempRotationY * TempRotationZ;
+
+			WorldAxis[AXIS::AX_FORWARD] = NTVEC::FORWARD;
+			WorldAxis[AXIS::AX_UP] = NTVEC::UP;
+			WorldAxis[AXIS::AX_RIGHT] = NTVEC::RIGHT;
+
+			for (size_t i = 0; i < AXIS::AX_MAX; i++)
+			{
+				WorldAxis[i] = WorldRotationMat.MulZero(WorldAxis[i]);
+				WorldAxis[i].Normalize();
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < AXIS::AX_MAX; i++)
+			{
+				WorldAxis[i] = LocalAxis[i];
+				WorldAxis[i].Normalize();
+			}
+		}
+
 		bLocalRotation = false;
 	}
 
@@ -70,6 +104,9 @@ void NTTransform::FinalUpdate()
 		if (true == bWorld)
 		{
 			WorldMatrix = ScaleMatrix * RotationMatrix * PositionMatrix;
+
+			WorldPosition = WorldMatrix.v4;
+			WorldScale = NTVEC(WorldMatrix.v1.x, WorldMatrix.v2.y, WorldMatrix.v3.z);
 		}
 	}
 	else if (nullptr != GetNTObject()->GetParent()->GetTransform())
@@ -78,26 +115,11 @@ void NTTransform::FinalUpdate()
 		{
 			NTMAT tmp = GetNTObject()->GetParent()->GetTransform()->GetWorldMatrix();
 			WorldMatrix = ScaleMatrix * RotationMatrix * PositionMatrix * tmp;
+
+			WorldPosition = WorldMatrix.v4;
+			WorldScale = NTVEC(WorldMatrix.v1.x, WorldMatrix.v2.y, WorldMatrix.v3.z);
 		}
 	}
-
-	WorldPosition = WorldMatrix.v4;
-	WorldScale = NTVEC(WorldMatrix.v1.x, WorldMatrix.v2.y, WorldMatrix.v3.z);
-
-	/*WorldPosition = NTVEC(WorldMatrix.m[3][0], WorldMatrix.m[3][1], WorldMatrix.m[3][2]);
-	WorldScale = NTVEC(WorldMatrix.m[0][0], WorldMatrix.m[1][1], WorldMatrix.m[2][2]);
-
-	NTMAT Temp = WorldMatrix;
-
-	WorldAxis[AXIS::AX_FORWARD] = NTVEC::FORWARD;
-	WorldAxis[AXIS::AX_RIGHT] = NTVEC::RIGHT;
-	WorldAxis[AXIS::AX_UP] = NTVEC::UP;
-
-	for (size_t i = 0; i < AX_MAX; i++)
-	{
-		WorldAxis[i] = Temp.MulZero(LocalAxis[i]);
-		WorldAxis[i].Normalize();
-	}*/
 }
 
 void NTTransform::EndUpdate()

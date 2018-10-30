@@ -24,7 +24,7 @@ public:
 	void SetImage(const wchar_t* _ImageName);
 
 public:
-	void Render(const NTMAT& _VP) override;
+	void Render(Autoptr<NTCamera> _Camera) override;
 
 public:
 	bool Init(int _Order = 0) override;

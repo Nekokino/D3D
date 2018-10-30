@@ -24,8 +24,6 @@ private:
 	std::set<Autoptr<NTCamera>> CameraSet;
 	std::set<Autoptr<NTCamera>>::iterator SetStartIter;
 	std::set<Autoptr<NTCamera>>::iterator SetEndIter;
-	std::set<int>::iterator GroupStartIter;
-	std::set<int>::iterator GroupEndIter;
 
 	std::map<int, std::list<Autoptr<NTRenderer>>> RendererMap;
 	std::map<int, std::list<Autoptr<NTRenderer>>>::iterator GroupFindIter;

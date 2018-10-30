@@ -103,15 +103,6 @@ void InputSystem::KeyData::Update()
 			Data &= RBinaryPressed;
 		}
 	}
-
-	GetCursorPos(&Point);
-	ScreenToClient(NTWinShortCut::GetMainWindow().GetHWND(), &Point);
-
-	LastMousePos = MousePos;
-	MousePos.Vec.x = (float)Point.x;
-	MousePos.Vec.y = (float)Point.y;
-
-	MouseDir = MousePos - LastMousePos;
 }
 
 bool InputSystem::KeyData::IsUp()
@@ -163,6 +154,15 @@ InputSystem::~InputSystem()
 
 void InputSystem::Update()
 {
+	GetCursorPos(&Point);
+	ScreenToClient(NTWinShortCut::GetMainWindow().GetHWND(), &Point);
+
+	LastMousePos = MousePos;
+	MousePos.Vec.x = (float)Point.x;
+	MousePos.Vec.y = (float)Point.y;
+
+	MouseDir = MousePos - LastMousePos;
+
 	MapStartIter = KeyMap.begin();
 	MapEndIter = KeyMap.end();
 

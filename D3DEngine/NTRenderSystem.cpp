@@ -20,23 +20,16 @@ void NTRenderSystem::Render()
 
 	for (; SetStartIter != SetEndIter; ++SetStartIter)
 	{
-		GroupStartIter = (*SetStartIter)->RenderGroup.begin();
-		GroupEndIter = (*SetStartIter)->RenderGroup.end();
 
 		bool TmpCheck = false;
 
-		for (; GroupStartIter != GroupEndIter; ++GroupStartIter)
+		for (size_t i = 0; i < (*SetStartIter)->RenderGroup.size(); i++)
 		{
-			GroupFindIter = RendererMap.find(*GroupStartIter);
+			GroupFindIter = RendererMap.find((*SetStartIter)->RenderGroup[i]);
 
 			if (GroupFindIter == RendererMap.end())
 			{
 				continue;
-			}
-
-			if (2 <= GroupFindIter->second.size())
-			{
-				GroupFindIter->second.sort(&NTRenderSystem::ZOrderSort);
 			}
 
 			ListStartIter = GroupFindIter->second.begin();
@@ -46,7 +39,7 @@ void NTRenderSystem::Render()
 			{
 				if ((*ListStartIter)->IsUpdate() == true)
 				{
-					(*ListStartIter)->Render((*SetStartIter)->GetVP());
+					(*ListStartIter)->Render((*SetStartIter));
 				}
 			}
 		}

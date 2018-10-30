@@ -81,6 +81,12 @@ public:
 	void SetLocalPosition(const NTVEC& _Pos)
 	{
 		LocalPosition = _Pos;
+
+		if (nullptr != GetNTObject()->GetParent())
+		{
+			WorldPosition = GetNTObject()->GetTransform()->GetWorldPosition() + LocalPosition;
+		}
+
 		bLocalPosition = true;
 		bWorld = true;
 	}
@@ -105,6 +111,21 @@ public:
 		bWorld = true;
 	}
 
+	void SetWorldRotation(const NTVEC& _Value)
+	{
+		if (nullptr != GetNTObject()->GetParent())
+		{
+			LocalRotation = (WorldRotation * MathSystem::D2R) - GetNTObject()->GetTransform()->GetWorldRotation();
+		}
+		else
+		{
+			LocalRotation = _Value * MathSystem::D2R;
+		}
+
+		bLocalRotation = true;
+		bWorld = true;
+	}
+
 	void SetLocalAccRotation(const NTVEC& _Value)
 	{
 		LocalRotation += _Value;
@@ -115,6 +136,21 @@ public:
 	void SetLocalScale(const NTVEC& _Scale)
 	{
 		LocalScale = _Scale;
+		bLocalScale = true;
+		bWorld = true;
+	}
+
+	void SetWorldScale(const NTVEC& _Scale)
+	{
+		if (nullptr != GetNTObject()->GetParent())
+		{
+			LocalScale = WorldScale - GetNTObject()->GetTransform()->GetWorldScale();
+		}
+		else
+		{
+			LocalScale = _Scale;
+		}
+
 		bLocalScale = true;
 		bWorld = true;
 	}
