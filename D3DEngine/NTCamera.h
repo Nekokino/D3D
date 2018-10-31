@@ -92,6 +92,16 @@ public:
 		return ScreenSize;
 	}
 
+	void SetNear(float _Near)
+	{
+		Near = _Near;
+	}
+
+	void SetFar(float _Far)
+	{
+		Far = _Far;
+	}
+
 public:
 	template<typename ...Rest>
 	void PushRenderLayer(Rest... Arg)

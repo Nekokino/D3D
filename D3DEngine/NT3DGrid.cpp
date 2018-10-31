@@ -2,6 +2,7 @@
 #include "NT3DGrid.h"
 #include "NTTransform.h"
 #include "NTWindow.h"
+#include "DebugFunc.h"
 
 
 NT3DGrid::NT3DGrid() : InterBlockSize(10.0f)
@@ -32,11 +33,15 @@ void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
 	MatData.WVP = (MatData.World * MatData.View * MatData.Projection).RTranspose();
 
 	GetNTWindow()->GetDevice().SetCBData<MatrixData>(L"MatData", MatData, NTShader::STYPE::ST_VS);
-	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"GridData", GridData, NTShader::STYPE::ST_VS);
+	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"GridData", GridData, NTShader::STYPE::ST_PX);
 
 	Material->Update();
 	Mesh->Update();
 	Mesh->Render();
+}
+
+void NT3DGrid::DbgRender()
+{
 }
 
 bool NT3DGrid::Init(int _Order)
@@ -55,7 +60,7 @@ bool NT3DGrid::Init(int _Order)
 
 	if (nullptr == GetNTWindow()->GetDevice().FindConstBuffer(L"GridData"))
 	{
-		GetNTWindow()->GetDevice().CreateConstBuffer<NTVEC>(L"GridData", D3D11_USAGE_DYNAMIC, 1);
+		GetNTWindow()->GetDevice().CreateConstBuffer<NTVEC>(L"GridData", D3D11_USAGE_DYNAMIC, 0);
 	}
 
 	return true;
@@ -87,7 +92,5 @@ void NT3DGrid::CalData(Autoptr<NTCamera> _Camera)
 
 	GridData.y = y * 0.01f;
 
-	float Alpha;
-
-	GridData.z = (CheckUpper - y) / (CheckUpper - Check);
+	GridData.z = fabsf((y - CheckUpper) / (CheckUpper - Check));
 }

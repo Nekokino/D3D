@@ -167,12 +167,17 @@ void NTFreeCamera::MainUpdate()
 	{
 		Transform->SetLocalAccRotation(NTVEC(InputSystem::GetMouseDir().y * RotSpeed * TimeSystem::DeltaTime(), InputSystem::GetMouseDir().x * RotSpeed * TimeSystem::DeltaTime()));
 	}
+
+	wchar_t Arr[256] = {};
+
+	swprintf_s(Arr, L"CameraPos : %f %f %f", GetTransform()->GetLocalPosition().x, GetTransform()->GetLocalPosition().y, GetTransform()->GetLocalPosition().z);
+	DebugFunc::DrawLog(Arr);
 }
 
 void NTFreeCamera::DbgRender()
 {
-	wchar_t Arr[256];
+	wchar_t Arr[256] = {};
 
-	swprintf_s(Arr, L"CameraPos %f, %f", Camera->GetNTObject()->GetTransform()->GetLocalPosition().x, Camera->GetNTObject()->GetTransform()->GetLocalPosition().y);
-	DebugFunc::DrawFont(Arr, NTVEC{ 10.0f, 10.0f }, 20.0f, 0xff00ffff);
+	swprintf_s(Arr, L"CamPOs : %f, %f, %f", GetTransform()->GetLocalPosition().x, GetTransform()->GetLocalPosition().y, GetTransform()->GetLocalPosition().z);
+	DebugFunc::DrawFont(Arr, { 10.0f, 10.0f }, 20.0f, 0xffffffff);
 }

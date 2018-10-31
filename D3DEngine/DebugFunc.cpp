@@ -8,6 +8,11 @@
 #include "NTFont.h"
 #include "NTWinShortCut.h"
 
+float DebugFunc::LogSize = 20.0f;
+std::list<DebugFunc::DbgLog>::iterator DebugFunc::ListStartIter;
+std::list<DebugFunc::DbgLog>::iterator DebugFunc::ListEndIter;
+std::list<DebugFunc::DbgLog> DebugFunc::Log;
+
 
 DebugFunc::DebugFunc()
 {
@@ -89,4 +94,25 @@ void DebugFunc::DrawFont(wchar_t * _Str, NTVEC2 _Pos, float _Size, UINT _Color, 
 	}
 
 	NTWinShortCut::GetMainDevice().ResetContext();
+}
+
+void DebugFunc::DrawLog(wchar_t * _Str, NTVEC _Color)
+{
+	Log.push_back({ _Str , _Color });
+}
+
+void DebugFunc::RenderLog()
+{
+	ListStartIter = Log.begin();
+	ListEndIter = Log.end();
+
+	NTVEC2 Pos = { 10.0f, 10.0f };
+
+	for (; ListStartIter != ListEndIter; ++ListStartIter)
+	{
+		DrawFont((wchar_t*)(*ListStartIter).Msg.c_str(), Pos, LogSize, (*ListStartIter).Color.ColorUINT());
+		Pos.y = LogSize;
+	}
+
+	Log.clear();
 }

@@ -35,7 +35,29 @@ cbuffer GridData : register(b0)
 PIX_OUT PS_Grid3D(VTX_OUT _In)
 {
     PIX_OUT Out = (PIX_OUT) 0.0f;
+
+    float BlockSize = GData.x;
+    float Alpha = GData.z;
+    float Border = GData.y;
    
-    Out.Color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    float X = abs(_In.WorldPos.x % (BlockSize * 10));
+    float Z = abs(_In.WorldPos.z % (BlockSize * 10));
+
+    if (X <= Border || Z <= Border)
+    {
+        Out.Color = float4(1.0f, 0.0f, 0.0f, 1.0f);
+        return Out;
+    }
+
+    X = abs(_In.WorldPos.x % (BlockSize));
+    Z = abs(_In.WorldPos.z % (BlockSize));
+
+    if (X <= Border || Z <= Border)
+    {
+        Out.Color = float4(1.0f, 0.0f, 0.0f, Alpha);
+        return Out;
+    }
+
+    clip(-1);
     return Out;
 }

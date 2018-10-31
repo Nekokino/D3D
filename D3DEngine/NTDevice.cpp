@@ -61,6 +61,11 @@ void NTDevice::Release()
 	{
 		SwapChain->Release();
 	}
+
+	if (nullptr != DepthStencilState)
+	{
+		DepthStencilState->Release();
+	}
 }
 
 void NTDevice::ResetContext()
@@ -140,7 +145,7 @@ bool NTDevice::CreateSwapChain()
 
 	tDesc.SampleDesc.Count = 1;
 	tDesc.SampleDesc.Quality = 0;
-	
+
 	tDesc.OutputWindow = GetNTWindow()->GetHWND();
 
 	tDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
@@ -323,7 +328,7 @@ Autoptr<NTDevice::NTConstBuffer> NTDevice::FindConstBuffer(const wchar_t* _Name)
 
 bool NTDevice::DefaultInit()
 {
-	ResourceSystem<NTBlend>::Create(L"AlphaBlend"); 
+	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
 	ResourceSystem<NTFont>::Create(L"궁서", L"궁서");
 
 
@@ -361,7 +366,7 @@ bool NTDevice::DefaultInit()
 
 	for (size_t i = 1; i < 37; ++i)
 	{
-		ArrCircleTexVtx[i].Uv = NTVEC2(cosf((90.0f - 10.0f * (i - 1)) * MathSystem::D2R) * 0.5f + 0.5f, sinf((90.0f - 10.0f * (i-1)) * MathSystem::D2R) * -0.5f + 0.5f);
+		ArrCircleTexVtx[i].Uv = NTVEC2(cosf((90.0f - 10.0f * (i - 1)) * MathSystem::D2R) * 0.5f + 0.5f, sinf((90.0f - 10.0f * (i - 1)) * MathSystem::D2R) * -0.5f + 0.5f);
 	}
 
 	for (size_t i = 0; i < 36; i++)
@@ -569,7 +574,7 @@ bool NTDevice::Default3DInit()
 	Autoptr<NTMaterial> Rect3DMat = ResourceSystem<NTMaterial>::Create(L"Rect3DMat");
 	Rect3DMat->SetVertexShader(L"Rect3DVtx");
 	Rect3DMat->SetPixelShader(L"Rect3DPix");
-	//Rect3DMat->SetBlend(L"AlphaBlend");
+	Rect3DMat->SetBlend(L"AlphaBlend");
 
 	////////////////////////////////////////////////////////////////// 그리드 시작
 
@@ -584,8 +589,9 @@ bool NTDevice::Default3DInit()
 	Autoptr<NTMaterial> Grid3DMat = ResourceSystem<NTMaterial>::Create(L"Grid3DMat");
 	Grid3DMat->SetVertexShader(L"Grid3DVtx");
 	Grid3DMat->SetPixelShader(L"Grid3DPix");
+	Grid3DMat->SetBlend(L"AlphaBlend");
 
 	////////////////////////////////////////////////////////////////// 그리드 끝
 
 	return true;
-} 
+}

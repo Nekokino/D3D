@@ -450,6 +450,22 @@ public:
 	{
 		return sqrtf(x*x + y*y + z*z);
 	}
+
+	UINT ColorUINT()
+	{
+		UINT Color = 0;
+		int TempR = (int)r;
+		int TempG = (int)g;
+		int TempB = (int)b;
+		int TempA = (int)a;
+
+		Color |= TempR;
+		Color |= (TempG << 8);
+		Color |= (TempB << 16);
+		Color |= (TempA << 24);
+
+		return Color;
+	}
 };
 
 typedef NTVEC NTCOLOR;

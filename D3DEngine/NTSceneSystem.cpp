@@ -2,6 +2,7 @@
 #include "NTSceneSystem.h"
 #include "StlAssist.h"
 #include "NTWindow.h"
+#include "DebugFunc.h"
 
 
 NTSceneSystem::NTSceneSystem(NTWindow* _Window)
