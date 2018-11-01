@@ -45,9 +45,6 @@ void DebugFunc::DrawRect(const NTRECT & _Rect, float _Border)
 	NTMAT Pos;
 	Pos.Translate(NTVEC(_Rect.Pos.x, _Rect.Pos.y, 0.1f));
 
-	NTWinShortCut::GetMainDevice().SetCBData<NTMAT>(L"TRANS", (Scale * Pos * VP).RTranspose(), NTShader::ST_VS);
-	NTWinShortCut::GetMainDevice().SetCBData<NTVEC>(L"OUTLINE", NTVEC(UvSize), NTShader::ST_PX);
-
 	Autoptr<NTMesh> Mesh = ResourceSystem<NTMesh>::Find(L"TEXMESH");
 	Autoptr<NTMaterial> Material = ResourceSystem<NTMaterial>::Find(L"DbgRectMat");
 
@@ -62,6 +59,8 @@ void DebugFunc::DrawCircle(const NTCIRCLE & _Circle, float _Border)
 
 	UvSize *= _Border;
 
+	NTMAT VP = NTWinShortCut::GetMainSceneSystem().GetCurScene()->GetMainCamera()->GetVP();
+
 	NTMAT View;
 	NTMAT Proj;
 	View.ViewAtLH(NTVEC::ZERO, NTVEC::FORWARD, NTVEC::UP);
@@ -73,11 +72,10 @@ void DebugFunc::DrawCircle(const NTCIRCLE & _Circle, float _Border)
 	NTMAT Pos;
 	Pos.Translate(NTVEC(_Circle.Pos.x, _Circle.Pos.y, 0.1f));
 
-	NTWinShortCut::GetMainDevice().SetCBData<NTMAT>(L"TRANS", (Scale * Pos * View * Proj).RTranspose(), NTShader::ST_VS);
-	NTWinShortCut::GetMainDevice().SetCBData<NTVEC>(L"OUTLINE", NTVEC(UvSize), NTShader::ST_PX);
 
 	Autoptr<NTMesh> Mesh = ResourceSystem<NTMesh>::Find(L"LINECIRCLEMESH2");
 	Autoptr<NTMaterial> Material = ResourceSystem<NTMaterial>::Find(L"CMAT");
+	Material->GetVertexShader()->SetConstBuffer<NTMAT>(L"TRANS", (Scale * Pos * VP).RTranspose());
 
 	Material->Update();
 	Mesh->Update();

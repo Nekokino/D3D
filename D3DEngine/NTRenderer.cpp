@@ -5,7 +5,7 @@
 #include "NTDevice.h"
 #include "NTWindow.h"
 
-NTRenderer::NTRenderer()
+NTRenderer::NTRenderer() : Light(0)
 {
 }
 
@@ -17,7 +17,7 @@ NTRenderer::~NTRenderer()
 bool NTRenderer::Init(int _Order)
 {
 	Order = _Order;
-	GetScene()->RenderSystem.PushRenderer(this, _Order);
+	GetScene()->RenderSystem.PushRenderer(this);
 	return true;
 }
 

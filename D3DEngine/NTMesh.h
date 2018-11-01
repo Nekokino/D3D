@@ -25,11 +25,6 @@ private:
 	UINT VertexSize;
 	UINT IndexCount;
 
-private:
-	std::vector<D3D11_INPUT_ELEMENT_DESC> InputLayoutVec;
-	UINT Offset;
-	ID3D11InputLayout* InputLayout;
-
 public:
 	bool Create(UINT _VertexCount, UINT _VertexSize, D3D11_USAGE _VertexUsage, void* _VertexMem, UINT _IndexCount, UINT _IndexSize,
 		D3D11_USAGE _IndexUsage, void* _IndexMem, DXGI_FORMAT _IndexFormat, D3D11_PRIMITIVE_TOPOLOGY _DrawMode = D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

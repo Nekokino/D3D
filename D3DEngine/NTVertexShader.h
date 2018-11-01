@@ -21,6 +21,9 @@ public:
 	void SetLayout();
 
 public:
+	void UpdateConstBuffer(Autoptr<ConstBuffer> _Buf);
+
+public:
 	NTVertexShader();
 	~NTVertexShader();
 };

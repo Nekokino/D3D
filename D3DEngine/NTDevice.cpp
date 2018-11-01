@@ -9,6 +9,7 @@
 #include "NTWinShortCut.h"
 #include "NTBlend.h"
 #include "NTFont.h"
+#include "NTLight.h"
 
 
 #define CIRCLE 10
@@ -315,11 +316,6 @@ void NTDevice::CreateRasterState(const wchar_t * _Name, D3D11_FILL_MODE _FillMod
 	RasterStateMap.insert(std::unordered_map<std::wstring, Autoptr<RasterState>>::value_type(_Name, RS));
 }
 
-Autoptr<NTDevice::NTConstBuffer> NTDevice::FindConstBuffer(const wchar_t* _Name)
-{
-	return MapFind<Autoptr<NTDevice::NTConstBuffer>>(ConstBufferMap, _Name);
-}
-
 bool NTDevice::DefaultInit()
 {
 
@@ -512,12 +508,12 @@ bool NTDevice::DefaultInit()
 
 	// 셰이더에 넘겨줄 상수버퍼 설정하는 곳
 
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINE", D3D11_USAGE_DYNAMIC, 2);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINECOLOR", D3D11_USAGE_DYNAMIC, 3);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"SECONDUV", D3D11_USAGE_DYNAMIC, 4);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINE", D3D11_USAGE_DYNAMIC, 2);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINECOLOR", D3D11_USAGE_DYNAMIC, 3);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"SECONDUV", D3D11_USAGE_DYNAMIC, 4);
 
 	return true;
 }
@@ -527,14 +523,14 @@ bool NTDevice::Default3DInit()
 	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
 	ResourceSystem<NTFont>::Create(L"궁서", L"궁서");
 
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
-	
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINE", D3D11_USAGE_DYNAMIC, 2);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINECOLOR", D3D11_USAGE_DYNAMIC, 3);
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"SECONDUV", D3D11_USAGE_DYNAMIC, 4);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+	//
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINE", D3D11_USAGE_DYNAMIC, 2);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINECOLOR", D3D11_USAGE_DYNAMIC, 3);
+	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"SECONDUV", D3D11_USAGE_DYNAMIC, 4);
 
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SNONE", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_NONE);
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SFRONT", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_FRONT);
@@ -773,7 +769,7 @@ bool NTDevice::Default3DInit()
 	Vtx.Uv = NTVEC2{ 0.5f, 0.0f };
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 	Vtx.Normal = Vtx.Pos;
-	Vtx.Normal.Normalize();
+	Vtx.Normal.Normalize3D();
 	SphereVtx.push_back(Vtx); // 위쪽 꼭대기점.
 
 	UINT StackCount = 40; // 가로 분할
@@ -798,7 +794,7 @@ bool NTDevice::Default3DInit()
 			Vtx.Uv = NTVEC2{ yUvRatio * z, zUvRatio * y };
 			Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 			Vtx.Normal = Vtx.Pos;
-			Vtx.Normal.Normalize();
+			Vtx.Normal.Normalize3D();
 
 			SphereVtx.push_back(Vtx);
 		}
@@ -808,7 +804,7 @@ bool NTDevice::Default3DInit()
 	Vtx.Uv = NTVEC2{ 0.5f, 1.0f };
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 	Vtx.Normal = Vtx.Pos;
-	Vtx.Normal.Normalize();
+	Vtx.Normal.Normalize3D();
 	SphereVtx.push_back(Vtx); // 아래쪽 꼭대기점.
 
 	for (UINT i = 0; i < SliceCount; ++i) // 위쪽 꼭대기점 인덱스 설정
@@ -851,6 +847,8 @@ bool NTDevice::Default3DInit()
 	Rect3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	Rect3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	Rect3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Rect3DVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+	Rect3DVtx->CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 10);
 
 	Autoptr<NTPixelShader> Rect3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Rect3DPix", L"Shader", L"Rect3D.fx", "PS_Rect3D");
 
@@ -866,8 +864,10 @@ bool NTDevice::Default3DInit()
 	Grid3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	Grid3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	Grid3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Grid3DVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> Grid3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Grid3DPix", L"Shader", L"Grid3D.fx", "PS_Grid3D");
+	Grid3DPix->CreateConstBuffer<NTVEC>(L"GridData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTMaterial> Grid3DMat = ResourceSystem<NTMaterial>::Create(L"Grid3DMat");
 	Grid3DMat->SetVertexShader(L"Grid3DVtx");
@@ -883,6 +883,7 @@ bool NTDevice::Default3DInit()
 	SkyBoxVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	SkyBoxVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	SkyBoxVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	SkyBoxVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> SkyBoxPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"SkyBoxPix", L"Shader", L"SkyBox.fx", "PS_SkyBox");
 
@@ -891,6 +892,43 @@ bool NTDevice::Default3DInit()
 	SkyBoxMat->SetPixelShader(L"SkyBoxPix");
 	SkyBoxMat->SetBlend(L"AlphaBlend");
 
+	///////////////////////////////////////////////////////////////// 스카이 바악스 끝
+
+	///////////////////////////////////////////////////////////////// 포워드 라이트
+
+	Autoptr<NTVertexShader> VertexLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"VertexLightVtx", L"Shader", L"VertexLight.fx", "VS_VtxLight");
+	VertexLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	VertexLightVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	VertexLightVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	VertexLightVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	VertexLightVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+
+	Autoptr<NTPixelShader> VertexLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"VertexLightPix", L"Shader", L"VertexLight.fx", "PS_VtxLight");
+
+	Autoptr<NTMaterial> VertexLightMat = ResourceSystem<NTMaterial>::Create(L"VertexLightMat");
+	VertexLightMat->SetVertexShader(L"VertexLightVtx");
+	VertexLightMat->SetPixelShader(L"VertexLightPix");
+	VertexLightMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////////////////////// 포워드 라이트 끝
+
+	///////////////////////////////////////////////////////////////// 디퍼드 라이트
+
+	Autoptr<NTVertexShader> PixelLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"PixelLightVtx", L"Shader", L"PixelLight.fx", "VS_PixLight");
+	PixelLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	PixelLightVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	PixelLightVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	PixelLightVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	PixelLightVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+
+	Autoptr<NTPixelShader> PixelLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"PixelLightPix", L"Shader", L"PixelLight.fx", "PS_PixLight");
+
+	Autoptr<NTMaterial> PixelLightMat = ResourceSystem<NTMaterial>::Create(L"PixelLightMat");
+	PixelLightMat->SetVertexShader(L"PixelLightVtx");
+	PixelLightMat->SetPixelShader(L"PixelLightPix");
+	PixelLightMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////////////////////// 디퍼드 라이트 끝
 	return true;
 }
 

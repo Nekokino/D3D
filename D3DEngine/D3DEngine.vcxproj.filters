@@ -193,6 +193,9 @@
     <ClInclude Include="NT3DMeshRenderer.h">
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClInclude>
+    <ClInclude Include="NTLight.h">
+      <Filter>05 Object\Component\EngineComponent\01 Basic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -353,6 +356,9 @@
     </ClCompile>
     <ClCompile Include="NT3DMeshRenderer.cpp">
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NTLight.cpp">
+      <Filter>05 Object\Component\EngineComponent\01 Basic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

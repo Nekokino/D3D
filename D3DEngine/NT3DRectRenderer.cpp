@@ -29,7 +29,7 @@ void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
 	MatData.Projection = _Camera->GetProjection();
 	MatData.WVP = (MatData.World * MatData.View * MatData.Projection).RTranspose();
 
-	GetNTWindow()->GetDevice().SetCBData<MatrixData>(L"MatData", MatData, NTShader::STYPE::ST_VS);
+	Material->GetVertexShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
 
 	Material->Update();
 	Mesh->Update();

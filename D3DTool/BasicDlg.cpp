@@ -76,18 +76,32 @@ BOOL BasicDlg::OnInitDialog()
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
 
-	Autoptr<NTObject> GridObj = TabScene->CreateObject(L"Grid", 0);
-	GridObj->GetTransform()->SetWorldRotation(NTVEC(91.0f, 0.0f, 0.0f));
-	GridObj->GetTransform()->SetWorldScale(NTVEC(10000.0f, 10000.0f, 10000.0f));
-	GridObj->AddComponent<NT3DGrid>();
-
 	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
-	Obj01->GetTransform()->SetLocalScale(NTVEC(10000.0f, 10000.0f, 10000.0f));
+	Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
 	Autoptr<NT3DMeshRenderer> TT = Obj01->AddComponent<NT3DMeshRenderer>();
 	TT->SetMaterial(L"SkyBoxMat");
 	TT->SetMesh(L"Sphere");
 	TT->SetRasterState(L"SNONE");
 	TT->SetImage(L"SkyBox.png");
+
+	Autoptr<NTObject> GridObj = TabScene->CreateObject(L"Grid", 0);
+	GridObj->GetTransform()->SetWorldRotation(NTVEC(91.0f, 0.0f, 0.0f));
+	GridObj->GetTransform()->SetWorldScale(NTVEC(10000.0f, 10000.0f, 10000.0f));
+	GridObj->AddComponent<NT3DGrid>();
+
+	Autoptr<NTObject> SphereLeft = TabScene->CreateObject(L"Left", 0);
+	SphereLeft->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
+	SphereLeft->GetTransform()->SetLocalPosition(NTVEC{ -15.0f, 0.0f, 0.0f });
+	Autoptr<NT3DMeshRenderer> SphereLeftMesh = SphereLeft->AddComponent<NT3DMeshRenderer>();
+	SphereLeftMesh->SetMaterial(L"VertexLightMat");
+	SphereLeftMesh->SetMesh(L"Sphere");
+
+	Autoptr<NTObject> SphereRight = TabScene->CreateObject(L"Left", 0);
+	SphereRight->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
+	SphereRight->GetTransform()->SetLocalPosition(NTVEC{ 15.0f, 0.0f, 0.0f });
+	Autoptr<NT3DMeshRenderer> SphereRightMesh = SphereRight->AddComponent<NT3DMeshRenderer>();
+	SphereRightMesh->SetMaterial(L"PixelLightMat");
+	SphereRightMesh->SetMesh(L"Sphere");
 	
 
 	return TRUE;  // return TRUE unless you set the focus to a control

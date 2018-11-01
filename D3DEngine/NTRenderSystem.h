@@ -9,6 +9,7 @@ class NTRenderer;
 class NTCamera;
 class NTScene;
 class NTObject;
+class NTLight;
 class NTRenderSystem
 {
 public:
@@ -34,8 +35,19 @@ private:
 
 private:
 	void PushCamera(NTCamera* _Cam);
-	void PushRenderer(NTRenderer* _Renderer, int _Order);
+	void PushRenderer(NTRenderer* _Renderer);
 	void PushOverRenderer(Autoptr<NTRenderer> _Renderer);
+
+	////////////// Light
+public:
+	std::set<Autoptr<NTLight>> LightSet;
+	std::set<Autoptr<NTLight>>::iterator LightStartIter;
+	std::set<Autoptr<NTLight>>::iterator LightEndIter;
+
+	void PushLight(NTLight* _Camera);
+	void LightCheck();
+
+	/////////////// Light End
 
 public:
 	void Render();

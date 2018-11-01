@@ -35,11 +35,6 @@ void NTSecondUVRenderer::Render(Autoptr<NTCamera> _Camera)
 
 	SubTranformUpdate();
 
-	GetNTWindow()->GetDevice().SetCBData<NTMAT>(L"TRANS", (GetSubWorldMat() * _Camera->GetVP()).RTranspose(), NTShader::STYPE::ST_VS);
-	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"MULCOLOR", Color, NTShader::STYPE::ST_PX);
-	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"IMGUV", Image->GetUv(ImgIndex), NTShader::STYPE::ST_PX);
-	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"SECONDUV", SecondUV, NTShader::ST_PX);
-
 	Material->Update();
 	Image->GetSamp()->Update();
 	Image->GetTex()->Update();

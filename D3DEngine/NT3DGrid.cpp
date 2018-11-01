@@ -27,14 +27,13 @@ void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
 
 	CalData(_Camera);
 
-	MatData.World = Transform->GetWorldMatrixConst();
+	MatData.World = Transform->GetWorldMatrixConst().RVTranspose();
+	MatData.View = _Camera->GetView().RVTranspose();
+	MatData.Projection = _Camera->GetProjection().RVTranspose();
+	MatData.WVP = (Transform->GetWorldMatrixConst() * _Camera->GetView() * _Camera->GetProjection()).RTranspose();
 
-	MatData.View = _Camera->GetView();
-	MatData.Projection = _Camera->GetProjection();
-	MatData.WVP = (MatData.World * MatData.View * MatData.Projection).RTranspose();
-
-	GetNTWindow()->GetDevice().SetCBData<MatrixData>(L"MatData", MatData, NTShader::STYPE::ST_VS);
-	GetNTWindow()->GetDevice().SetCBData<NTVEC>(L"GridData", GridData, NTShader::STYPE::ST_PX);
+	Material->GetVertexShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
+	Material->GetPixelShader()->SetConstBuffer<NTVEC>(L"GridData", GridData);
 
 	Material->Update();
 	Mesh->Update();
@@ -57,11 +56,6 @@ bool NT3DGrid::Init(int _Order)
 	if (false == SetMesh(L"Rect3DMesh"))
 	{
 		return false;
-	}
-
-	if (nullptr == GetNTWindow()->GetDevice().FindConstBuffer(L"GridData"))
-	{
-		GetNTWindow()->GetDevice().CreateConstBuffer<NTVEC>(L"GridData", D3D11_USAGE_DYNAMIC, 0);
 	}
 
 	SetRasterState(L"SNONE");

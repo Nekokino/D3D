@@ -40,10 +40,17 @@ bool NTPixelShader::Load(const char* _FuncName, UINT _VH, UINT _VL)
 		return false;
 	}
 
+	DefaultInit();
+
 	return true;
 }
 
 void NTPixelShader::Update()
 {
 	NTWinShortCut::GetContext()->PSSetShader(Shader, 0, 0);
+}
+
+void NTPixelShader::UpdateConstBuffer(Autoptr<ConstBuffer> _Buf)
+{
+	Context->PSSetConstantBuffers(_Buf->Reg, 1, &_Buf->CB);
 }

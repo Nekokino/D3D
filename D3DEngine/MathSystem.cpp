@@ -115,7 +115,7 @@ NTVEC MathSystem::Pendulum(const NTVEC & _OriginPoint, const NTVEC & _PenPoint, 
 {
 	NTVEC Tmp = _PenPoint - _OriginPoint;
 	float InitLength = GetLength2D(Tmp);
-	Tmp.Normalize();
+	Tmp.Normalize2D();
 	float InitRad = GetRadian2D(Tmp, NTVEC::ZERO);
 	float PenTime = _Time;
 

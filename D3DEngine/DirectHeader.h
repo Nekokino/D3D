@@ -436,9 +436,22 @@ public:
 		return Return.x;
 	}
 
-	void Normalize()
+	void Normalize4D()
 	{
 		*this = DirectX::XMVector4Normalize(*this);
+	}
+
+	void Normalize3D()
+	{
+		*this = DirectX::XMVector3Normalize(*this);
+		w = 0.0f;
+	}
+
+	void Normalize2D()
+	{
+		*this = DirectX::XMVector2Normalize(*this);
+		z = 0.0f;
+		w = 0.0f;
 	}
 
 	NTVEC ReturnNormalize()
@@ -550,6 +563,14 @@ public:
 	{
 		*this = DirectX::XMMatrixTranspose(*this);
 		return *this;
+	}
+
+	const NTMAT RVTranspose() const
+	{
+		NTMAT Mat = *this;
+		Mat = DirectX::XMMatrixTranspose(Mat);
+		return Mat;
+
 	}
 
 	void ViewAtLH(const NTVEC& _Pos, const NTVEC& _LookAt, const NTVEC& _Up)

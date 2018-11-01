@@ -52,7 +52,7 @@ void NTTransform::FinalUpdate()
 		for (size_t i = 0; i < AX_MAX; i++)
 		{
 			LocalAxis[i] = RotationMatrix.MulZero(LocalAxis[i]);
-			LocalAxis[i].Normalize();
+			LocalAxis[i].Normalize3D();
 		}
 
 		if (nullptr != GetNTObject()->GetParent())
@@ -77,7 +77,7 @@ void NTTransform::FinalUpdate()
 			for (size_t i = 0; i < AXIS::AX_MAX; i++)
 			{
 				WorldAxis[i] = WorldRotationMat.MulZero(WorldAxis[i]);
-				WorldAxis[i].Normalize();
+				WorldAxis[i].Normalize3D();
 			}
 		}
 		else
@@ -85,7 +85,7 @@ void NTTransform::FinalUpdate()
 			for (size_t i = 0; i < AXIS::AX_MAX; i++)
 			{
 				WorldAxis[i] = LocalAxis[i];
-				WorldAxis[i].Normalize();
+				WorldAxis[i].Normalize3D();
 			}
 		}
 

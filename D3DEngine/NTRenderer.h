@@ -14,7 +14,8 @@ protected:
 	Autoptr<NTMesh> Mesh;
 	Autoptr<NTMaterial> Material;
 	Autoptr<NTDevice::RasterState> RasterState;
-
+	
+	int Light;
 	int Order;
 
 public:

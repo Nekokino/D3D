@@ -47,6 +47,8 @@ bool NTVertexShader::Load(const char* _FuncName, UINT _VH, UINT _VL)
 		return false;
 	}
 
+	DefaultInit();
+
 	return true;
 }
 
@@ -106,4 +108,9 @@ bool NTVertexShader::CreateLayout()
 void NTVertexShader::SetLayout()
 {
 	NTWinShortCut::GetContext()->IASetInputLayout(InputLayout);
+}
+
+void NTVertexShader::UpdateConstBuffer(Autoptr<ConstBuffer> _Buf)
+{
+	Context->VSSetConstantBuffers(_Buf->Reg, 1, &_Buf->CB);
 }

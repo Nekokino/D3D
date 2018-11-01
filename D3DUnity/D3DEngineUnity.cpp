@@ -18,6 +18,7 @@
 #include "NTFont.cpp"
 #include "NTFontRenderer.cpp"
 #include "NTImage.cpp"
+#include "NTLight.cpp"
 #include "NTLogic.cpp"
 #include "NTMaterial.cpp"
 #include "NTMesh.cpp"

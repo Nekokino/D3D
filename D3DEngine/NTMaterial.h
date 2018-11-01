@@ -12,6 +12,17 @@ private:
 	Autoptr<NTBlend> Blend;
 
 public:
+	Autoptr<NTVertexShader> GetVertexShader()
+	{
+		return VertexShader;
+	}
+
+	Autoptr<NTPixelShader> GetPixelShader()
+	{
+		return PixelShader;
+	}
+
+public:
 	bool SetVertexShader(const wchar_t* _VertexName);
 	bool SetPixelShader(const wchar_t* _PixelName);
 	bool SetBlend(const wchar_t* _BlendName);

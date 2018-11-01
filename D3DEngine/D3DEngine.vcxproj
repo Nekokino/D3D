@@ -194,6 +194,7 @@
     <ClInclude Include="NTFont.h" />
     <ClInclude Include="NTFontRenderer.h" />
     <ClInclude Include="NTImage.h" />
+    <ClInclude Include="NTLight.h" />
     <ClInclude Include="NTLogic.h" />
     <ClInclude Include="NTMaterial.h" />
     <ClInclude Include="NTMesh.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="NTFont.cpp" />
     <ClCompile Include="NTFontRenderer.cpp" />
     <ClCompile Include="NTImage.cpp" />
+    <ClCompile Include="NTLight.cpp" />
     <ClCompile Include="NTLogic.cpp" />
     <ClCompile Include="NTMaterial.cpp" />
     <ClCompile Include="NTMesh.cpp" />

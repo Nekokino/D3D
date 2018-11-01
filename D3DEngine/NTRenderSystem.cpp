@@ -2,6 +2,7 @@
 #include "NTRenderSystem.h"
 #include "NTRenderer.h"
 #include "NTCamera.h"
+#include "NTLight.h"
 
 
 NTRenderSystem::NTRenderSystem()
@@ -35,6 +36,8 @@ void NTRenderSystem::Render()
 			ListStartIter = GroupFindIter->second.begin();
 			ListEndIter = GroupFindIter->second.end();
 
+			// 라이트를 모아서 상수버퍼에 세팅
+
 			for (; ListStartIter != ListEndIter; ++ListStartIter)
 			{
 				if ((*ListStartIter)->IsUpdate() == true)
@@ -65,16 +68,16 @@ void NTRenderSystem::PushCamera(NTCamera* _Cam)
 	CameraSet.insert(_Cam);
 }
 
-void NTRenderSystem::PushRenderer(NTRenderer* _Renderer, int _Order)
+void NTRenderSystem::PushRenderer(NTRenderer* _Renderer)
 {
 	tassert(nullptr == _Renderer);
 
-	GroupFindIter = RendererMap.find(_Order);
+	GroupFindIter = RendererMap.find(_Renderer->Order);
 
 	if (GroupFindIter == RendererMap.end())
 	{
-		RendererMap.insert(std::map<int, std::list<Autoptr<NTRenderer>>>::value_type(_Order, std::list<Autoptr<NTRenderer>>()));
-		GroupFindIter = RendererMap.find(_Order);
+		RendererMap.insert(std::map<int, std::list<Autoptr<NTRenderer>>>::value_type(_Renderer->Order, std::list<Autoptr<NTRenderer>>()));
+		GroupFindIter = RendererMap.find(_Renderer->Order);
 	}
 
 	GroupFindIter->second.push_back(_Renderer);
@@ -140,4 +143,28 @@ Autoptr<NTRenderer> NTRenderSystem::GetRenderer(const wchar_t* _Name, int _Order
 	}
 
 	return nullptr;
+}
+
+void NTRenderSystem::PushLight(NTLight* _Light)
+{
+	LightSet.insert(_Light);
+}
+
+void NTRenderSystem::LightCheck()
+{
+	LightStartIter = LightSet.begin();
+	LightEndIter = LightSet.end();
+
+	int Count = 0;
+	NTLight::LightCBData Data;
+
+	for (; LightStartIter != LightEndIter; ++LightStartIter)
+	{
+		Data.ArrLight[Count] = (*LightStartIter)->Data;
+		++Count;
+		if (10 >= Count)
+		{
+			break;
+		}
+	}
 }
