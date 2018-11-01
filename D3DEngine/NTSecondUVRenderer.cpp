@@ -46,7 +46,7 @@ void NTSecondUVRenderer::Render(Autoptr<NTCamera> _Camera)
 	Mesh->Update();
 	Mesh->Render();
 
-	//NTWinShortCut::GetMainDevice().ResetContext();
+	NTWinShortCut::GetMainDevice().ResetContext();
 }
 
 bool NTSecondUVRenderer::Init(int _Order)

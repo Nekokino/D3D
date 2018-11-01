@@ -50,5 +50,6 @@ bool NT3DRectRenderer::Init(int _Order)
 		return false;
 	}
 
+	SetRasterState(L"SBACK");
 	return true;
 }

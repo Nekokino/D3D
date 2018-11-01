@@ -2,7 +2,8 @@
 #include "NTRenderer.h"
 #include "ResourceSystem.h"
 #include "NTScene.h"
-
+#include "NTDevice.h"
+#include "NTWindow.h"
 
 NTRenderer::NTRenderer()
 {
@@ -44,4 +45,28 @@ bool NTRenderer::SetMaterial(const wchar_t* _Material)
 	}
 
 	return true;
+}
+
+void NTRenderer::SetRasterState(const wchar_t * _Name)
+{
+	RasterState = GetNTWindow()->GetDevice().FindRasterState(_Name);
+
+	if (nullptr == RasterState)
+	{
+		tassert(true);
+		return;
+	}
+}
+
+void NTRenderer::RenderUpdate()
+{
+	if (nullptr != RasterState)
+	{
+		RasterState->Update();
+	}
+}
+
+void NTRenderer::RenderAfterUpdate()
+{
+	GetNTWindow()->GetDevice().ResetRasterState();
 }

@@ -39,7 +39,9 @@ void NTRenderSystem::Render()
 			{
 				if ((*ListStartIter)->IsUpdate() == true)
 				{
+					(*ListStartIter)->RenderUpdate(); // 렌더러의 래스터라이저 모드로 바꿔주세요.
 					(*ListStartIter)->Render((*SetStartIter));
+					(*ListStartIter)->RenderAfterUpdate(); // 기존 디바이스의 래스터라이저 모드로 바꿔주세요.
 				}
 			}
 		}

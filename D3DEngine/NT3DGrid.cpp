@@ -63,6 +63,7 @@ bool NT3DGrid::Init(int _Order)
 		GetNTWindow()->GetDevice().CreateConstBuffer<NTVEC>(L"GridData", D3D11_USAGE_DYNAMIC, 0);
 	}
 
+	SetRasterState(L"SNONE");
 	return true;
 }
 

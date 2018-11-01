@@ -140,6 +140,7 @@ NTWindow::NTWindow(const wchar_t* _Name, HWND _hWnd) : NTNameTag(_Name), hWnd(nu
 
 NTWindow::~NTWindow()
 {
+
 }
 
 void NTWindow::Show(int _ShowOption)
@@ -223,7 +224,7 @@ bool NTWindow::InitDevice()
 {
 	bool Return = Device.Init();
 
-	Device.DefaultInit();
+	//Device.DefaultInit();
 	Device.Default3DInit();
 
 	return Return;

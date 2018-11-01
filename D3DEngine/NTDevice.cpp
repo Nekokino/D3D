@@ -10,9 +10,10 @@
 #include "NTBlend.h"
 #include "NTFont.h"
 
+
 #define CIRCLE 10
 
-NTDevice::NTDevice(NTWindow* _Win) : NTWinParent(_Win), Device(nullptr), Context(nullptr), TargetView(nullptr), DepthStencilView(nullptr), DepthStencilTexture(nullptr), SwapChain(nullptr), bInit(false), Color(0.2f, 0.835f, 0.674f, 1.0f)
+NTDevice::NTDevice(NTWindow* _Win) : NTWinParent(_Win), Device(nullptr), Context(nullptr), TargetView(nullptr), DepthStencilView(nullptr), DepthStencilTexture(nullptr), SwapChain(nullptr), bInit(false), Color(0.2f, 0.835f, 0.674f, 1.0f), IsAllStateDefault(false)
 {
 }
 
@@ -32,21 +33,6 @@ void NTDevice::Release()
 		}
 	}
 
-	if (nullptr != Device)
-	{
-		Device->Release();
-	}
-
-	if (nullptr != Context)
-	{
-		Context->Release();
-	}
-
-	if (nullptr != TargetView)
-	{
-		TargetView->Release();
-	}
-
 	if (nullptr != DepthStencilView)
 	{
 		DepthStencilView->Release();
@@ -57,9 +43,24 @@ void NTDevice::Release()
 		DepthStencilTexture->Release();
 	}
 
+	if (nullptr != TargetView)
+	{
+		TargetView->Release();
+	}
+
 	if (nullptr != SwapChain)
 	{
 		SwapChain->Release();
+	}
+
+	if (nullptr != Context)
+	{
+		Context->Release();
+	}
+
+	if (nullptr != Device)
+	{
+		Device->Release();
 	}
 
 	if (nullptr != DepthStencilState)
@@ -102,6 +103,9 @@ bool NTDevice::Init()
 
 	Device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &iMSLv); // ¸ÖÆ¼ »ùÇÃ¸µ ·¹º§ Ã¼Å©
 
+
+	
+
 	if (false == CreateSwapChain())
 	{
 		Release();
@@ -119,8 +123,6 @@ bool NTDevice::Init()
 		Release();
 		return false;
 	}
-
-	CreateRasterizerState();
 
 	bInit = true;
 	return true;
@@ -268,47 +270,6 @@ bool NTDevice::CreateViewPort()
 	return true;
 }
 
-bool NTDevice::CreateRasterizerState()
-{
-	D3D11_RASTERIZER_DESC tDesc = {};
-
-	tDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	tDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_FRONT;
-
-	if (S_OK != Device->CreateRasterizerState(&tDesc, &m_ArrRs[(UINT)RS_TYPE::RT_FRONT]))
-	{
-		return false;
-	}
-
-	tDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	tDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_BACK;
-
-	if (S_OK != Device->CreateRasterizerState(&tDesc, &m_ArrRs[(UINT)RS_TYPE::RT_BACK]))
-	{
-		return false;
-	}
-
-	tDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_SOLID;
-	tDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
-
-	if (S_OK != Device->CreateRasterizerState(&tDesc, &m_ArrRs[(UINT)RS_TYPE::RT_NONE]))
-	{
-		return false;
-	}
-
-	tDesc.FillMode = D3D11_FILL_MODE::D3D11_FILL_WIREFRAME;
-	tDesc.CullMode = D3D11_CULL_MODE::D3D11_CULL_NONE;
-
-	if (S_OK != Device->CreateRasterizerState(&tDesc, &m_ArrRs[(UINT)RS_TYPE::RT_WIREFRAME]))
-	{
-		return false;
-	}
-
-	Context->RSSetState(m_ArrRs[(UINT)RS_TYPE::RT_NONE]);
-
-	return true;
-}
-
 void NTDevice::ClearTarget() // ±×¸®±âÀü¿¡ Áö¿ì±â
 {
 
@@ -321,6 +282,45 @@ void NTDevice::Present() // Ãâ·Â
 	SwapChain->Present(0, 0);
 }
 
+Autoptr<NTDevice::RasterState> NTDevice::FindRasterState(const wchar_t * _Name)
+{
+	return MapFind<Autoptr<RasterState>>(RasterStateMap, _Name);
+}
+
+void NTDevice::ResetRasterState()
+{
+	DefaultState->Update();
+}
+
+void NTDevice::SetDefaultRasterState(const wchar_t * _Name)
+{
+	Autoptr<RasterState> RS = MapFind<Autoptr<RasterState>>(RasterStateMap, _Name);
+
+	if (nullptr == RS)
+	{
+		tassert(true);
+		return;
+	}
+
+	if (nullptr == RS->State)
+	{
+		tassert(true);
+		return;
+	}
+
+	DefaultState = RS;
+	DefaultState->Update();
+
+	return;
+}
+
+void NTDevice::CreateRasterState(const wchar_t * _Name, D3D11_FILL_MODE _FillMode, D3D11_CULL_MODE _CullMode)
+{
+	RasterState* RS = new RasterState();
+	RS->Create(Device, Context, _FillMode, _CullMode);
+	RasterStateMap.insert(std::unordered_map<std::wstring, Autoptr<RasterState>>::value_type(_Name, RS));
+}
+
 Autoptr<NTDevice::NTConstBuffer> NTDevice::FindConstBuffer(const wchar_t* _Name)
 {
 	return MapFind<Autoptr<NTDevice::NTConstBuffer>>(ConstBufferMap, _Name);
@@ -328,8 +328,6 @@ Autoptr<NTDevice::NTConstBuffer> NTDevice::FindConstBuffer(const wchar_t* _Name)
 
 bool NTDevice::DefaultInit()
 {
-	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
-	ResourceSystem<NTFont>::Create(L"±Ã¼­", L"±Ã¼­");
 
 
 #pragma region COLVTX
@@ -532,8 +530,29 @@ bool NTDevice::DefaultInit()
 
 bool NTDevice::Default3DInit()
 {
-	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
+	ResourceSystem<NTFont>::Create(L"±Ã¼­", L"±Ã¼­");
 
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
+	
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINE", D3D11_USAGE_DYNAMIC, 2);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINECOLOR", D3D11_USAGE_DYNAMIC, 3);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"SECONDUV", D3D11_USAGE_DYNAMIC, 4);
+
+	NTWinShortCut::GetMainDevice().CreateRasterState(L"SNONE", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_NONE);
+	NTWinShortCut::GetMainDevice().CreateRasterState(L"SFRONT", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_FRONT);
+	NTWinShortCut::GetMainDevice().CreateRasterState(L"SBACK", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_BACK);
+
+	NTWinShortCut::GetMainDevice().CreateRasterState(L"WNONE", D3D11_FILL_MODE::D3D11_FILL_WIREFRAME, D3D11_CULL_MODE::D3D11_CULL_NONE);
+	NTWinShortCut::GetMainDevice().CreateRasterState(L"WFRONT", D3D11_FILL_MODE::D3D11_FILL_WIREFRAME, D3D11_CULL_MODE::D3D11_CULL_FRONT);
+	NTWinShortCut::GetMainDevice().CreateRasterState(L"WBACK", D3D11_FILL_MODE::D3D11_FILL_WIREFRAME, D3D11_CULL_MODE::D3D11_CULL_BACK);
+
+	NTWinShortCut::GetMainDevice().SetDefaultRasterState(L"SBACK");
+
+#pragma region 3DRectMesh
 	Vtx3D Arr3DVtx[4] = {};
 
 	Arr3DVtx[0].Pos = NTVEC(-0.5f, 0.5f, 0.0f, 1.0f);
@@ -562,6 +581,84 @@ bool NTDevice::Default3DInit()
 	ArrColorIdx[1] = IDX16(0, 1, 3);
 
 	ResourceSystem<NTMesh>::Create(L"Rect3DMesh", 4, (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, Arr3DVtx, 6, (UINT)IDX16::MemberSize(), D3D11_USAGE_DYNAMIC, ArrColorIdx, IDX16::GetFormat());
+
+#pragma endregion
+
+#pragma region 3DCubeMesh
+	std::vector<Vtx3D> Cube;
+	std::vector<WORD> CubeIdx;
+	Vtx3D Vtx;
+
+	Vtx.Pos = NTVEC{ -0.5f, 0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, 0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	CubeIdx.push_back(0); CubeIdx.push_back(2); CubeIdx.push_back(1);
+	CubeIdx.push_back(1); CubeIdx.push_back(2); CubeIdx.push_back(3); // µÞ¸é
+
+	CubeIdx.push_back(4); CubeIdx.push_back(5); CubeIdx.push_back(6);
+	CubeIdx.push_back(5); CubeIdx.push_back(7); CubeIdx.push_back(6); // ¾Õ¸é
+
+	CubeIdx.push_back(0); CubeIdx.push_back(1); CubeIdx.push_back(5);
+	CubeIdx.push_back(0); CubeIdx.push_back(5); CubeIdx.push_back(4); // À­¸é
+
+	CubeIdx.push_back(2); CubeIdx.push_back(3); CubeIdx.push_back(7);
+	CubeIdx.push_back(2); CubeIdx.push_back(7); CubeIdx.push_back(6); // ¾Æ·§¸é
+
+	CubeIdx.push_back(0); CubeIdx.push_back(4); CubeIdx.push_back(6);
+	CubeIdx.push_back(0); CubeIdx.push_back(6); CubeIdx.push_back(2); // ¿ÞÂÊ¸é
+
+	CubeIdx.push_back(5); CubeIdx.push_back(1); CubeIdx.push_back(7);
+	CubeIdx.push_back(1); CubeIdx.push_back(7); CubeIdx.push_back(4); // ¿À¸¥ÂÊ¸é
+
+	ResourceSystem<NTMesh>::Create(L"Cube", (UINT)Cube.size(), (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, &Cube[0], (UINT)CubeIdx.size(), (UINT)IDX16::MemberSize(), D3D11_USAGE_DYNAMIC, &CubeIdx[0], IDX16::GetFormat());
+
+
+#pragma endregion
 
 	Autoptr<NTVertexShader> Rect3DVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"Rect3DVtx", L"Shader", L"Rect3D.fx", "VS_Rect3D");
 	Rect3DVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
@@ -594,4 +691,27 @@ bool NTDevice::Default3DInit()
 	////////////////////////////////////////////////////////////////// ±×¸®µå ³¡
 
 	return true;
+}
+
+void NTDevice::RasterState::Update()
+{
+	Context->RSSetState(State);
+}
+
+void NTDevice::RasterState::Create(ID3D11Device * _Device, ID3D11DeviceContext * _Context, D3D11_FILL_MODE _FillMode, D3D11_CULL_MODE _CullMode)
+{
+	if (nullptr == _Context)
+	{
+		tassert(true);
+		return;
+	}
+
+	Desc.FillMode = _FillMode;
+	Desc.CullMode = _CullMode;
+	Context = _Context;
+
+	if (S_OK != _Device->CreateRasterizerState(&Desc, &State))
+	{
+		return;
+	}
 }
