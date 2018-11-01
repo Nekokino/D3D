@@ -10,6 +10,9 @@
 #include <NTFreeCamera.h>
 #include <NT3DRectRenderer.h>
 #include <NT3DGrid.h>
+#include <ResourceSystem.h>
+#include <NTImage.h>
+#include <NT3DMeshRenderer.h>
 
 
 
@@ -67,6 +70,8 @@ BOOL BasicDlg::OnInitDialog()
 		tassert(TRUE);
 	}
 
+	ResourceSystem<NTImage>::Load(L"Texture", L"SkyBox.png");
+
 	TabScene->GetMainCamera()->AddComponent<NTFreeCamera>();
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
@@ -77,8 +82,12 @@ BOOL BasicDlg::OnInitDialog()
 	GridObj->AddComponent<NT3DGrid>();
 
 	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
-	Obj01->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 1.0f));
-	Autoptr<NT3DRectRenderer> TT = Obj01->AddComponent<NT3DRectRenderer>();
+	Obj01->GetTransform()->SetLocalScale(NTVEC(10000.0f, 10000.0f, 10000.0f));
+	Autoptr<NT3DMeshRenderer> TT = Obj01->AddComponent<NT3DMeshRenderer>();
+	TT->SetMaterial(L"SkyBoxMat");
+	TT->SetMesh(L"Sphere");
+	TT->SetRasterState(L"SNONE");
+	TT->SetImage(L"SkyBox.png");
 	
 
 	return TRUE;  // return TRUE unless you set the focus to a control

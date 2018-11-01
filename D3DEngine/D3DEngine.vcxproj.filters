@@ -190,6 +190,9 @@
     <ClInclude Include="NT3DGrid.h">
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClInclude>
+    <ClInclude Include="NT3DMeshRenderer.h">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -346,6 +349,9 @@
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClCompile>
     <ClCompile Include="NT3DGrid.cpp">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NT3DMeshRenderer.cpp">
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClCompile>
   </ItemGroup>

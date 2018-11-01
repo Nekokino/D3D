@@ -27,6 +27,26 @@ public:
 			return _Value;
 	}
 
+	static bool EpslionCheck(float _Value)
+	{
+		if (fabsf(_Value) < 0.0000001f)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	static float EpslionCut(float _Value)
+	{
+		if (fabsf(_Value) < 0.0000001f)
+		{
+			_Value = 0.0f;
+		}
+
+		return _Value;
+	}
+
 	static bool R2RCol(const NTRECT& _Left, const NTRECT& _Right)
 	{
 		if (_Left.Left() > _Right.Right())

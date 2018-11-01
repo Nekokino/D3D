@@ -3,7 +3,7 @@
 #include "NTWinShortCut.h"
 
 
-NTSampler::NTSampler()
+NTSampler::NTSampler() : State(nullptr)
 {
 }
 

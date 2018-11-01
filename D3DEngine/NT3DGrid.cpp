@@ -28,6 +28,7 @@ void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
 	CalData(_Camera);
 
 	MatData.World = Transform->GetWorldMatrixConst();
+
 	MatData.View = _Camera->GetView();
 	MatData.Projection = _Camera->GetProjection();
 	MatData.WVP = (MatData.World * MatData.View * MatData.Projection).RTranspose();

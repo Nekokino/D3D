@@ -25,13 +25,6 @@ NTDevice::~NTDevice()
 
 void NTDevice::Release()
 {
-	for (size_t i = 0; i < RS_TYPE::MAX; i++)
-	{
-		if (nullptr != m_ArrRs[i])
-		{
-			m_ArrRs[i]->Release();
-		}
-	}
 
 	if (nullptr != DepthStencilView)
 	{
@@ -244,6 +237,7 @@ bool NTDevice::CreateView() // 스왑체인에 사용할 텍스쳐 생성단계
 	if (nullptr == DepthStencilState)
 	{
 		tassert(true);
+		return false;
 	}
 
 	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView); // 렌더타겟뷰와, 뎁스스텐실 뷰를 OM단계에 전달
@@ -552,6 +546,8 @@ bool NTDevice::Default3DInit()
 
 	NTWinShortCut::GetMainDevice().SetDefaultRasterState(L"SBACK");
 
+	Vtx3D Vtx;
+
 #pragma region 3DRectMesh
 	Vtx3D Arr3DVtx[4] = {};
 
@@ -587,7 +583,6 @@ bool NTDevice::Default3DInit()
 #pragma region 3DCubeMesh
 	std::vector<Vtx3D> Cube;
 	std::vector<WORD> CubeIdx;
-	Vtx3D Vtx;
 
 	Vtx.Pos = NTVEC{ -0.5f, 0.5f, 0.5f, 1.0f };
 	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
@@ -601,13 +596,7 @@ bool NTDevice::Default3DInit()
 	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
 	Cube.push_back(Vtx);
 
-	Vtx.Pos = NTVEC{ -0.5f, -0.5f, 0.5f, 1.0f };
-	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
-	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
-	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
-	Cube.push_back(Vtx);
-
-	Vtx.Pos = NTVEC{ 0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, -0.5f, 1.0f };
 	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
@@ -619,43 +608,240 @@ bool NTDevice::Default3DInit()
 	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
 	Cube.push_back(Vtx);
 
-	Vtx.Pos = NTVEC{ 0.5f, 0.5f, -0.5f, 1.0f };
+	// 아랫면
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, 0.5f, 1.0f };
 	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
-	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Vtx.Normal = NTVEC{ 0.0f, -1.0f, 0.0f, 0.0f };
 	Cube.push_back(Vtx);
 
-	Vtx.Pos = NTVEC{ -0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, 0.5f, 1.0f };
 	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
-	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Vtx.Normal = NTVEC{ 0.0f, -1.0f, 0.0f, 0.0f };
 	Cube.push_back(Vtx);
 
 	Vtx.Pos = NTVEC{ 0.5f, -0.5f, -0.5f, 1.0f };
 	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
-	Vtx.Normal = NTVEC{ 0.0f, 1.0f, 0.0f, 0.0f };
+	Vtx.Normal = NTVEC{ 0.0f, -1.0f, 0.0f, 0.0f };
 	Cube.push_back(Vtx);
 
-	CubeIdx.push_back(0); CubeIdx.push_back(2); CubeIdx.push_back(1);
-	CubeIdx.push_back(1); CubeIdx.push_back(2); CubeIdx.push_back(3); // 뒷면
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, -1.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
 
-	CubeIdx.push_back(4); CubeIdx.push_back(5); CubeIdx.push_back(6);
-	CubeIdx.push_back(5); CubeIdx.push_back(7); CubeIdx.push_back(6); // 앞면
 
-	CubeIdx.push_back(0); CubeIdx.push_back(1); CubeIdx.push_back(5);
-	CubeIdx.push_back(0); CubeIdx.push_back(5); CubeIdx.push_back(4); // 윗면
+	// 오른쪽
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
 
-	CubeIdx.push_back(2); CubeIdx.push_back(3); CubeIdx.push_back(7);
-	CubeIdx.push_back(2); CubeIdx.push_back(7); CubeIdx.push_back(6); // 아랫면
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
 
-	CubeIdx.push_back(0); CubeIdx.push_back(4); CubeIdx.push_back(6);
-	CubeIdx.push_back(0); CubeIdx.push_back(6); CubeIdx.push_back(2); // 왼쪽면
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
 
-	CubeIdx.push_back(5); CubeIdx.push_back(1); CubeIdx.push_back(7);
-	CubeIdx.push_back(1); CubeIdx.push_back(7); CubeIdx.push_back(4); // 오른쪽면
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	// 왼쪽
+	Vtx.Pos = NTVEC{ -0.5f, 0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ -1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, 0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ -1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ -1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ -1.0f, 0.0f, 0.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	// 앞
+	Vtx.Pos = NTVEC{ -0.5f, 0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, -1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, -1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, -1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, 0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, -1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	// 뒤
+	Vtx.Pos = NTVEC{ -0.5f, 0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, 1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, 0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, 1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ 0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, 1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	Vtx.Pos = NTVEC{ -0.5f, -0.5f, -0.5f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.0f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = NTVEC{ 0.0f, 0.0f, 1.0f, 0.0f };
+	Cube.push_back(Vtx);
+
+	// 윗면 인덱스
+	CubeIdx.push_back(0); CubeIdx.push_back(1); CubeIdx.push_back(2);
+	CubeIdx.push_back(0); CubeIdx.push_back(2); CubeIdx.push_back(3);
+
+	// 아랫면
+	CubeIdx.push_back(6); CubeIdx.push_back(5); CubeIdx.push_back(4);
+	CubeIdx.push_back(6); CubeIdx.push_back(4); CubeIdx.push_back(7);
+
+	// 오른쪽
+	CubeIdx.push_back(8); CubeIdx.push_back(9); CubeIdx.push_back(10);
+	CubeIdx.push_back(8); CubeIdx.push_back(10); CubeIdx.push_back(11);
+
+	// 왼쪽 면
+	CubeIdx.push_back(13); CubeIdx.push_back(12); CubeIdx.push_back(15);
+	CubeIdx.push_back(13); CubeIdx.push_back(15); CubeIdx.push_back(14);
+
+	// 앞면
+	CubeIdx.push_back(17); CubeIdx.push_back(16); CubeIdx.push_back(19);
+	CubeIdx.push_back(17); CubeIdx.push_back(19); CubeIdx.push_back(18);
+
+	// 뒷면
+	CubeIdx.push_back(20); CubeIdx.push_back(21); CubeIdx.push_back(22);
+	CubeIdx.push_back(20); CubeIdx.push_back(22); CubeIdx.push_back(23);
 
 	ResourceSystem<NTMesh>::Create(L"Cube", (UINT)Cube.size(), (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, &Cube[0], (UINT)CubeIdx.size(), (UINT)IDX16::MemberSize(), D3D11_USAGE_DYNAMIC, &CubeIdx[0], IDX16::GetFormat());
+
+
+#pragma endregion
+
+#pragma region SphereMesh
+	std::vector<Vtx3D> SphereVtx;
+	std::vector<UINT> SphereIdx;
+
+	float Rad = 0.5f;
+
+	Vtx.Pos = NTVEC{ 0.0f, Rad, 0.0f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.5f, 0.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = Vtx.Pos;
+	Vtx.Normal.Normalize();
+	SphereVtx.push_back(Vtx); // 위쪽 꼭대기점.
+
+	UINT StackCount = 40; // 가로 분할
+	UINT SliceCount = 40; // 세로 분할
+
+	float yAngle = DirectX::XM_PI / (float)StackCount; // 반바퀴만 돌아도 구가 그려지기 때문에 2파이 아니고 파이
+	float zAngle = DirectX::XM_2PI / (float)SliceCount; // 얘가 한바퀴 돌아야 그려지니까 얘는 2파이
+
+	float yUvRatio = 1.0f / (float)SliceCount;
+	float zUvRatio = 1.0f / (float)StackCount;
+
+	for (UINT y = 1; y < StackCount; ++y)
+	{
+		for (UINT z = 0; z < SliceCount + 1; ++z)
+		{
+			Vtx.Pos = NTVEC{
+				Rad * sinf(y * yAngle) * cosf(z * zAngle),
+				Rad * cosf(y * yAngle),
+				Rad * sinf(y * yAngle) * sinf(z * zAngle)
+			};
+			Vtx.Pos.w = 1.0f;
+			Vtx.Uv = NTVEC2{ yUvRatio * z, zUvRatio * y };
+			Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+			Vtx.Normal = Vtx.Pos;
+			Vtx.Normal.Normalize();
+
+			SphereVtx.push_back(Vtx);
+		}
+	}
+
+	Vtx.Pos = NTVEC{ 0.0f, -Rad, 0.0f, 1.0f };
+	Vtx.Uv = NTVEC2{ 0.5f, 1.0f };
+	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
+	Vtx.Normal = Vtx.Pos;
+	Vtx.Normal.Normalize();
+	SphereVtx.push_back(Vtx); // 아래쪽 꼭대기점.
+
+	for (UINT i = 0; i < SliceCount; ++i) // 위쪽 꼭대기점 인덱스 설정
+	{
+		SphereIdx.push_back(0);
+		SphereIdx.push_back(i + 2);
+		SphereIdx.push_back(i + 1);
+	}
+
+	for (UINT y = 0; y < StackCount - 2; ++y) // 양 끝 꼭대기점은 따로 그려주기 때문에 
+	{
+		for (UINT z = 0; z < SliceCount; ++z)
+		{
+			SphereIdx.push_back((SliceCount + 1) * y + z + 1);
+			SphereIdx.push_back((SliceCount + 1) * (y + 1) + (z + 1) + 1);
+			SphereIdx.push_back((SliceCount + 1) * (y + 1) + z + 1); // 수로는 이해가 안되면 그림을 그려보시오.
+
+			SphereIdx.push_back((SliceCount + 1) * y + z + 1);
+			SphereIdx.push_back((SliceCount + 1) * y + (z + 1) + 1);
+			SphereIdx.push_back((SliceCount + 1) * (y + 1) + (z + 1) + 1); // 수로는 이해가 안되면 그림을 그려보시오.
+		}
+	}
+
+	UINT BottomStartIdx = (UINT)SphereVtx.size() - 1;
+
+	for (UINT i = 0; i < SliceCount; ++i)
+	{
+		SphereIdx.push_back(BottomStartIdx);
+		SphereIdx.push_back(BottomStartIdx - (i + 2));
+		SphereIdx.push_back(BottomStartIdx - (i + 1));
+	}
+
+	ResourceSystem<NTMesh>::Create(L"Sphere", (UINT)SphereVtx.size(), (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, &SphereVtx[0], (UINT)SphereIdx.size(), (UINT)IDX32::MemberSize(), D3D11_USAGE_DEFAULT, &SphereIdx[0], IDX32::GetFormat());
 
 
 #pragma endregion
@@ -689,6 +875,21 @@ bool NTDevice::Default3DInit()
 	Grid3DMat->SetBlend(L"AlphaBlend");
 
 	////////////////////////////////////////////////////////////////// 그리드 끝
+
+	////////////////////////////////////////////////////////////////// 스카이 바악스 시작
+
+	Autoptr<NTVertexShader> SkyBoxVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"SkyBoxVtx", L"Shader", L"SkyBox.fx", "VS_SkyBox");
+	SkyBoxVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	SkyBoxVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	SkyBoxVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	SkyBoxVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> SkyBoxPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"SkyBoxPix", L"Shader", L"SkyBox.fx", "PS_SkyBox");
+
+	Autoptr<NTMaterial> SkyBoxMat = ResourceSystem<NTMaterial>::Create(L"SkyBoxMat");
+	SkyBoxMat->SetVertexShader(L"SkyBoxVtx");
+	SkyBoxMat->SetPixelShader(L"SkyBoxPix");
+	SkyBoxMat->SetBlend(L"AlphaBlend");
 
 	return true;
 }

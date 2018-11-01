@@ -1,19 +1,20 @@
 #include "PreCom.h"
-#include "NT3DRectRenderer.h"
+#include "NT3DMeshRenderer.h"
 #include "NTWindow.h"
-#include "NTTransform.h"
+#include "NTMesh.h"
+#include "ResourceSystem.h"
 
 
-NT3DRectRenderer::NT3DRectRenderer()
+NT3DMeshRenderer::NT3DMeshRenderer()
 {
 }
 
 
-NT3DRectRenderer::~NT3DRectRenderer()
+NT3DMeshRenderer::~NT3DMeshRenderer()
 {
 }
 
-void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
+void NT3DMeshRenderer::Render(Autoptr<NTCamera> _Camera)
 {
 	tassert(nullptr == Transform);
 
@@ -23,6 +24,12 @@ void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
 	}
 
 	SubTranformUpdate();
+
+	if (nullptr != Image)
+	{
+		Image->GetSamp()->Update();
+		Image->GetTex()->Update();
+	}
 
 	MatData.World = Transform->GetWorldMatrixConst();
 	MatData.View = _Camera->GetView();
@@ -36,20 +43,21 @@ void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
 	Mesh->Render();
 }
 
-bool NT3DRectRenderer::Init(int _Order)
+void NT3DMeshRenderer::SetImage(const wchar_t * _Name)
+{
+	Image = ResourceSystem<NTImage>::Find(_Name);
+
+	if (nullptr == Image)
+	{
+		tassert(true);
+	}
+}
+
+bool NT3DMeshRenderer::Init(int _Order)
 {
 	NTRenderer::Init(_Order);
 
-	if (false == SetMaterial(L"Rect3DMat"))
-	{
-		return false;
-	}
-
-	if (false == SetMesh(L"Sphere"))
-	{
-		return false;
-	}
-
 	SetRasterState(L"SBACK");
+
 	return true;
 }
