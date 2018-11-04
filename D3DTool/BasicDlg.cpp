@@ -13,6 +13,7 @@
 #include <ResourceSystem.h>
 #include <NTImage.h>
 #include <NT3DMeshRenderer.h>
+#include <NTLight.h>
 
 
 
@@ -76,6 +77,12 @@ BOOL BasicDlg::OnInitDialog()
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
 
+	Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
+	Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
+	PP->GetTransform()->SetWorldPosition(NTVEC(0.0f, 0.0f, 0.0f));
+	PP->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
+	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
+
 	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
 	Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
 	Autoptr<NT3DMeshRenderer> TT = Obj01->AddComponent<NT3DMeshRenderer>();
@@ -85,7 +92,7 @@ BOOL BasicDlg::OnInitDialog()
 	TT->SetImage(L"SkyBox.png");
 
 	Autoptr<NTObject> GridObj = TabScene->CreateObject(L"Grid", 0);
-	GridObj->GetTransform()->SetWorldRotation(NTVEC(91.0f, 0.0f, 0.0f));
+	GridObj->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
 	GridObj->GetTransform()->SetWorldScale(NTVEC(10000.0f, 10000.0f, 10000.0f));
 	GridObj->AddComponent<NT3DGrid>();
 
@@ -100,7 +107,7 @@ BOOL BasicDlg::OnInitDialog()
 	SphereRight->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
 	SphereRight->GetTransform()->SetLocalPosition(NTVEC{ 15.0f, 0.0f, 0.0f });
 	Autoptr<NT3DMeshRenderer> SphereRightMesh = SphereRight->AddComponent<NT3DMeshRenderer>();
-	SphereRightMesh->SetMaterial(L"PixelLightMat");
+	//SphereRightMesh->SetMaterial(L"PixelLightMat");
 	SphereRightMesh->SetMesh(L"Sphere");
 	
 

@@ -3,14 +3,13 @@
 class NT3DGrid : public NTRenderer
 {
 public:
-	MatrixData MatData;
-
 	float CurBlockSize;
 	float InterBlockSize;
 
 	NTVEC GridData;
 
 public:
+	void TransformUpdate(Autoptr <NTCamera> _Camera) override;
 	void Render(Autoptr<NTCamera> _Camera) override;
 	void DbgRender() override;
 

@@ -14,7 +14,7 @@ NT3DGrid::~NT3DGrid()
 {
 }
 
-void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
+void NT3DGrid::TransformUpdate(Autoptr<NTCamera> _Camera)
 {
 	tassert(nullptr == Transform);
 
@@ -32,12 +32,17 @@ void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
 	MatData.Projection = _Camera->GetProjection().RVTranspose();
 	MatData.WVP = (Transform->GetWorldMatrixConst() * _Camera->GetView() * _Camera->GetProjection()).RTranspose();
 
-	Material->GetVertexShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
-	Material->GetPixelShader()->SetConstBuffer<NTVEC>(L"GridData", GridData);
+	NTRenderer::TransformConstBufferUpdate();
+	
 
 	Material->Update();
 	Mesh->Update();
 	Mesh->Render();
+}
+
+void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
+{
+	Material->GetPixelShader()->SetConstBuffer<NTVEC>(L"GridData", GridData);
 }
 
 void NT3DGrid::DbgRender()

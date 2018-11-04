@@ -30,6 +30,7 @@ PixLightVtx_Output VS_PixLight(PixLightVtx_Input _In)
     Out.Uv = _In.Uv;
     Out.Color.rgba = _In.Color.rgba;
     Out.ViewPos = mul(mul(_In.Pos, World), View);
+    _In.Normal.w = 0.0f;
     Out.Normal = normalize(mul(mul(_In.Normal, World), View));
 
     return Out;
@@ -39,20 +40,20 @@ PixLightPix_Output PS_PixLight(PixLightVtx_Output _In)
 {
     PixLightPix_Output Out = (PixLightPix_Output) 0.0f;
     
-    LightData LD;
-    LD.Range = 500.0f;
-    LD.Color.Diffuse = float4(1.0f, 1.0f, 1.0f, 0.0f);
-    LD.Color.Specular = float4(0.2f, 0.2f, 0.2f, 0.0f);
-    LD.Color.Ambient = float4(0.1f, 0.1f, 0.1f, 0.0f);
+    //LightData LD;
+    //LD.Range = 500.0f;
+    //LD.Color.Diffuse = float4(1.0f, 1.0f, 1.0f, 0.0f);
+    //LD.Color.Specular = float4(0.2f, 0.2f, 0.2f, 0.0f);
+    //LD.Color.Ambient = float4(0.1f, 0.1f, 0.1f, 0.0f);
 
-    LD.Dir = float4(1.0f, 0.0f, 0.0f, 0.0f);
-    LD.Dir = normalize(LD.Dir);
-    LD.Pos = float4(200.0f, 200.0f, 500.0f, 0.0f);
-    LD.Pos = -mul(LD.Pos, View);
+    //LD.Dir = float4(1.0f, 0.0f, 0.0f, 0.0f);
+    //LD.Dir = normalize(LD.Dir);
+    //LD.Pos = float4(200.0f, 200.0f, 500.0f, 0.0f);
+    //LD.Pos = -mul(LD.Pos, View);
 
-    LightColor LC = CalDirLight(_In.ViewPos, _In.Normal, LD);
+    LightColor LC = CalDirLight(_In.ViewPos, _In.Normal, Arr[0]);
 
-    Out.Color.rgb = _In.Color.rgb * LC.Diffuse.rgb + LC.Specular.rgb + LC.Ambient;
+    Out.Color.rgb = _In.Color.rgb * LC.Diffuse.rgb + LC.Specular.rgb + LC.Ambient.rgb;
     Out.Color.a = _In.Color.a;
 
     return Out;

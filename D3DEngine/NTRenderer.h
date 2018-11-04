@@ -11,6 +11,7 @@ class NTRenderer : public NTSubTransform
 protected:
 	friend class NTRenderSystem;
 
+	MatrixData MatData;
 	Autoptr<NTMesh> Mesh;
 	Autoptr<NTMaterial> Material;
 	Autoptr<NTDevice::RasterState> RasterState;
@@ -35,6 +36,11 @@ public:
 private:
 	void RenderUpdate();
 	void RenderAfterUpdate();
+
+protected:
+	virtual void TransformUpdate(Autoptr<NTCamera> _Cam);
+	virtual void TransformConstBufferUpdate();
+	virtual void MeshToMatUpdate();
 
 public:
 	NTRenderer();

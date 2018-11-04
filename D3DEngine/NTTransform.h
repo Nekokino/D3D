@@ -93,6 +93,14 @@ public:
 
 	void SetWorldPosition(const NTVEC& _Pos)
 	{
+		if (nullptr != GetNTObject()->GetParent())
+		{
+			LocalPosition = _Pos - GetNTObject()->GetTransform()->GetWorldPosition();
+		}
+		else
+		{
+			LocalPosition = _Pos;
+		}
 		WorldPosition = _Pos;
 		bWorld = true;
 	}

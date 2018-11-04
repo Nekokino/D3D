@@ -1,6 +1,7 @@
 #pragma once
 #include "NTStCom.h"
-#include  <list>
+#include <list>
+#include <set>
 class NTLight : public NTStCom
 {
 public:
@@ -38,7 +39,6 @@ public:
 		LightData ArrLight[10];
 		int LightCount;
 		int Dummy1;
-		int Dummy2;
 	};
 
 private:
@@ -71,9 +71,9 @@ public:
 		PushLayer(Arg...);
 	}
 
-private:
+public:
 	template<typename ...Rest>
-	void PushLightLayer(int _Data, Rest... Arg)
+	void PushLayer(int _Data, Rest... Arg)
 	{
 		std::set<int>::iterator FindIter = RenderGroup.find(_Data);
 
@@ -85,7 +85,7 @@ private:
 		PushLayer(Arg...);
 	}
 
-	void PushLightLayer() {};
+	void PushLayer() {};
 
 public:
 	NTLight();

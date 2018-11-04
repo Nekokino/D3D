@@ -31,17 +31,6 @@ void NT3DMeshRenderer::Render(Autoptr<NTCamera> _Camera)
 		Image->GetTex()->Update();
 	}
 
-	MatData.World = (Transform->GetWorldMatrixConst()).RVTranspose();
-	MatData.View = (_Camera->GetView()).RVTranspose();
-	MatData.Projection = (_Camera->GetProjection()).RVTranspose();
-	MatData.WVP = (Transform->GetWorldMatrixConst() * _Camera->GetView() * _Camera->GetProjection()).RTranspose();
-
-	Material->GetVertexShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
-	Material->GetPixelShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
-
-	Material->Update();
-	Mesh->Update();
-	Mesh->Render();
 }
 
 void NT3DMeshRenderer::SetImage(const wchar_t * _Name)

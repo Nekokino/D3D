@@ -3,6 +3,7 @@
 #include "NTRenderer.h"
 #include "NTCamera.h"
 #include "NTLight.h"
+#include "NTWinShortCut.h"
 
 
 NTRenderSystem::NTRenderSystem()
@@ -38,12 +39,16 @@ void NTRenderSystem::Render()
 
 			// 라이트를 모아서 상수버퍼에 세팅
 
+			LightCheck((*SetStartIter)->RenderGroup[i], SetStartIter);
+
 			for (; ListStartIter != ListEndIter; ++ListStartIter)
 			{
 				if ((*ListStartIter)->IsUpdate() == true)
 				{
 					(*ListStartIter)->RenderUpdate(); // 렌더러의 래스터라이저 모드로 바꿔주세요.
+					(*ListStartIter)->TransformUpdate((*SetStartIter));
 					(*ListStartIter)->Render((*SetStartIter));
+					(*ListStartIter)->MeshToMatUpdate();
 					(*ListStartIter)->RenderAfterUpdate(); // 기존 디바이스의 래스터라이저 모드로 바꿔주세요.
 				}
 			}
@@ -150,19 +155,22 @@ void NTRenderSystem::PushLight(NTLight* _Light)
 	LightSet.insert(_Light);
 }
 
-void NTRenderSystem::LightCheck(int _Group)
+void NTRenderSystem::LightCheck(int _Group, const std::set<Autoptr<NTCamera>>::iterator& _CamIter)
 {
 	LightStartIter = LightSet.begin();
 	LightEndIter = LightSet.end();
 
 	int Count = 0;
 	NTLight::LightCBData Data;
+	memset(&Data, 0, sizeof(NTLight::LightCBData));
 
 	for (; LightStartIter != LightEndIter; ++LightStartIter)
 	{
 		if (true == (*LightStartIter)->IsLight(_Group))
 		{
 			Data.ArrLight[Count] = (*LightStartIter)->Data;
+			Data.ArrLight[Count].Dir = -(*_CamIter)->GetView().MulZero(Data.ArrLight[Count].Dir);
+			Data.ArrLight[Count].Pos = -(*_CamIter)->GetView().MulOne(Data.ArrLight[Count].Pos);
 			++Count;
 			if (10 >= Count)
 			{
@@ -170,4 +178,9 @@ void NTRenderSystem::LightCheck(int _Group)
 			}
 		}
 	}
+
+	Data.LightCount = Count;
+
+	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_VS);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_PX);
 }

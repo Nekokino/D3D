@@ -30,21 +30,10 @@ VtxLightVtx_Output VS_VtxLight(VtxLightVtx_Input _In)
     Out.Uv = _In.Uv;
     Out.Color.rgba = _In.Color.rgba;
     Out.ViewPos = mul(mul(_In.Pos, World), View);
+    _In.Normal.w = 0.0f;
     Out.Normal = normalize(mul(mul(_In.Normal, World), View));
 
-    LightData LD;
-    LD.Range = 500.0f;
-    LD.Color.Diffuse = float4(1.0f, 1.0f, 1.0f, 0.0f);
-    LD.Color.Specular = float4(0.2f, 0.2f, 0.2f, 0.0f);
-    LD.Color.Ambient = float4(0.1f, 0.1f, 0.1f, 0.0f);
-
-
-    LD.Dir = float4(1.0f, 0.0f, 0.0f, 0.0f);
-    LD.Dir = normalize(LD.Dir);
-    LD.Pos = float4(200.0f, 200.0f, 500.0f, 0.0f);
-    LD.Pos = -mul(LD.Pos, View);
-
-    LightColor Color = CalDirLight(Out.ViewPos, Out.Normal, LD);
+    LightColor Color = CalDirLight(Out.ViewPos, Out.Normal, Arr[0]);
 
     Out.Color.rgb = _In.Color.rgb * Color.Diffuse.rgb + Color.Specular.rgb + Color.Ambient.rgb;
     Out.Color.a = _In.Color.a;

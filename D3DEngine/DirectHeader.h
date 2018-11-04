@@ -593,13 +593,13 @@ public:
 		*this = DirectX::XMMatrixOrthographicLH(_Width, _Height, _Near, _Far);
 	}
 
-	NTVEC MulOne(const NTVEC& _Vec)
+	NTVEC MulOne(const NTVEC& _Vec) const
 	{
 		NTMAT Return = *this;
 		return DirectX::XMVector3TransformCoord(_Vec, Return);
 	}
 
-	NTVEC MulZero(const NTVEC& _Vec)
+	NTVEC MulZero(const NTVEC& _Vec) const
 	{
 		NTMAT Return;
 		memcpy_s(&Return, sizeof(NTMAT), this, sizeof(NTMAT));
@@ -631,4 +631,11 @@ public:
 	NTMAT View;
 	NTMAT Projection;
 	NTMAT WVP;
+};
+
+enum STYPE
+{
+	ST_NONE,
+	ST_VS,
+	ST_PX,
 };

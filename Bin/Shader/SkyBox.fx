@@ -1,10 +1,4 @@
-cbuffer TransformBuffer : register(b0)
-{
-    matrix World;
-    matrix View;
-    matrix Projection;
-    matrix WVP;
-}
+#include "GValue.fx"
 
 Texture2D Tex_0 : register(t0);
 SamplerState Sam_0 : register(s0);

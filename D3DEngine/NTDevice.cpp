@@ -525,8 +525,8 @@ bool NTDevice::Default3DInit()
 	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
 	ResourceSystem<NTFont>::Create(L"±Ã¼­", L"±Ã¼­");
 
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
-	//
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 10);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 12);
 	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
 	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
 	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
@@ -844,13 +844,24 @@ bool NTDevice::Default3DInit()
 
 #pragma endregion
 
+	////////////////////////////////////////////////////////////////// µðÆúÆ® ½¦ÀÌ´õ ½ÃÀÛ
+
+	Autoptr<NTVertexShader> DefaultVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefaultVtx", L"Shader", L"Default.fx", "VS_Default");
+	DefaultVtx->AddLayoutClose("POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Autoptr<NTPixelShader> DefaultPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefaultPix", L"Shader", L"Default.fx", "PS_Default");
+
+	Autoptr<NTMaterial> DefaultMat = ResourceSystem<NTMaterial>::Create(L"DefaultMat");
+	DefaultMat->SetVertexShader(L"DefaultVtx");
+	DefaultMat->SetPixelShader(L"DefaultPix");
+	DefaultMat->SetBlend(L"AlphaBlend");
+
+	////////////////////////////////////////////////////////////////// µðÆúÆ® ½¦ÀÌ´õ ³¡
+
 	Autoptr<NTVertexShader> Rect3DVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"Rect3DVtx", L"Shader", L"Rect3D.fx", "VS_Rect3D");
 	Rect3DVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	Rect3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	Rect3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	Rect3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	Rect3DVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
-	Rect3DVtx->CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 10);
 
 	Autoptr<NTPixelShader> Rect3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Rect3DPix", L"Shader", L"Rect3D.fx", "PS_Rect3D");
 
@@ -866,7 +877,6 @@ bool NTDevice::Default3DInit()
 	Grid3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	Grid3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	Grid3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	Grid3DVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> Grid3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Grid3DPix", L"Shader", L"Grid3D.fx", "PS_Grid3D");
 	Grid3DPix->CreateConstBuffer<NTVEC>(L"GridData", D3D11_USAGE_DYNAMIC, 0);
@@ -885,7 +895,6 @@ bool NTDevice::Default3DInit()
 	SkyBoxVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	SkyBoxVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	SkyBoxVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	SkyBoxVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> SkyBoxPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"SkyBoxPix", L"Shader", L"SkyBox.fx", "PS_SkyBox");
 
@@ -903,7 +912,6 @@ bool NTDevice::Default3DInit()
 	VertexLightVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	VertexLightVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	VertexLightVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	VertexLightVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> VertexLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"VertexLightPix", L"Shader", L"VertexLight.fx", "PS_VtxLight");
 
@@ -921,10 +929,8 @@ bool NTDevice::Default3DInit()
 	PixelLightVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	PixelLightVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	PixelLightVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	PixelLightVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> PixelLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"PixelLightPix", L"Shader", L"PixelLight.fx", "PS_PixLight");
-	PixelLightPix->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTMaterial> PixelLightMat = ResourceSystem<NTMaterial>::Create(L"PixelLightMat");
 	PixelLightMat->SetVertexShader(L"PixelLightVtx");
@@ -958,12 +964,18 @@ void NTDevice::RasterState::Create(ID3D11Device * _Device, ID3D11DeviceContext *
 	}
 }
 
-bool NTDevice::CreateConstBuffer(ConstBuffer * _Buf)
+bool NTDevice::CreateConstBuffer(GlobalConstBuffer * _Buf)
 {
-	return false;
+	if (S_OK != Device->CreateBuffer(&_Buf->Desc, nullptr, &_Buf->CB))
+	{
+		delete _Buf;
+		return false;
+	}
+
+	return true;
 }
 
-Autoptr<NTDevice::ConstBuffer> NTDevice::FindConstBuffer(const wchar_t * _Name)
+Autoptr<NTDevice::GlobalConstBuffer> NTDevice::FindConstBuffer(const wchar_t * _Name)
 {
-	return Autoptr<ConstBuffer>();
+	return MapFind<Autoptr<NTDevice::GlobalConstBuffer>>(ConstBufferMap, _Name);
 }

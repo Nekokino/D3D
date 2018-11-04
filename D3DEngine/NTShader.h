@@ -7,13 +7,6 @@
 class ConstBuffer;
 class NTShader : public NTResource
 {
-public:
-	enum STYPE
-	{
-		ST_NONE,
-		ST_VS,
-		ST_PX,
-	};
 protected:
 	STYPE Type;
 	ID3DBlob* Blob; // 쉐이더 코드를 컴파일했을때 나오는 바이트 배열

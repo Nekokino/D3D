@@ -4,9 +4,14 @@
 #include "NTScene.h"
 #include "NTDevice.h"
 #include "NTWindow.h"
+#include "NTWinShortCut.h"
 
 NTRenderer::NTRenderer() : Light(0)
 {
+	if (false == SetMaterial(L"DefaultMat"))
+	{
+		tassert(true);
+	}
 }
 
 
@@ -69,4 +74,27 @@ void NTRenderer::RenderUpdate()
 void NTRenderer::RenderAfterUpdate()
 {
 	GetNTWindow()->GetDevice().ResetRasterState();
+}
+
+void NTRenderer::TransformUpdate(Autoptr<NTCamera> _Cam)
+{
+	MatData.World = Transform->GetWorldMatrixConst().RVTranspose();
+	MatData.View = _Cam->GetView().RVTranspose();
+	MatData.Projection = _Cam->GetProjection().RVTranspose();
+	MatData.WVP = (Transform->GetWorldMatrixConst() * _Cam->GetView() * _Cam->GetProjection()).RVTranspose();
+
+	TransformConstBufferUpdate();
+}
+
+void NTRenderer::TransformConstBufferUpdate()
+{
+	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PX);
+}
+
+void NTRenderer::MeshToMatUpdate()
+{
+	Material->Update();
+	Mesh->Update();
+	Mesh->Render();
 }

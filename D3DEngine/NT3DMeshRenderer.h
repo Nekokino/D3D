@@ -5,7 +5,6 @@
 class NT3DMeshRenderer : public NTRenderer
 {
 public:
-	MatrixData MatData;
 	Autoptr<NTImage> Image;
 
 public:

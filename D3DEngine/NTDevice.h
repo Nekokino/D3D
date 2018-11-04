@@ -2,7 +2,6 @@
 #include "DirectHeader.h"
 #include "NTWinParent.h"
 #include "RefNAutoptr.h"
-#include "NTShader.h"
 
 #include <string>
 #include <unordered_map>
@@ -127,14 +126,14 @@ public:
 	/////////////////////////////// ConstBuffer
 
 private:
-	class ConstBuffer : public RefCounter
+	class GlobalConstBuffer : public RefCounter
 	{
 	public:
 		D3D11_BUFFER_DESC Desc;
 		ID3D11Buffer* CB;
 		UINT Reg;
 
-		~ConstBuffer()
+		~GlobalConstBuffer()
 		{
 			if (nullptr != CB)
 			{
@@ -144,13 +143,13 @@ private:
 	};
 
 private:
-	std::unordered_map<std::wstring, Autoptr<ConstBuffer>> ConstBufferMap;
+	std::unordered_map<std::wstring, Autoptr<GlobalConstBuffer>> ConstBufferMap;
 
 public:
 	template<typename BufType>
 	bool CreateConstBuffer(const wchar_t* _Name, D3D11_USAGE _Usage, UINT _Reg)
 	{
-		ConstBuffer* Buf = new ConstBuffer();
+		GlobalConstBuffer* Buf = new GlobalConstBuffer();
 
 		Buf->Desc.ByteWidth = sizeof(BufType);
 		Buf->Desc.Usage = _Usage;
@@ -168,15 +167,15 @@ public:
 
 		Buf->Reg = _Reg;
 
-		ConstBufferMap.insert(std::unordered_map<std::wstring, Autoptr<ConstBuffer>>::value_type(_Name, Buf));
+		ConstBufferMap.insert(std::unordered_map<std::wstring, Autoptr<GlobalConstBuffer>>::value_type(_Name, Buf));
 
 		return true;
 	}
 
 	template<typename BufType>
-	void SetConstBuffer(const wchar_t* _Name, const BufType& _Data)
+	void SetConstBuffer(const wchar_t* _Name, const BufType& _Data, STYPE _Type)
 	{
-		Autoptr<ConstBuffer> Buf = FindConstBuffer(_Name);
+		Autoptr<GlobalConstBuffer> Buf = FindConstBuffer(_Name);
 
 		if (nullptr == Buf || Buf->Desc.ByteWidth != sizeof(BufType))
 		{
@@ -185,14 +184,26 @@ public:
 
 		D3D11_MAPPED_SUBRESOURCE Sub = {};
 		Context->Map(Buf->CB, 0, D3D11_MAP_WRITE_DISCARD, 0, &Sub);
-		memcpy(Sub.Data, &_Data, sizeof(BufType));
+		memcpy(Sub.pData, &_Data, sizeof(BufType));
 		Context->Unmap(Buf->CB, 0);
 
-		UpdateConstBuffer(Buf);
+		switch (_Type)
+		{
+		case ST_NONE:
+			break;
+		case ST_VS:
+			Context->VSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
+			break;
+		case ST_PX:
+			Context->PSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
+			break;
+		default:
+			break;
+		}
 	}
 
-	bool CreateConstBuffer(ConstBuffer* _Buf);
-	Autoptr<ConstBuffer> FindConstBuffer(const wchar_t* _Name);
+	bool CreateConstBuffer(GlobalConstBuffer* _Buf);
+	Autoptr<GlobalConstBuffer> FindConstBuffer(const wchar_t* _Name);
 
 
 public:

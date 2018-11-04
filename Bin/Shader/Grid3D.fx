@@ -1,10 +1,4 @@
-cbuffer TransformBuffer : register(b0)
-{
-    matrix World;
-    matrix View;
-    matrix Projection;
-    matrix WVP;
-}
+#include "GValue.fx"
 
 struct VTX_OUT
 {
