@@ -1,13 +1,5 @@
 #include "Light.fx"
 
-cbuffer TransformBuffer : register(b0)
-{
-    matrix World;
-    matrix View;
-    matrix Projection;
-    matrix WVP;
-}
-
 struct VtxLightVtx_Input
 {
     float4 Pos : POSITION;
@@ -46,24 +38,15 @@ VtxLightVtx_Output VS_VtxLight(VtxLightVtx_Input _In)
     LD.Color.Specular = float4(0.2f, 0.2f, 0.2f, 0.0f);
     LD.Color.Ambient = float4(0.1f, 0.1f, 0.1f, 0.0f);
 
+
+    LD.Dir = float4(1.0f, 0.0f, 0.0f, 0.0f);
+    LD.Dir = normalize(LD.Dir);
     LD.Pos = float4(200.0f, 200.0f, 500.0f, 0.0f);
     LD.Pos = -mul(LD.Pos, View);
 
-    LightData Call = (LightData)0.0f;
+    LightColor Color = CalDirLight(Out.ViewPos, Out.Normal, LD);
 
-    float4 Light = -mul(LD.Pos - Out.ViewPos, World);
-
-    Call.Color.Diffuse = LD.Color.Diffuse * saturate(dot(Out.Normal, normalize(Light)));
-
-    Light = normalize(Light);
-
-    float4 Reflect = normalize(2.0f * dot(Light, Out.Normal) * Out.Normal - Light);
-    float4 Eye = normalize(-Out.ViewPos);
-
-    Call.Color.Specular = LD.Color.Specular * pow(saturate(dot(Eye, Reflect)), 10);
-    Call.Color.Ambient = LD.Color.Ambient;
-
-    Out.Color.rgb = _In.Color.rgb * Call.Color.Diffuse.rgb + Call.Color.Specular.rgb, Call.Color.Ambient;
+    Out.Color.rgb = _In.Color.rgb * Color.Diffuse.rgb + Color.Specular.rgb + Color.Ambient.rgb;
     Out.Color.a = _In.Color.a;
     return Out;
 }
