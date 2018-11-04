@@ -45,7 +45,7 @@ public:
 	std::set<Autoptr<NTLight>>::iterator LightEndIter;
 
 	void PushLight(NTLight* _Camera);
-	void LightCheck();
+	void LightCheck(int _Group);
 
 	/////////////// Light End
 

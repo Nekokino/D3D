@@ -150,7 +150,7 @@ void NTRenderSystem::PushLight(NTLight* _Light)
 	LightSet.insert(_Light);
 }
 
-void NTRenderSystem::LightCheck()
+void NTRenderSystem::LightCheck(int _Group)
 {
 	LightStartIter = LightSet.begin();
 	LightEndIter = LightSet.end();
@@ -160,11 +160,14 @@ void NTRenderSystem::LightCheck()
 
 	for (; LightStartIter != LightEndIter; ++LightStartIter)
 	{
-		Data.ArrLight[Count] = (*LightStartIter)->Data;
-		++Count;
-		if (10 >= Count)
+		if (true == (*LightStartIter)->IsLight(_Group))
 		{
-			break;
+			Data.ArrLight[Count] = (*LightStartIter)->Data;
+			++Count;
+			if (10 >= Count)
+			{
+				break;
+			}
 		}
 	}
 }

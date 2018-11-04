@@ -41,26 +41,51 @@ public:
 		int Dummy2;
 	};
 
-public:
-	int LightOrder;
-	std::vector<int> RenderGroup;
-
 private:
+	LightType Type;
 	LightData Data;
+
+	std::set<int> RenderGroup;
 
 public:
 	virtual bool Init();
-	void MainUpdate() override;
+	void EndUpdate() override;
 
-private:
-	template<typename ...Rest>
-	void PushLayer(int _Data, Rest ...Arg)
+public:
+	bool IsLight(int _Group) const
 	{
-		RenderGroup.push_back(_Data);
+		std::set<int>::iterator FindIter = RenderGroup.find(_Group);
+
+		if (FindIter == RenderGroup.end())
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+public:
+	template<typename ...Rest>
+	void PushLightLayer(Rest ...Arg)
+	{
 		PushLayer(Arg...);
 	}
 
-	void PushLayer() {}
+private:
+	template<typename ...Rest>
+	void PushLightLayer(int _Data, Rest... Arg)
+	{
+		std::set<int>::iterator FindIter = RenderGroup.find(_Data);
+
+		if (FindIter == RenderGroup.end())
+		{
+			RenderGroup.insert(_Data);
+		}
+
+		PushLayer(Arg...);
+	}
+
+	void PushLightLayer() {};
 
 public:
 	NTLight();

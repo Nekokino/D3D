@@ -14,6 +14,8 @@
 
 #define CIRCLE 10
 
+
+
 NTDevice::NTDevice(NTWindow* _Win) : NTWinParent(_Win), Device(nullptr), Context(nullptr), TargetView(nullptr), DepthStencilView(nullptr), DepthStencilTexture(nullptr), SwapChain(nullptr), bInit(false), Color(0.2f, 0.835f, 0.674f, 1.0f), IsAllStateDefault(false)
 {
 }
@@ -922,6 +924,7 @@ bool NTDevice::Default3DInit()
 	PixelLightVtx->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTPixelShader> PixelLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"PixelLightPix", L"Shader", L"PixelLight.fx", "PS_PixLight");
+	PixelLightPix->CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 0);
 
 	Autoptr<NTMaterial> PixelLightMat = ResourceSystem<NTMaterial>::Create(L"PixelLightMat");
 	PixelLightMat->SetVertexShader(L"PixelLightVtx");
@@ -953,4 +956,14 @@ void NTDevice::RasterState::Create(ID3D11Device * _Device, ID3D11DeviceContext *
 	{
 		return;
 	}
+}
+
+bool NTDevice::CreateConstBuffer(ConstBuffer * _Buf)
+{
+	return false;
+}
+
+Autoptr<NTDevice::ConstBuffer> NTDevice::FindConstBuffer(const wchar_t * _Name)
+{
+	return Autoptr<ConstBuffer>();
 }

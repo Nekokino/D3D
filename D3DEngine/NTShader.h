@@ -1,8 +1,10 @@
 #pragma once
 #include "NTResource.h"
 #include <unordered_map>
+#include "NTDevice.h"
 
 
+class ConstBuffer;
 class NTShader : public NTResource
 {
 public:
@@ -26,7 +28,7 @@ public:
 private:
 	virtual void Update() = 0;
 
-public:
+protected:
 	class ConstBuffer : public RefCounter
 	{
 	public:
@@ -87,7 +89,7 @@ public:
 	{
 		Autoptr<ConstBuffer> Buf = FindConstBuffer(_Name);
 
-		if (nullptr == Buf && Buf->Desc.ByteWidth != sizeof(BufType))
+		if (nullptr == Buf || Buf->Desc.ByteWidth != sizeof(BufType))
 		{
 			return;
 		}

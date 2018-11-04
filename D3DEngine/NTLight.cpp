@@ -21,8 +21,9 @@ bool NTLight::Init()
 	return true;
 }
 
-void NTLight::MainUpdate()
+void NTLight::EndUpdate()
 {
 	Data.Dir = GetTransform()->GetWorldForward();
 	Data.Pos = GetTransform()->GetWorldPosition();
+	Data.Type = Type;
 }
