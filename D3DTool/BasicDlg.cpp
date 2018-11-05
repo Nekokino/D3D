@@ -71,17 +71,17 @@ BOOL BasicDlg::OnInitDialog()
 		tassert(TRUE);
 	}
 
-	ResourceSystem<NTImage>::Load(L"Texture", L"SkyBox.png");
+	//ResourceSystem<NTImage>::Load(L"Texture", L"SkyBox.png");
 
 	TabScene->GetMainCamera()->AddComponent<NTFreeCamera>();
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
 
-	Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
+	/*Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
 	Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
 	PP->GetTransform()->SetWorldPosition(NTVEC(0.0f, 0.0f, 0.0f));
 	PP->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
-	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
+	PP->PushLightLayer(0, 1, 2, 3, 4, 5);*/
 
 	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
 	Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
@@ -89,7 +89,7 @@ BOOL BasicDlg::OnInitDialog()
 	TT->SetMaterial(L"SkyBoxMat");
 	TT->SetMesh(L"Sphere");
 	TT->SetRasterState(L"SNONE");
-	TT->SetImage(L"SkyBox.png");
+	//TT->SetImage(L"SkyBox.png");
 
 	Autoptr<NTObject> GridObj = TabScene->CreateObject(L"Grid", 0);
 	GridObj->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
@@ -100,8 +100,10 @@ BOOL BasicDlg::OnInitDialog()
 	SphereLeft->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
 	SphereLeft->GetTransform()->SetLocalPosition(NTVEC{ -15.0f, 0.0f, 0.0f });
 	Autoptr<NT3DMeshRenderer> SphereLeftMesh = SphereLeft->AddComponent<NT3DMeshRenderer>();
-	SphereLeftMesh->SetMaterial(L"VertexLightMat");
+	//SphereLeftMesh->SetMaterial(L"VertexLightMat");
 	SphereLeftMesh->SetMesh(L"Sphere");
+	SphereLeftMesh->RndOpt.IsLight = 1;
+	SphereLeftMesh->SetMaterial(L"Mesh3DMat");
 
 	Autoptr<NTObject> SphereRight = TabScene->CreateObject(L"Left", 0);
 	SphereRight->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));

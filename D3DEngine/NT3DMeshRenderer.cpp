@@ -27,8 +27,8 @@ void NT3DMeshRenderer::Render(Autoptr<NTCamera> _Camera)
 
 	if (nullptr != Image)
 	{
-		Image->GetSamp()->Update();
-		Image->GetTex()->Update();
+		Image->GetSamp()->Update(0);
+		Image->GetTex()->Update(0);
 	}
 
 }

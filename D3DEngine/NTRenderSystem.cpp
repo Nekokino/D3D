@@ -172,7 +172,7 @@ void NTRenderSystem::LightCheck(int _Group, const std::set<Autoptr<NTCamera>>::i
 			Data.ArrLight[Count].Dir = -(*_CamIter)->GetView().MulZero(Data.ArrLight[Count].Dir);
 			Data.ArrLight[Count].Pos = -(*_CamIter)->GetView().MulOne(Data.ArrLight[Count].Pos);
 			++Count;
-			if (10 >= Count)
+			if (10 <= Count)
 			{
 				break;
 			}

@@ -36,8 +36,8 @@ void NTSecondUVRenderer::Render(Autoptr<NTCamera> _Camera)
 	SubTranformUpdate();
 
 	Material->Update();
-	Image->GetSamp()->Update();
-	Image->GetTex()->Update();
+	Image->GetSamp()->Update(0);
+	Image->GetTex()->Update(0);
 	Mesh->Update();
 	Mesh->Render();
 

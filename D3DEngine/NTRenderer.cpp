@@ -69,6 +69,12 @@ void NTRenderer::RenderUpdate()
 	{
 		RasterState->Update();
 	}
+
+	if (nullptr != Material)
+	{
+		Material->TextureUpdate();
+		Material->SamplerUpdate();
+	}
 }
 
 void NTRenderer::RenderAfterUpdate()
@@ -78,6 +84,11 @@ void NTRenderer::RenderAfterUpdate()
 
 void NTRenderer::TransformUpdate(Autoptr<NTCamera> _Cam)
 {
+	if (nullptr == Transform)
+	{
+		tassert(true);
+		return;
+	}
 	MatData.World = Transform->GetWorldMatrixConst().RVTranspose();
 	MatData.View = _Cam->GetView().RVTranspose();
 	MatData.Projection = _Cam->GetProjection().RVTranspose();
@@ -88,8 +99,14 @@ void NTRenderer::TransformUpdate(Autoptr<NTCamera> _Cam)
 
 void NTRenderer::TransformConstBufferUpdate()
 {
+	if (nullptr != Material)
+	{
+		RndOpt.TexCount = Material->SetTextureData(RndOpt.ArrTex);
+	}
 	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
 	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PX);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_VS);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_PX);
 }
 
 void NTRenderer::MeshToMatUpdate()

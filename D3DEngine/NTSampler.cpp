@@ -61,7 +61,8 @@ bool NTSampler::Set(D3D11_FILTER Filter,
 	return true;
 }
 
-void NTSampler::Update()
+void NTSampler::Update(unsigned int _Slot)
 {
-	NTWinShortCut::GetContext()->PSSetSamplers(0, 1, &State);
+	NTWinShortCut::GetContext()->VSSetSamplers(_Slot, 1, &State);
+	NTWinShortCut::GetContext()->PSSetSamplers(_Slot, 1, &State);
 }

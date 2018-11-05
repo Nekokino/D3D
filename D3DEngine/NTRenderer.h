@@ -5,6 +5,27 @@
 #include "NTSubTransform.h"
 #include "NTDevice.h"
 
+class RenderOption
+{
+private:
+	friend class NTRenderer;
+
+public:
+	int IsLight;
+	int IsDefferdOrForward;
+	int IsLightVtxOrPix;
+	int TexCount;
+
+private:
+	TextureData ArrTex[12];
+
+public:
+	RenderOption() : IsLight(1), TexCount(0), IsLightVtxOrPix(1), IsDefferdOrForward(0)
+	{
+
+	}
+};
+
 class NTCamera;
 class NTRenderer : public NTSubTransform
 {
@@ -18,6 +39,9 @@ protected:
 	
 	int Light;
 	int Order;
+
+public:
+	RenderOption RndOpt;
 
 public:
 	bool SetMesh(const wchar_t* _Mesh);

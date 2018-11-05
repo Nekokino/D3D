@@ -10,6 +10,8 @@
 #include "NTBlend.h"
 #include "NTFont.h"
 #include "NTLight.h"
+#include "NTRenderer.h"
+#include "NTTexture.h"
 
 
 #define CIRCLE 10
@@ -267,6 +269,8 @@ bool NTDevice::CreateViewPort()
 	return true;
 }
 
+
+
 void NTDevice::ClearTarget() // 그리기전에 지우기
 {
 
@@ -522,17 +526,19 @@ bool NTDevice::DefaultInit()
 
 bool NTDevice::Default3DInit()
 {
+	Create3DDefault();
+	Create3DMesh();
+	Create3DMaterial();
+	return true;
+}
+
+bool NTDevice::Create3DDefault()
+{
 	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
 	ResourceSystem<NTFont>::Create(L"궁서", L"궁서");
 
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 10);
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 12);
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTMAT>(L"TRANS", D3D11_USAGE_DYNAMIC, 0);
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"MULCOLOR", D3D11_USAGE_DYNAMIC, 0);
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"IMGUV", D3D11_USAGE_DYNAMIC, 1);
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINE", D3D11_USAGE_DYNAMIC, 2);
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"OUTLINECOLOR", D3D11_USAGE_DYNAMIC, 3);
-	//NTWinShortCut::GetMainDevice().CreateConstBuffer<NTVEC>(L"SECONDUV", D3D11_USAGE_DYNAMIC, 4);
 
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SNONE", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_NONE);
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SFRONT", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_FRONT);
@@ -544,6 +550,13 @@ bool NTDevice::Default3DInit()
 
 	NTWinShortCut::GetMainDevice().SetDefaultRasterState(L"SBACK");
 
+	ResourceSystem<NTTexture>::Load(L"Texture", L"SkyBox.png");
+
+	return true;
+}
+
+bool NTDevice::Create3DMesh()
+{
 	Vtx3D Vtx;
 
 #pragma region 3DRectMesh
@@ -844,6 +857,11 @@ bool NTDevice::Default3DInit()
 
 #pragma endregion
 
+	return true;
+}
+
+bool NTDevice::Create3DMaterial()
+{
 	////////////////////////////////////////////////////////////////// 디폴트 쉐이더 시작
 
 	Autoptr<NTVertexShader> DefaultVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefaultVtx", L"Shader", L"Default.fx", "VS_Default");
@@ -902,42 +920,24 @@ bool NTDevice::Default3DInit()
 	SkyBoxMat->SetVertexShader(L"SkyBoxVtx");
 	SkyBoxMat->SetPixelShader(L"SkyBoxPix");
 	SkyBoxMat->SetBlend(L"AlphaBlend");
+	SkyBoxMat->AddTextureData(0, L"SkyBox.png");
 
 	///////////////////////////////////////////////////////////////// 스카이 바악스 끝
 
-	///////////////////////////////////////////////////////////////// 포워드 라이트
+	Autoptr<NTVertexShader> Mesh3DVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"Mesh3DVtx", L"Shader", L"MeshMat.fx", "VS_Mesh3D");
+	Mesh3DVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Mesh3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	Mesh3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Mesh3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 
-	Autoptr<NTVertexShader> VertexLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"VertexLightVtx", L"Shader", L"VertexLight.fx", "VS_VtxLight");
-	VertexLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	VertexLightVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
-	VertexLightVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	VertexLightVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Autoptr<NTPixelShader> Mesh3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Mesh3DPix", L"Shader", L"MeshMat.fx", "PS_Mesh3D");
 
-	Autoptr<NTPixelShader> VertexLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"VertexLightPix", L"Shader", L"VertexLight.fx", "PS_VtxLight");
+	Autoptr<NTMaterial> Mesh3DMat = ResourceSystem<NTMaterial>::Create(L"Mesh3DMat");
+	Mesh3DMat->SetVertexShader(L"Mesh3DVtx");
+	Mesh3DMat->SetPixelShader(L"Mesh3DPix");
+	Mesh3DMat->SetBlend(L"AlphaBlend");
 
-	Autoptr<NTMaterial> VertexLightMat = ResourceSystem<NTMaterial>::Create(L"VertexLightMat");
-	VertexLightMat->SetVertexShader(L"VertexLightVtx");
-	VertexLightMat->SetPixelShader(L"VertexLightPix");
-	VertexLightMat->SetBlend(L"AlphaBlend");
 
-	///////////////////////////////////////////////////////////////// 포워드 라이트 끝
-
-	///////////////////////////////////////////////////////////////// 디퍼드 라이트
-
-	Autoptr<NTVertexShader> PixelLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"PixelLightVtx", L"Shader", L"PixelLight.fx", "VS_PixLight");
-	PixelLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	PixelLightVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
-	PixelLightVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	PixelLightVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-
-	Autoptr<NTPixelShader> PixelLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"PixelLightPix", L"Shader", L"PixelLight.fx", "PS_PixLight");
-
-	Autoptr<NTMaterial> PixelLightMat = ResourceSystem<NTMaterial>::Create(L"PixelLightMat");
-	PixelLightMat->SetVertexShader(L"PixelLightVtx");
-	PixelLightMat->SetPixelShader(L"PixelLightPix");
-	PixelLightMat->SetBlend(L"AlphaBlend");
-
-	///////////////////////////////////////////////////////////////// 디퍼드 라이트 끝
 	return true;
 }
 

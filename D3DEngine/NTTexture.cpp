@@ -73,7 +73,8 @@ bool NTTexture::Load()
 	return true;
 }
 
-void NTTexture::Update()
+void NTTexture::Update(unsigned int _Slot)
 {
-	NTWinShortCut::GetContext()->PSSetShaderResources(0, 1, &View);
+	NTWinShortCut::GetContext()->VSSetShaderResources(_Slot, 1, &View);
+	NTWinShortCut::GetContext()->PSSetShaderResources(_Slot, 1, &View);
 }

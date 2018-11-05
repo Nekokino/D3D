@@ -106,6 +106,10 @@ public:
 	bool DefaultInit();
 	bool Default3DInit();
 
+	bool Create3DDefault();
+	bool Create3DMesh();
+	bool Create3DMaterial();
+
 private:
 	void ClearTarget();
 	void Present();

@@ -39,8 +39,8 @@ void NTSpRenderer::Render(Autoptr<NTCamera> _Camera)
 	float SecondUV = 1.0f;
 
 	Material->Update();
-	Image->GetSamp()->Update();
-	Image->GetTex()->Update();
+	Image->GetSamp()->Update(0);
+	Image->GetTex()->Update(0);
 	Mesh->Update();
 	Mesh->Render();
 }

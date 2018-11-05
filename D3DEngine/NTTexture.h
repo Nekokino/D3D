@@ -47,7 +47,7 @@ public:
 	bool Load();
 
 public:
-	void Update();
+	void Update(unsigned int _Slot);
 
 public:
 	NTTexture();

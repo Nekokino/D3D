@@ -37,7 +37,7 @@ float4 GetColor(Texture2D _Tex, int _Samp, float2 _Uv)
         case 7:
             return _Tex.Sample(Sam_7, _Uv);
         default:
-            return float4(0.0f);
+            return (float4) 0.0f;
 
     }
 }
@@ -63,7 +63,7 @@ float4 GetTexColor(int _Tex, int _Samp, float2 _Uv)
         case 7:
             return GetColor(Tex_7, _Samp, _Uv);
         default:
-            return float4(0.0f);
+            return (float4) 0.0f;
 
     }
 

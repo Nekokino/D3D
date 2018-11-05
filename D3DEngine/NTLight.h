@@ -31,6 +31,7 @@ public:
 		float Range;
 		float Angle;
 		int Type;
+		int Dummy;
 	};
 
 	class LightCBData
@@ -39,6 +40,8 @@ public:
 		LightData ArrLight[10];
 		int LightCount;
 		int Dummy1;
+		int Dummy2;
+		int Dummy3;
 	};
 
 private:

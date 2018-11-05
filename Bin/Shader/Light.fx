@@ -15,6 +15,7 @@ class LightData
     float Range;
     float Angle;
     int Type;
+    int Dummy;
 };
 
 cbuffer LightBuffer : register(b12)
@@ -23,6 +24,7 @@ cbuffer LightBuffer : register(b12)
     int LightCount;
     int Dummy1;
     int Dummy2;
+    int Dummy3;
 }
 
 LightColor CalDirLight(float4 _ViewPos, float4 _ViewNormal, LightData _LightInfo)

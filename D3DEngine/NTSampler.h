@@ -29,7 +29,7 @@ public:
 		FLOAT MaxLOD = FLT_MAX);
 
 public:
-	void Update();
+	void Update(unsigned int _Slot);
 public:
 	NTSampler();
 	~NTSampler();
