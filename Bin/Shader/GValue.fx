@@ -3,16 +3,16 @@ cbuffer TransformBuffer : register(b10)
     matrix World;
     matrix View;
     matrix Projection;
+    matrix WV;
     matrix WVP;
 }
 
 class TexData
 {
+    int Type;
     int Tex_Idx;
     int Tex_Smp;
-    int Eff_Idx;
-    int Eff_Smp;
-    int Type;
+    int Dummy;
 };
 
 cbuffer RenderOption : register(b11)
@@ -21,5 +21,5 @@ cbuffer RenderOption : register(b11)
     int IsDefferdOrForward;
     int IsLightVtxOrPix;
     int TexCount;
-    TexData TexArr[12];
+    TexData TexArr[8];
 }

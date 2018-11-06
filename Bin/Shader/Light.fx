@@ -1,5 +1,3 @@
-#include "GValue.fx"
-
 class LightColor
 {
     float4 Diffuse;

@@ -1,3 +1,6 @@
+#define TEX 0
+#define BUMP 1
+
 Texture2D Tex_0 : register(t0);
 Texture2D Tex_1 : register(t1);
 Texture2D Tex_2 : register(t2);
@@ -67,4 +70,19 @@ float4 GetTexColor(int _Tex, int _Samp, float2 _Uv)
 
     }
 
+}
+
+float4 CalBump(int _BumpIdx, int _BumpSmp, float2 _Uv, float4 _ViewTangent, float4 _ViewBiNormal, float4 _Normal)
+{
+    float4 BumpNormal = GetTexColor(_BumpIdx, _BumpSmp, _Uv);
+
+    BumpNormal = BumpNormal * 2.0f - 1.0f;
+    BumpNormal = normalize(BumpNormal);
+    BumpNormal.w = 0.0f;
+
+    float3x3 MatTBN = float3x3(_ViewTangent.xyz, _ViewBiNormal.xyz, _Normal.xyz);
+    BumpNormal.xyz = mul(BumpNormal.xyz, MatTBN);
+    BumpNormal.w = 0.0f;
+
+    return BumpNormal;
 }

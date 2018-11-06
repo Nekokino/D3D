@@ -1,3 +1,4 @@
+#include "GValue.fx"
 #include "Light.fx"
 
 Texture2D Tex_0 : register(t0);
