@@ -33,6 +33,7 @@ private:
 
 public:
 	RefCounter();
+	RefCounter(const RefCounter& _Other);
 	virtual ~RefCounter() = 0; // 流立 积己且老 绝澜.
 };
 

@@ -6,6 +6,11 @@ NTResource::NTResource()
 {
 }
 
+NTResource::NTResource(const NTResource & _Other) : NTNameTag(_Other), NTTypeParent(_Other), RefCounter(_Other), Path(_Other.Path), Pathkey(_Other.Pathkey), FullFileName(_Other.FullFileName), FileName(_Other.FileName), Extension(_Other.Extension)
+{
+
+}
+
 
 NTResource::~NTResource()
 {

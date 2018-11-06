@@ -4,6 +4,8 @@
 #include "NTCamera.h"
 #include "NTLight.h"
 #include "NTWinShortCut.h"
+#include "ResourceSystem.h"
+#include "NTSampler.h"
 
 
 NTRenderSystem::NTRenderSystem()
@@ -15,8 +17,30 @@ NTRenderSystem::~NTRenderSystem()
 {
 }
 
+void NTRenderSystem::ResetSampler()
+{
+	Autoptr<NTSampler> Sampler = ResourceSystem<NTSampler>::Find(L"DefaultSampler");
+
+	if (nullptr == Sampler)
+	{
+		tassert(true);
+		return;
+	}
+
+	Sampler->Update(0);
+	Sampler->Update(1);
+	Sampler->Update(2);
+	Sampler->Update(3);
+	Sampler->Update(4);
+	Sampler->Update(5);
+	Sampler->Update(6);
+	Sampler->Update(7);
+}
+
 void NTRenderSystem::Render()
 {
+	ResetSampler();
+
 	SetStartIter = CameraSet.begin();
 	SetEndIter = CameraSet.end();
 

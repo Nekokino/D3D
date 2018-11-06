@@ -26,10 +26,13 @@ public:
 private:
 	ID3D11Device* Device;
 	ID3D11DeviceContext* Context;	// 함수 실행 전에 미리 정해줘야할 것들인것 같다.
+
+	ID3D11Texture2D* BackBuffer;
 	ID3D11RenderTargetView* TargetView;
-	ID3D11Texture2D* DepthStencilTexture;
+
 	ID3D11DepthStencilView* DepthStencilView;
 	IDXGISwapChain* SwapChain;		// 스왑체인 알아두기.
+	ID3D11Texture2D* DepthStencilTexture;
 	UINT iMSLv;
 	NTCOLOR Color;
 	bool bInit;
@@ -107,6 +110,7 @@ public:
 	bool Default3DInit();
 
 	bool Create3DDefault();
+	bool CreateDefaultRenderTarget();
 	bool Create3DMesh();
 	bool Create3DMaterial();
 

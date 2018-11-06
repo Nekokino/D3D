@@ -16,6 +16,12 @@ NTMaterial::~NTMaterial()
 {
 }
 
+NTMaterial::NTMaterial(const NTMaterial & _Other) : NTResource(_Other), VertexShader(_Other.VertexShader), PixelShader(_Other.PixelShader), Blend(_Other.Blend), TexData(_Other.TexData), TextureMap(_Other.TextureMap), SamplerMap(_Other.SamplerMap)
+{
+	
+
+}
+
 bool NTMaterial::SetVertexShader(const wchar_t* _VertexName)
 {
 	VertexShader = ResourceSystem<NTVertexShader>::Find(_VertexName);
@@ -74,12 +80,15 @@ void NTMaterial::Update()
 	}
 }
 
-void NTMaterial::AddTextureData(UINT _TexSlot, const wchar_t * _TexName, UINT _SmpSlot, const wchar_t * _SmpName)
+void NTMaterial::AddTextureData(TEXTYPE _Type, UINT _TexSlot, const wchar_t * _TexName, UINT _SmpSlot, const wchar_t * _SmpName)
 {
 	TextureData TD;
+	TD.Type = (int)_Type;
 	TD.Tex_Idx = _TexSlot;
+	TD.Tex_Smp = _SmpSlot;
 	TexData.push_back(TD);
 	SetTexture(_TexSlot, _TexName);
+	SetSampler(_SmpSlot, _SmpName);
 }
 
 bool NTMaterial::Create()
@@ -160,4 +169,9 @@ void NTMaterial::SamplerUpdate()
 	{
 		SmpStartIter->second->Update(SmpStartIter->first);
 	}
+}
+
+Autoptr<NTMaterial> NTMaterial::Clone()
+{
+	return new NTMaterial(*this);
 }

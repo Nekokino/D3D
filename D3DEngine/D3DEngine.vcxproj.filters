@@ -196,6 +196,12 @@
     <ClInclude Include="NTLight.h">
       <Filter>05 Object\Component\EngineComponent\01 Basic</Filter>
     </ClInclude>
+    <ClInclude Include="NTMultiRenderTarget.h">
+      <Filter>04 Resource\Resource\07 RenderTarget</Filter>
+    </ClInclude>
+    <ClInclude Include="NTRenderTarget.h">
+      <Filter>04 Resource\Resource\07 RenderTarget</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -360,6 +366,12 @@
     <ClCompile Include="NTLight.cpp">
       <Filter>05 Object\Component\EngineComponent\01 Basic</Filter>
     </ClCompile>
+    <ClCompile Include="NTMultiRenderTarget.cpp">
+      <Filter>04 Resource\Resource\07 RenderTarget</Filter>
+    </ClCompile>
+    <ClCompile Include="NTRenderTarget.cpp">
+      <Filter>04 Resource\Resource\07 RenderTarget</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01 Core">
@@ -454,6 +466,9 @@
     </Filter>
     <Filter Include="05 Object\Component\EngineComponent\02 Render\2D\Sub">
       <UniqueIdentifier>{36d4c5d0-4f4a-4bcf-9023-423844e9ae52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04 Resource\Resource\07 RenderTarget">
+      <UniqueIdentifier>{5c491cbe-b535-418e-a01b-4cc274d74401}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

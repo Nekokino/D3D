@@ -62,6 +62,9 @@ BOOL BasicDlg::OnInitDialog()
 {
 	TabDlgBase::OnInitDialog();
 
+	ResourceSystem<NTTexture>::Load(L"Texture", L"rock2.png");
+	ResourceSystem<NTTexture>::Load(L"Texture", L"rock2_bump.png");
+
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
 	Autoptr<NTScene> TabScene = NTWinShortCut::GetMainSceneSystem().FindScene(SceneName.GetString());
@@ -77,11 +80,11 @@ BOOL BasicDlg::OnInitDialog()
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
 
-	/*Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
+	Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
 	Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
 	PP->GetTransform()->SetWorldPosition(NTVEC(0.0f, 0.0f, 0.0f));
 	PP->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
-	PP->PushLightLayer(0, 1, 2, 3, 4, 5);*/
+	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
 
 	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
 	Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
@@ -104,8 +107,10 @@ BOOL BasicDlg::OnInitDialog()
 	SphereLeftMesh->SetMesh(L"Sphere");
 	SphereLeftMesh->RndOpt.IsLight = 1;
 	SphereLeftMesh->SetMaterial(L"Mesh3DMat");
+	SphereLeftMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_COLOR, 0, L"rock2.png");
+	SphereLeftMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_BUMP, 1, L"rock2_bump.png");
 
-	Autoptr<NTObject> SphereRight = TabScene->CreateObject(L"Left", 0);
+	Autoptr<NTObject> SphereRight = TabScene->CreateObject(L"Right", 0);
 	SphereRight->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
 	SphereRight->GetTransform()->SetLocalPosition(NTVEC{ 15.0f, 0.0f, 0.0f });
 	Autoptr<NT3DMeshRenderer> SphereRightMesh = SphereRight->AddComponent<NT3DMeshRenderer>();

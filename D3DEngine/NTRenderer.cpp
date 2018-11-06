@@ -5,6 +5,7 @@
 #include "NTDevice.h"
 #include "NTWindow.h"
 #include "NTWinShortCut.h"
+#include "NTMaterial.h"
 
 NTRenderer::NTRenderer() : Light(0)
 {
@@ -24,6 +25,16 @@ bool NTRenderer::Init(int _Order)
 	Order = _Order;
 	GetScene()->RenderSystem.PushRenderer(this);
 	return true;
+}
+
+Autoptr<NTMaterial> NTRenderer::GetMaterial()
+{
+	if (true == Material->IsOriginal)
+	{
+		Material = Material->Clone();
+	}
+
+	return Material;
 }
 
 bool NTRenderer::SetMesh(const wchar_t* _Mesh)
@@ -92,6 +103,7 @@ void NTRenderer::TransformUpdate(Autoptr<NTCamera> _Cam)
 	MatData.World = Transform->GetWorldMatrixConst().RVTranspose();
 	MatData.View = _Cam->GetView().RVTranspose();
 	MatData.Projection = _Cam->GetProjection().RVTranspose();
+	MatData.WV = (Transform->GetWorldMatrixConst() * _Cam->GetView()).RVTranspose();
 	MatData.WVP = (Transform->GetWorldMatrixConst() * _Cam->GetView() * _Cam->GetProjection()).RVTranspose();
 
 	TransformConstBufferUpdate();

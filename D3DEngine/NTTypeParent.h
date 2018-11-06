@@ -41,6 +41,7 @@ public:
 	}
 
 public:
+	NTTypeParent(const NTTypeParent& _Other) : TypeInfo(_Other.TypeInfo), DbgFlag(_Other.DbgFlag) {}
 	NTTypeParent() : DbgFlag(false) {}
 	virtual ~NTTypeParent() = 0 {}
 };

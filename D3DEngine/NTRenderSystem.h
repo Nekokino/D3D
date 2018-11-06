@@ -49,6 +49,9 @@ public:
 
 	/////////////// Light End
 
+private:
+	void ResetSampler();
+
 public:
 	void Render();
 	void Release();

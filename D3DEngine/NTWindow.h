@@ -89,6 +89,16 @@ public:
 		return (float)WindowHeight;
 	}
 
+	UINT GetWidthU()
+	{
+		return (UINT)WindowWidth;
+	}
+
+	UINT GetHeightU()
+	{
+		return (UINT)WindowHeight;
+	}
+
 	bool IsWindow()
 	{
 		return bWindowed;

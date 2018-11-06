@@ -2,19 +2,6 @@
 #include "NTResource.h"
 #include <vector>
 
-
-struct VertexTexture
-{
-	NTVEC Pos;
-	NTVEC Uv;
-};
-
-struct VertexColor
-{
-	NTVEC Pos;
-	NTVEC Color;
-};
-
 class NTMesh : public NTResource
 {
 private:

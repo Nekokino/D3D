@@ -57,6 +57,7 @@ private:
 	
 public:
 	NTResource();
+	NTResource(const NTResource& _Other);
 	~NTResource();
 };
 

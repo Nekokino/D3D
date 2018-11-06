@@ -26,6 +26,8 @@ public:
 	NTVEC2 Uv;
 	NTVEC Color;
 	NTVEC Normal;
+	NTVEC Tangent;
+	NTVEC BiNormal;
 
 	TypeS(Vtx3D);
 };

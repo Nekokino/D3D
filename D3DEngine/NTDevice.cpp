@@ -12,6 +12,8 @@
 #include "NTLight.h"
 #include "NTRenderer.h"
 #include "NTTexture.h"
+#include "NTSampler.h"
+#include "NTMultiRenderTarget.h"
 
 
 #define CIRCLE 10
@@ -64,6 +66,11 @@ void NTDevice::Release()
 	if (nullptr != DepthStencilState)
 	{
 		DepthStencilState->Release();
+	}
+
+	if (nullptr != BackBuffer)
+	{
+		BackBuffer->Release();
 	}
 }
 
@@ -185,18 +192,16 @@ bool NTDevice::CreateSwapChain()
 
 bool NTDevice::CreateView() // 스왑체인에 사용할 텍스쳐 생성단계
 {
-	ID3D11Texture2D* BackBufferTexture = nullptr;
-	if (S_OK != SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBufferTexture))
+	BackBuffer = nullptr;
+	if (S_OK != SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer))
 	{
 		return false;
 	}
 
-	if (S_OK != Device->CreateRenderTargetView(BackBufferTexture, 0, &TargetView))
+	if (S_OK != Device->CreateRenderTargetView(BackBuffer, 0, &TargetView))
 	{
 		return false;
 	}
-
-	BackBufferTexture->Release();
 
 	D3D11_TEXTURE2D_DESC tDesc = {};
 
@@ -526,6 +531,7 @@ bool NTDevice::DefaultInit()
 
 bool NTDevice::Default3DInit()
 {
+	CreateDefaultRenderTarget();
 	Create3DDefault();
 	Create3DMesh();
 	Create3DMaterial();
@@ -536,8 +542,10 @@ bool NTDevice::Create3DDefault()
 {
 	ResourceSystem<NTBlend>::Create(L"AlphaBlend");
 	ResourceSystem<NTFont>::Create(L"궁서", L"궁서");
+	ResourceSystem<NTSampler>::Create(L"DefaultSampler");
 
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 10);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<RenderOption>(L"RenderOption", D3D11_USAGE_DYNAMIC, 11);
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 12);
 
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SNONE", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_NONE);
@@ -552,6 +560,22 @@ bool NTDevice::Create3DDefault()
 
 	ResourceSystem<NTTexture>::Load(L"Texture", L"SkyBox.png");
 
+	return true;
+}
+
+bool NTDevice::CreateDefaultRenderTarget()
+{
+	ResourceSystem<NTRenderTarget>::Create(L"BackBuffer", BackBuffer, D3D11_BIND_RENDER_TARGET);
+	ResourceSystem<NTRenderTarget>::Create(L"Forward", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT); // 아니 디폴트인자 썻는데 왜안돼냐 버그진짜;
+
+	// 디퍼드용
+	ResourceSystem<NTRenderTarget>::Create(L"Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
+	ResourceSystem<NTRenderTarget>::Create(L"Position", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
+	ResourceSystem<NTRenderTarget>::Create(L"Normal", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
+	ResourceSystem<NTRenderTarget>::Create(L"Depth", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
+
+	Autoptr<NTMultiRenderTarget> BackMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Forward", L"BackBuffer", L"Forward");
+	BackMRT->CreateDepth(NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU());
 	return true;
 }
 
@@ -785,6 +809,9 @@ bool NTDevice::Create3DMesh()
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 	Vtx.Normal = Vtx.Pos;
 	Vtx.Normal.Normalize3D();
+	Vtx.Normal.w = 0.0f;
+	Vtx.Tangent = NTVEC{ 1.0f, 0.0f, 0.0f, 0.0f };
+	Vtx.BiNormal = NTVEC{ 0.0f, 0.0f, 1.0f, 0.0f };
 	SphereVtx.push_back(Vtx); // 위쪽 꼭대기점.
 
 	UINT StackCount = 40; // 가로 분할
@@ -798,8 +825,10 @@ bool NTDevice::Create3DMesh()
 
 	for (UINT y = 1; y < StackCount; ++y)
 	{
+		float Phi = y * yAngle;
 		for (UINT z = 0; z < SliceCount + 1; ++z)
 		{
+			float Theta = z * zAngle;
 			Vtx.Pos = NTVEC{
 				Rad * sinf(y * yAngle) * cosf(z * zAngle),
 				Rad * cosf(y * yAngle),
@@ -810,6 +839,17 @@ bool NTDevice::Create3DMesh()
 			Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 			Vtx.Normal = Vtx.Pos;
 			Vtx.Normal.Normalize3D();
+			Vtx.Normal.w = 0.0f;
+
+			Vtx.Tangent.x = -Rad * sinf(Phi) * sinf(Theta);
+			Vtx.Tangent.y = 0.0f;
+			Vtx.Tangent.z = Rad * sinf(Phi) * cosf(Theta);
+			Vtx.Tangent.Normalize3D();
+			Vtx.Tangent.w = 0.0f;
+
+			Vtx.BiNormal = NTVEC::Cross3D(Vtx.Tangent, Vtx.Normal);
+			Vtx.BiNormal.Normalize3D();
+			Vtx.BiNormal.w = 0.0f;
 
 			SphereVtx.push_back(Vtx);
 		}
@@ -820,6 +860,7 @@ bool NTDevice::Create3DMesh()
 	Vtx.Color = NTVEC{ 1.0f, 1.0f, 1.0f, 1.0f };
 	Vtx.Normal = Vtx.Pos;
 	Vtx.Normal.Normalize3D();
+	Vtx.Normal.w = 0.0f;
 	SphereVtx.push_back(Vtx); // 아래쪽 꼭대기점.
 
 	for (UINT i = 0; i < SliceCount; ++i) // 위쪽 꼭대기점 인덱스 설정
@@ -920,7 +961,7 @@ bool NTDevice::Create3DMaterial()
 	SkyBoxMat->SetVertexShader(L"SkyBoxVtx");
 	SkyBoxMat->SetPixelShader(L"SkyBoxPix");
 	SkyBoxMat->SetBlend(L"AlphaBlend");
-	SkyBoxMat->AddTextureData(0, L"SkyBox.png");
+	SkyBoxMat->AddTextureData(TEXTYPE::TT_COLOR, 0, L"SkyBox.png");
 
 	///////////////////////////////////////////////////////////////// 스카이 바악스 끝
 
@@ -928,7 +969,10 @@ bool NTDevice::Create3DMaterial()
 	Mesh3DVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	Mesh3DVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 	Mesh3DVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	Mesh3DVtx->AddLayoutClose("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Mesh3DVtx->AddLayout("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Mesh3DVtx->AddLayout("TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Mesh3DVtx->AddLayoutClose("BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	
 
 	Autoptr<NTPixelShader> Mesh3DPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"Mesh3DPix", L"Shader", L"MeshMat.fx", "PS_Mesh3D");
 

@@ -4,17 +4,22 @@
 #include "NTPixelShader.h"
 #include "NTBlend.h"
 
+enum TEXTYPE
+{
+	TT_COLOR,
+	TT_BUMP,
+};
+
 class TextureData
 {
 public:
+	int Type;
 	int Tex_Idx;
 	int Tex_Smp;
-	int Eff_Idx;
-	int Eff_Smp;
-	int Type;
+	int Dummy;
 
 public:
-	TextureData() : Tex_Idx(-1), Tex_Smp(-1), Eff_Idx(-1), Eff_Smp(-1), Type(-1)
+	TextureData() : Tex_Idx(-1), Tex_Smp(-1), Type(-1)
 	{
 
 	}
@@ -57,7 +62,7 @@ private:
 	std::vector<TextureData> TexData;
 
 public:
-	void AddTextureData(UINT _TexSlot, const wchar_t* _TexName, UINT _SmpSlot = 0, const wchar_t* _SmpName = L"DefaultSmp");
+	void AddTextureData(TEXTYPE _Type, UINT _TexSlot, const wchar_t* _TexName, UINT _SmpSlot = 0, const wchar_t* _SmpName = L"DefaultSampler");
 
 private:
 	std::unordered_map<unsigned int, Autoptr<NTTexture>> TextureMap;
@@ -76,6 +81,12 @@ public:
 private:
 	void TextureUpdate();
 	void SamplerUpdate();
+
+public:
+	Autoptr<NTMaterial> Clone();
+
+private:
+	NTMaterial(const NTMaterial& _Other);
 
 public:
 	NTMaterial();

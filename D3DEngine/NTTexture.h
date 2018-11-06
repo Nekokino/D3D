@@ -23,7 +23,10 @@ class NTTexture : public NTResource
 private:
 	DirectX::ScratchImage Image;
 	ID3D11Texture2D* Tex2D;
-	ID3D11ShaderResourceView* View;
+	
+	ID3D11ShaderResourceView* SRV;
+	ID3D11RenderTargetView* RTV;
+	ID3D11DepthStencilView* DSV;
 
 public:
 	float GetWidth()
@@ -42,6 +45,27 @@ public:
 	}
 
 	NTCOLOR GetPixel(int _X, int _Y);
+
+	ID3D11ShaderResourceView* GetSRV()
+	{
+		return SRV;
+	}
+
+	ID3D11RenderTargetView* GetRTV()
+	{
+		return RTV;
+	}
+
+	ID3D11DepthStencilView* GetDSV()
+	{
+		return DSV;
+	}
+
+public:
+	void SetView(UINT _BindFlag);
+
+	bool Create(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT);
+	bool Create(ID3D11Texture2D* _Tex2D, UINT _BindFlag);
 
 public:
 	bool Load();

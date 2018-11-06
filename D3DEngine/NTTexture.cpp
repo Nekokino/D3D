@@ -3,7 +3,7 @@
 #include "NTWinShortCut.h"
 
 
-NTTexture::NTTexture()
+NTTexture::NTTexture() : Tex2D(nullptr), SRV(nullptr), RTV(nullptr), DSV(nullptr)
 {
 }
 
@@ -15,10 +15,21 @@ NTTexture::~NTTexture()
 		Tex2D->Release();
 	}
 
-	if (nullptr != View)
+	if (nullptr != SRV)
 	{
-		View->Release();
+		SRV->Release();
 	}
+
+	if (nullptr != RTV)
+	{
+		RTV->Release();
+	}
+
+	if (nullptr != DSV)
+	{
+		DSV->Release();
+	}
+
 }
 
 NTCOLOR NTTexture::GetPixel(int _X, int _Y)
@@ -59,14 +70,14 @@ bool NTTexture::Load()
 		}
 	}
 
-	if (S_OK != DirectX::CreateShaderResourceView(NTWinShortCut::GetDevice(), Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), &View))
+	if (S_OK != DirectX::CreateShaderResourceView(NTWinShortCut::GetDevice(), Image.GetImages(), Image.GetImageCount(), Image.GetMetadata(), &SRV))
 	{
 		return false;
 	}
 
-	tassert(nullptr == View);
+	tassert(nullptr == SRV);
 
-	View->GetResource((ID3D11Resource**)(&Tex2D));
+	SRV->GetResource((ID3D11Resource**)(&Tex2D));
 
 	tassert(nullptr == Tex2D);
 
@@ -75,6 +86,84 @@ bool NTTexture::Load()
 
 void NTTexture::Update(unsigned int _Slot)
 {
-	NTWinShortCut::GetContext()->VSSetShaderResources(_Slot, 1, &View);
-	NTWinShortCut::GetContext()->PSSetShaderResources(_Slot, 1, &View);
+	NTWinShortCut::GetContext()->VSSetShaderResources(_Slot, 1, &SRV);
+	NTWinShortCut::GetContext()->PSSetShaderResources(_Slot, 1, &SRV);
+}
+
+void NTTexture::SetView(UINT _BindFlag)
+{
+	if (D3D11_BIND_FLAG::D3D11_BIND_DEPTH_STENCIL & _BindFlag)
+	{
+		if (S_OK != NTWinShortCut::GetDevice()->CreateDepthStencilView(Tex2D, 0, &DSV))
+		{
+			tassert(true);
+			return;
+		}
+	}
+	else
+	{
+		if (D3D11_BIND_FLAG::D3D11_BIND_RENDER_TARGET & _BindFlag)
+		{
+			if (S_OK != NTWinShortCut::GetDevice()->CreateRenderTargetView(Tex2D, 0, &RTV))
+			{
+				tassert(true);
+				return;
+			}
+		}
+
+		if (D3D11_BIND_FLAG::D3D11_BIND_SHADER_RESOURCE & _BindFlag)
+		{
+			if (S_OK != NTWinShortCut::GetDevice()->CreateShaderResourceView(Tex2D, 0, &SRV))
+			{
+				tassert(true);
+				return;
+			}
+		}
+	}
+
+	if (S_OK != DirectX::CaptureTexture(NTWinShortCut::GetDevice(), NTWinShortCut::GetContext(), Tex2D, Image))
+	{
+		tassert(true);
+		return;
+	}
+}
+
+bool NTTexture::Create(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage)
+{
+	D3D11_TEXTURE2D_DESC Desc = {};
+
+	Desc.Width = _W;
+	Desc.Height = _H;
+	Desc.ArraySize = 1;
+	Desc.BindFlags = _BindFlag;
+	Desc.Usage = _Usage;
+
+	if (D3D11_USAGE::D3D11_USAGE_DYNAMIC == _Usage)
+	{
+		Desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	}
+	else
+	{
+		Desc.CPUAccessFlags = 0;
+	}
+
+	Desc.Format = _Format;
+	Desc.SampleDesc.Count = 1;
+	Desc.SampleDesc.Quality = 0;
+	Desc.MipLevels = 1;
+
+	if (S_OK != NTWinShortCut::GetDevice()->CreateTexture2D(&Desc, nullptr, &Tex2D))
+	{
+		tassert(true);
+		return false;
+	}
+
+	SetView(_BindFlag);
+
+	return true;
+}
+
+bool NTTexture::Create(ID3D11Texture2D * _Tex2D, UINT _BindFlag)
+{
+	return false;
 }

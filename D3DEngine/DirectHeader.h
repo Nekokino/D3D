@@ -436,6 +436,18 @@ public:
 		return Return.x;
 	}
 
+	static NTVEC Cross3D(const NTVEC& _Left, const NTVEC& _Right)
+	{
+		NTVEC Return = DirectX::XMVector3Cross(_Left, _Right);
+		return Return;
+	}
+
+	NTVEC Cross3D(const NTVEC& _Other)
+	{
+		NTVEC Return = DirectX::XMVector3Cross(*this, _Other);
+		return Return;
+	}
+
 	void Normalize4D()
 	{
 		*this = DirectX::XMVector4Normalize(*this);
@@ -630,6 +642,7 @@ public:
 	NTMAT World;
 	NTMAT View;
 	NTMAT Projection;
+	NTMAT WV;
 	NTMAT WVP;
 };
 

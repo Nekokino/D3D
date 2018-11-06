@@ -198,6 +198,7 @@
     <ClInclude Include="NTLogic.h" />
     <ClInclude Include="NTMaterial.h" />
     <ClInclude Include="NTMesh.h" />
+    <ClInclude Include="NTMultiRenderTarget.h" />
     <ClInclude Include="NTNameTag.h" />
     <ClInclude Include="NTObject.h" />
     <ClInclude Include="NTObjectParent.h" />
@@ -205,6 +206,7 @@
     <ClInclude Include="NTReadStream.h" />
     <ClInclude Include="NTRenderer.h" />
     <ClInclude Include="NTRenderSystem.h" />
+    <ClInclude Include="NTRenderTarget.h" />
     <ClInclude Include="NTResource.h" />
     <ClInclude Include="NTSampler.h" />
     <ClInclude Include="NTScene.h" />
@@ -260,11 +262,13 @@
     <ClCompile Include="NTLogic.cpp" />
     <ClCompile Include="NTMaterial.cpp" />
     <ClCompile Include="NTMesh.cpp" />
+    <ClCompile Include="NTMultiRenderTarget.cpp" />
     <ClCompile Include="NTObject.cpp" />
     <ClCompile Include="NTPixelShader.cpp" />
     <ClCompile Include="NTReadStream.cpp" />
     <ClCompile Include="NTRenderer.cpp" />
     <ClCompile Include="NTRenderSystem.cpp" />
+    <ClCompile Include="NTRenderTarget.cpp" />
     <ClCompile Include="NTResource.cpp" />
     <ClCompile Include="NTSampler.cpp" />
     <ClCompile Include="NTScene.cpp" />

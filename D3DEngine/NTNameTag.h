@@ -25,5 +25,6 @@ public:
 public:
 	NTNameTag() {}
 	NTNameTag(const wchar_t* _Name) : Name(_Name) {}
+	NTNameTag(const NTNameTag& _Other) : Name(_Other.Name) {}
 	~NTNameTag() {}
 };

@@ -6,6 +6,10 @@ RefCounter::RefCounter() : Counter(0)
 {
 }
 
+RefCounter::RefCounter(const RefCounter & _Other) : Counter(0)
+{
+}
+
 
 RefCounter::~RefCounter()
 {

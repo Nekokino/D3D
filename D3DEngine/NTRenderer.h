@@ -17,7 +17,7 @@ public:
 	int TexCount;
 
 private:
-	TextureData ArrTex[12];
+	TextureData ArrTex[8];
 
 public:
 	RenderOption() : IsLight(1), TexCount(0), IsLightVtxOrPix(1), IsDefferdOrForward(0)
@@ -56,6 +56,8 @@ public:
 public:
 	virtual bool Init(int _Order = 0);
 	virtual void Render(Autoptr<NTCamera> _Camera) = 0;
+
+	Autoptr<NTMaterial> GetMaterial();
 
 private:
 	void RenderUpdate();
