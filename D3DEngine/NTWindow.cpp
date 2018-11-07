@@ -175,11 +175,7 @@ void NTWindow::Update()
 
 	if (true == Device.IsInit())
 	{
-		Device.ClearTarget();
-
 		SceneSystem.Render();
-
-		Device.Present();
 	}
 
 	SceneSystem.PreProgress();

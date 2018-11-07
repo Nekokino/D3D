@@ -90,6 +90,13 @@ void NTTexture::Update(unsigned int _Slot)
 	NTWinShortCut::GetContext()->PSSetShaderResources(_Slot, 1, &SRV);
 }
 
+void NTTexture::Reset(unsigned int _Slot)
+{
+	ID3D11ShaderResourceView* Reset = nullptr;
+	NTWinShortCut::GetContext()->VSSetShaderResources(_Slot, 1, &Reset);
+	NTWinShortCut::GetContext()->PSSetShaderResources(_Slot, 1, &Reset);
+}
+
 void NTTexture::SetView(UINT _BindFlag)
 {
 	if (D3D11_BIND_FLAG::D3D11_BIND_DEPTH_STENCIL & _BindFlag)

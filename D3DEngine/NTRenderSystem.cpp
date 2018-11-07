@@ -6,6 +6,8 @@
 #include "NTWinShortCut.h"
 #include "ResourceSystem.h"
 #include "NTSampler.h"
+#include "DebugFunc.h"
+#include "NTMultiRenderTarget.h"
 
 
 NTRenderSystem::NTRenderSystem()
@@ -39,6 +41,7 @@ void NTRenderSystem::ResetSampler()
 
 void NTRenderSystem::Render()
 {
+	NTWinShortCut::GetMainDevice().ClearTarget();
 	ResetSampler();
 
 	SetStartIter = CameraSet.begin();
@@ -48,6 +51,7 @@ void NTRenderSystem::Render()
 	{
 
 		bool TmpCheck = false;
+		Autoptr<NTCamera> CurCam = (*SetStartIter);
 
 		for (size_t i = 0; i < (*SetStartIter)->RenderGroup.size(); i++)
 		{
@@ -58,24 +62,99 @@ void NTRenderSystem::Render()
 				continue;
 			}
 
-			ListStartIter = GroupFindIter->second.begin();
-			ListEndIter = GroupFindIter->second.end();
+			//ListStartIter = GroupFindIter->second.begin();
+			//ListEndIter = GroupFindIter->second.end();
 
-			// 라이트를 모아서 상수버퍼에 세팅
+			//// 라이트를 모아서 상수버퍼에 세팅
 
-			LightCheck((*SetStartIter)->RenderGroup[i], SetStartIter);
+			//LightCheck((*SetStartIter)->RenderGroup[i], SetStartIter);
 
-			for (; ListStartIter != ListEndIter; ++ListStartIter)
-			{
-				if ((*ListStartIter)->IsUpdate() == true)
-				{
-					(*ListStartIter)->RenderUpdate(); // 렌더러의 래스터라이저 모드로 바꿔주세요.
-					(*ListStartIter)->TransformUpdate((*SetStartIter));
-					(*ListStartIter)->Render((*SetStartIter));
-					(*ListStartIter)->MeshToMatUpdate();
-					(*ListStartIter)->RenderAfterUpdate(); // 기존 디바이스의 래스터라이저 모드로 바꿔주세요.
-				}
-			}
+			//for (; ListStartIter != ListEndIter; ++ListStartIter)
+			//{
+			//	if ((*ListStartIter)->IsUpdate() == true)
+			//	{
+			//		(*ListStartIter)->RenderUpdate(); // 렌더러의 래스터라이저 모드로 바꿔주세요.
+			//		(*ListStartIter)->TransformUpdate((*SetStartIter));
+			//		(*ListStartIter)->Render((*SetStartIter));
+			//		(*ListStartIter)->MeshToMatUpdate();
+			//		(*ListStartIter)->RenderAfterUpdate(); // 기존 디바이스의 래스터라이저 모드로 바꿔주세요.
+			//	}
+			//}
+
+			Render_Defferd(GroupFindIter, i);
+
+			Render_Defferd_Light(SetStartIter, (int)i);
+
+			CurCam->CamTarget->Clear();
+			CurCam->CamTarget->OMSet();
+			CurCam->MergeRender();
+			// 여기서 머지해준다.
+
+			Render_Forward(GroupFindIter, i);
+		}
+	}
+
+	if (DebugFunc::IsDebug() == true)
+	{
+		NTWinShortCut::GetMainDevice().OMSetDebug();
+		NTWinShortCut::GetMainSceneSystem().GetCurScene()->DbgRender();
+		DebugFunc::TargetDebug();
+		DebugFunc::RenderLog();
+	}
+
+	NTWinShortCut::GetMainDevice().Present();
+}
+
+void NTRenderSystem::Render_Forward(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index)
+{
+
+	ListStartIter = GroupFindIter->second.begin();
+	ListEndIter = GroupFindIter->second.end();
+
+	LightCheck(SetStartIter, (*SetStartIter)->RenderGroup[_Index]);
+
+	for (; ListStartIter != ListEndIter; ++ListStartIter)
+	{
+		if (0 == (*ListStartIter)->RndOpt.IsDefferdOrForward)
+		{
+			(*ListStartIter)->RenderUpdate();
+			(*ListStartIter)->TransformUpdate(*SetStartIter);
+			(*ListStartIter)->Render(*SetStartIter);
+			(*ListStartIter)->MaterialUpdate();
+			(*ListStartIter)->MeshUpdate();
+			(*ListStartIter)->RenderAfterUpdate();
+		}
+	}
+	
+}
+
+void NTRenderSystem::Render_Defferd(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index)
+{
+	Autoptr<NTMultiRenderTarget> DefferdTarget = ResourceSystem<NTMultiRenderTarget>::Find(L"Defferd");
+	DefferdTarget->Clear();
+	DefferdTarget->OMSet();
+
+	Autoptr<NTMaterial> DefferdMat = ResourceSystem<NTMaterial>::Find(L"DefferdMat");
+
+	if (DefferdMat == nullptr)
+	{
+		tassert(true);
+		return;
+	}
+
+	ListStartIter = GroupFindIter->second.begin();
+	ListEndIter = GroupFindIter->second.end();
+
+	for (; ListStartIter != ListEndIter; ++ListStartIter)
+	{
+		if (1 == (*ListStartIter)->RndOpt.IsDefferdOrForward)
+		{
+			(*ListStartIter)->RenderUpdate();
+			(*ListStartIter)->TransformUpdate(*SetStartIter);
+			(*ListStartIter)->Render(*SetStartIter);
+			DefferdMat->Update();
+			(*ListStartIter)->MeshUpdate();
+			(*ListStartIter)->RenderAfterUpdate();
 		}
 	}
 }
@@ -179,7 +258,7 @@ void NTRenderSystem::PushLight(NTLight* _Light)
 	LightSet.insert(_Light);
 }
 
-void NTRenderSystem::LightCheck(int _Group, const std::set<Autoptr<NTCamera>>::iterator& _CamIter)
+void NTRenderSystem::LightCheck(const std::set<Autoptr<NTCamera>>::iterator& _CamIter, int _Group)
 {
 	LightStartIter = LightSet.begin();
 	LightEndIter = LightSet.end();
@@ -207,4 +286,25 @@ void NTRenderSystem::LightCheck(int _Group, const std::set<Autoptr<NTCamera>>::i
 
 	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_VS);
 	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_PX);
+
+	return;
+}
+
+void NTRenderSystem::Render_Defferd_Light(const std::set<Autoptr<NTCamera>>::iterator & _CamIter, int _Group)
+{
+	Autoptr<NTMultiRenderTarget> LightTarget = ResourceSystem<NTMultiRenderTarget>::Find(L"Light");
+	LightTarget->Clear();
+	LightTarget->OMSet();
+
+	LightStartIter = LightSet.begin();
+	LightEndIter = LightSet.end();
+
+	for (; LightStartIter != LightEndIter; ++LightStartIter)
+	{
+		if (true == (*LightStartIter)->IsLight(_Group))
+		{
+			Autoptr<NTLight> Light = *LightStartIter;
+			Light->LightRender();
+		}
+	}
 }

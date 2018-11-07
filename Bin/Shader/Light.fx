@@ -16,15 +16,6 @@ class LightData
     int Dummy;
 };
 
-cbuffer LightBuffer : register(b12)
-{
-    LightData Arr[10];
-    int LightCount;
-    int Dummy1;
-    int Dummy2;
-    int Dummy3;
-}
-
 LightColor CalDirLight(float4 _ViewPos, float4 _ViewNormal, LightData _LightInfo)
 {
     LightColor CalColor = (LightColor) 0.0f;
@@ -35,9 +26,9 @@ LightColor CalDirLight(float4 _ViewPos, float4 _ViewNormal, LightData _LightInfo
     Light = normalize(Light);
 
     float4 Reflect = normalize(2.0f * dot(Light, _ViewNormal) * _ViewNormal - Light);
-    float4 Eye = -normalize(_ViewPos);
+    float4 Eye = normalize(-_ViewPos);
 
-    CalColor.Specular = _LightInfo.Color.Specular * pow(saturate(dot(Eye, Reflect)), 10);
+    CalColor.Specular = _LightInfo.Color.Specular * pow(saturate(dot(Eye, Reflect)), 1);
     CalColor.Ambient = _LightInfo.Color.Ambient;
 
     return CalColor;

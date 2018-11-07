@@ -7,6 +7,7 @@
 
 NT3DGrid::NT3DGrid() : InterBlockSize(10.0f)
 {
+	RndOpt.IsDefferdOrForward = 0;
 }
 
 

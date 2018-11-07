@@ -644,6 +644,16 @@ public:
 	NTMAT Projection;
 	NTMAT WV;
 	NTMAT WVP;
+
+public:
+	void TransposeAll()
+	{
+		World.Transpose();
+		View.Transpose();
+		Projection.Transpose();
+		WV.Transpose();
+		WVP.Transpose();
+	}
 };
 
 enum STYPE

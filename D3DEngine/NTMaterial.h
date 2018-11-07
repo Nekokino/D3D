@@ -8,6 +8,7 @@ enum TEXTYPE
 {
 	TT_COLOR,
 	TT_BUMP,
+	TT_TARGET,
 };
 
 class TextureData
@@ -31,6 +32,8 @@ class NTMaterial : public NTResource
 {
 public:
 	friend class NTRenderer;
+	friend class NTLight;
+	friend class NTCamera;
 private:
 	Autoptr<NTVertexShader> VertexShader;
 	Autoptr<NTPixelShader> PixelShader;
@@ -75,11 +78,13 @@ private:
 
 public:
 	void SetTexture(unsigned int _Slot, const wchar_t* _TexName);
+	void SetTargetTexture(unsigned int _Slot, const wchar_t* _TexName);
 	void SetSampler(unsigned int _Slot, const wchar_t* _SmpName);
 	unsigned int SetTextureData(TextureData* _Data);
 
 private:
 	void TextureUpdate();
+	void ResetTexture();
 	void SamplerUpdate();
 
 public:

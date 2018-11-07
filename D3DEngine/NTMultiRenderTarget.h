@@ -3,7 +3,7 @@
 #include "NTRenderSystem.h"
 #include "ResourceSystem.h"
 
-class NTMultiRenderTarget : public NTRenderTarget
+class NTMultiRenderTarget : public NTResource
 {
 public:
 	friend NTRenderSystem;
@@ -24,6 +24,7 @@ public:
 
 public:
 	void OMSet();
+	void Clear();
 	void CreateDepth(unsigned int _W, unsigned int _H);
 
 public:
@@ -48,11 +49,19 @@ private:
 		}
 
 		RenderTarget.push_back(Target);
-		RenderTargetView.push_back(Target->Texture()->GetRTV());
+		RenderTargetView.push_back(Target->GetTexture()->GetRTV());
 		InsertTarget(_Arg...);
 	}
 
 	void InsertTarget() {}
+
+public:
+	std::vector<Autoptr<NTRenderTarget>> GetTargetTextureList()
+	{
+		return RenderTarget;
+	}
+
+	void CreateTarget(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage = D3D11_USAGE_DEFAULT);
 public:
 	NTMultiRenderTarget();
 	~NTMultiRenderTarget();

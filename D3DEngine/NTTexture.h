@@ -72,6 +72,7 @@ public:
 
 public:
 	void Update(unsigned int _Slot);
+	void Reset(unsigned int _Slot);
 
 public:
 	NTTexture();

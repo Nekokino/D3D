@@ -17,6 +17,7 @@ public:
 	friend NTRenderer;
 	friend NTObject;
 	friend NTScene;
+	friend class DebugFunc;
 
 private:
 	static bool ZOrderSort(Autoptr<NTRenderer> _Left, Autoptr<NTRenderer> _Right);
@@ -45,7 +46,8 @@ public:
 	std::set<Autoptr<NTLight>>::iterator LightEndIter;
 
 	void PushLight(NTLight* _Camera);
-	void LightCheck(int _Group, const std::set<Autoptr<NTCamera>>::iterator& _CamIter);
+	void LightCheck(const std::set<Autoptr<NTCamera>>::iterator& _CamIter, int _Group);
+	void Render_Defferd_Light(const std::set<Autoptr<NTCamera>>::iterator& _CamIter, int _Group);
 
 	/////////////// Light End
 
@@ -54,6 +56,10 @@ private:
 
 public:
 	void Render();
+
+	void Render_Forward(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index);
+	void Render_Defferd(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index);
+
 	void Release();
 
 	Autoptr<NTRenderer> GetRenderer(const wchar_t* _Name, int _Order);

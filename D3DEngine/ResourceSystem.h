@@ -100,6 +100,23 @@ public:
 		return NewRes;
 	}
 
+	template<typename V1, typename V2, typename V3, typename V4>
+	static Autoptr<Res> Create(const wchar_t* _Name, V1 _1, V2 _2, V3 _3, V4 _4)
+	{
+		Res* NewRes = new Res();
+		NewRes->SetType();
+		NewRes->SetName(_Name);
+
+		if (false == NewRes->Create(_1, _2, _3, _4))
+		{
+			delete NewRes;
+			return nullptr;
+		}
+
+		ResMap.insert(std::unordered_map<std::wstring, Autoptr<Res>>::value_type(_Name, NewRes));
+		return NewRes;
+	}
+
 	template<typename V1, typename V2, typename V3, typename V4, typename V5>
 	static Autoptr<Res> Create(const wchar_t* _Name, V1 _1, V2 _2, V3 _3, V4 _4, V5 _5)
 	{
@@ -429,6 +446,21 @@ public:
 
 		ResMap.insert(std::unordered_map<std::wstring, Autoptr<Res>>::value_type(_Key, NewRes));
 		return NewRes;
+	}
+
+	static std::vector<Autoptr<Res>> GetAllRes()
+	{
+		std::vector<Autoptr<Res>> Vec;
+
+		std::unordered_map<std::wstring, Autoptr<Res>>::iterator StartIter = ResMap.begin();
+		std::unordered_map<std::wstring, Autoptr<Res>>::iterator EndIter = ResMap.end();
+
+		for (; StartIter != EndIter; ++StartIter)
+		{
+			Vec.push_back(StartIter->second);
+		}
+
+		return Vec;
 	}
 private:
 	ResourceSystem() {}

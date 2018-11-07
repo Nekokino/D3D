@@ -10,7 +10,7 @@
 class NTDevice : public NTWinParent
 {
 public:
-	friend class NTWindow;
+	friend class NTRenderSystem;
 	friend class NTRenderer;
 
 public:
@@ -43,6 +43,7 @@ private:
 
 	D3D11_DEPTH_STENCIL_DESC DepthState;
 	ID3D11DepthStencilState* DepthStencilState;
+	ID3D11DepthStencilState* DepthStencilStateDebug;
 
 public:
 	ID3D11Device* GetDevice() { return Device; }
@@ -128,7 +129,8 @@ public:
 public:
 	void Release();
 	void ResetContext();
-	void ResetDepthStencil();
+	void OMSet();
+	void OMSetDebug();
 
 
 	/////////////////////////////// ConstBuffer

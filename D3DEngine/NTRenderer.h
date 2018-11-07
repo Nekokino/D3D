@@ -20,7 +20,7 @@ private:
 	TextureData ArrTex[8];
 
 public:
-	RenderOption() : IsLight(1), TexCount(0), IsLightVtxOrPix(1), IsDefferdOrForward(0)
+	RenderOption() : IsLight(1), TexCount(0), IsLightVtxOrPix(1), IsDefferdOrForward(1)
 	{
 
 	}
@@ -66,7 +66,8 @@ private:
 protected:
 	virtual void TransformUpdate(Autoptr<NTCamera> _Cam);
 	virtual void TransformConstBufferUpdate();
-	virtual void MeshToMatUpdate();
+	virtual void MeshUpdate();
+	virtual void MaterialUpdate();
 
 public:
 	NTRenderer();

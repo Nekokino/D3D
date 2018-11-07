@@ -1,7 +1,8 @@
 #include "PreCom.h"
 #include "NTRenderTarget.h"
+#include "NTWinShortCut.h"
 
-NTRenderTarget::NTRenderTarget()
+NTRenderTarget::NTRenderTarget() : Color(NTVEC{ 0.0f, 0.0f, 0.0f, 1.0f })
 {
 }
 
@@ -35,5 +36,16 @@ bool NTRenderTarget::Create(ID3D11Texture2D * _Tex2D, UINT _BindFlag)
 	}
 
 	return true;
+}
+
+void NTRenderTarget::Clear()
+{
+	if (nullptr == Texture || nullptr == Texture->GetRTV())
+	{
+		tassert(true);
+		return;
+	}
+
+	NTWinShortCut::GetContext()->ClearRenderTargetView(Texture->GetRTV(), Color.s);
 }
 

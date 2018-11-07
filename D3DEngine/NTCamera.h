@@ -2,13 +2,17 @@
 
 #include "NTStCom.h"
 #include <vector>
+#include "NTMultiRenderTarget.h"
 
+class NTMesh;
+class NTMaterial;
 class NTTransform;
 class NTRenderSystem;
 class NTCamera final : public NTStCom
 {
 public:
 	friend NTRenderSystem;
+	friend class DebugFunc;
 
 public:
 	enum PROJMODE
@@ -123,6 +127,16 @@ private:
 	virtual void MainUpdate() override;
 	virtual void FinalUpdate() override;
 	virtual void EndUpdate() override;
+
+private:
+	Autoptr<NTMesh> CamMesh;
+	Autoptr<NTMaterial> CamMaterial;
+
+private:
+	void MergeRender();
+
+private:
+	Autoptr<NTMultiRenderTarget> CamTarget;
 public:
 	NTCamera();
 	~NTCamera();

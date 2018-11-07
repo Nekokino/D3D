@@ -17,10 +17,17 @@ private:
 		NTVEC Color;
 	};
 
+	static bool bIsDebug;
 	static float LogSize;
 	static std::list<DbgLog>::iterator ListStartIter;
 	static std::list<DbgLog>::iterator ListEndIter;
 	static std::list<DbgLog> Log;
+
+public:
+	static bool IsDebug()
+	{
+		return bIsDebug;
+	}
 
 public:
 	static void Init();
@@ -31,6 +38,7 @@ public:
 
 public:
 	static void RenderLog();
+	static void TargetDebug();
 
 public:
 	DebugFunc();

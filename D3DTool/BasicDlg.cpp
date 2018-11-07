@@ -86,13 +86,13 @@ BOOL BasicDlg::OnInitDialog()
 	PP->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
 	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
 
-	Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
-	Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
-	Autoptr<NT3DMeshRenderer> TT = Obj01->AddComponent<NT3DMeshRenderer>();
-	TT->SetMaterial(L"SkyBoxMat");
-	TT->SetMesh(L"Sphere");
-	TT->SetRasterState(L"SNONE");
-	//TT->SetImage(L"SkyBox.png");
+	//Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
+	//Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
+	//Autoptr<NT3DMeshRenderer> TT = Obj01->AddComponent<NT3DMeshRenderer>();
+	//TT->SetMaterial(L"SkyBoxMat");
+	//TT->SetMesh(L"Sphere");
+	//TT->SetRasterState(L"SNONE");
+	////TT->SetImage(L"SkyBox.png");
 
 	Autoptr<NTObject> GridObj = TabScene->CreateObject(L"Grid", 0);
 	GridObj->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));

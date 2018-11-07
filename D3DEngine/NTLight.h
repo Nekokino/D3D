@@ -2,6 +2,9 @@
 #include "NTStCom.h"
 #include <list>
 #include <set>
+
+class NTMesh;
+class NTMaterial;
 class NTLight : public NTStCom
 {
 public:
@@ -51,6 +54,10 @@ private:
 	std::set<int> RenderGroup;
 
 public:
+	Autoptr<NTMesh> LightMesh;
+	Autoptr<NTMaterial> LightMat;
+
+public:
 	virtual bool Init();
 	void EndUpdate() override;
 
@@ -89,6 +96,11 @@ public:
 	}
 
 	void PushLayer() {};
+
+	void SetLightType(LightType _Type);
+
+private:
+	void LightRender();
 
 public:
 	NTLight();

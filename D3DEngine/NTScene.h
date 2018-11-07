@@ -17,6 +17,7 @@ private:
 	friend NTSceneSystem;
 	friend NTObject;
 	friend NTCamera;
+	friend class NTRenderSystem;
 
 #pragma region Builder & Updater
 public:

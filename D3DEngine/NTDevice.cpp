@@ -21,6 +21,7 @@
 
 
 NTDevice::NTDevice(NTWindow* _Win) : NTWinParent(_Win), Device(nullptr), Context(nullptr), TargetView(nullptr), DepthStencilView(nullptr), DepthStencilTexture(nullptr), SwapChain(nullptr), bInit(false), Color(0.2f, 0.835f, 0.674f, 1.0f), IsAllStateDefault(false)
+, DepthStencilState(nullptr), DepthStencilStateDebug(nullptr)
 {
 }
 
@@ -68,6 +69,11 @@ void NTDevice::Release()
 		DepthStencilState->Release();
 	}
 
+	if (nullptr != DepthStencilStateDebug)
+	{
+		DepthStencilStateDebug->Release();
+	}
+
 	if (nullptr != BackBuffer)
 	{
 		BackBuffer->Release();
@@ -83,10 +89,16 @@ void NTDevice::ResetContext()
 	Context->PSSetShader(nullptr, nullptr, 0);
 }
 
-void NTDevice::ResetDepthStencil()
+void NTDevice::OMSet()
 {
 	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView);
 	Context->OMSetDepthStencilState(DepthStencilState, 1);
+}
+
+void NTDevice::OMSetDebug()
+{
+	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView);
+	Context->OMSetDepthStencilState(DepthStencilStateDebug, 1);
 }
 
 bool NTDevice::Init()
@@ -237,6 +249,25 @@ bool NTDevice::CreateView() // 스왑체인에 사용할 텍스쳐 생성단계
 	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
+	const D3D11_DEPTH_STENCILOP_DESC DefaultStencilOpDebug = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
+	DepthState.FrontFace = DefaultStencilOpDebug;
+	DepthState.BackFace = DefaultStencilOpDebug;
+
+	Device->CreateDepthStencilState(&DepthState, &DepthStencilStateDebug);
+
+	if (nullptr == DepthStencilStateDebug)
+	{
+		tassert(true);
+		return false;
+	}
+
+	DepthState.DepthEnable = TRUE;
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	DepthState.StencilEnable = FALSE;
+	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
 	const D3D11_DEPTH_STENCILOP_DESC DefaultStencilOp = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
 
 	DepthState.FrontFace = DefaultStencilOp;
@@ -249,6 +280,10 @@ bool NTDevice::CreateView() // 스왑체인에 사용할 텍스쳐 생성단계
 		tassert(true);
 		return false;
 	}
+
+	
+
+	
 
 	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView); // 렌더타겟뷰와, 뎁스스텐실 뷰를 OM단계에 전달
 	Context->OMSetDepthStencilState(DepthStencilState, 1);
@@ -547,6 +582,7 @@ bool NTDevice::Create3DDefault()
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 10);
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<RenderOption>(L"RenderOption", D3D11_USAGE_DYNAMIC, 11);
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 12);
+	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTLight::LightData>(L"DefferdLightData", D3D11_USAGE_DYNAMIC, 12);
 
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SNONE", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_NONE);
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"SFRONT", D3D11_FILL_MODE::D3D11_FILL_SOLID, D3D11_CULL_MODE::D3D11_CULL_FRONT);
@@ -565,17 +601,24 @@ bool NTDevice::Create3DDefault()
 
 bool NTDevice::CreateDefaultRenderTarget()
 {
-	ResourceSystem<NTRenderTarget>::Create(L"BackBuffer", BackBuffer, D3D11_BIND_RENDER_TARGET);
-	ResourceSystem<NTRenderTarget>::Create(L"Forward", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT); // 아니 디폴트인자 썻는데 왜안돼냐 버그진짜;
+	//ResourceSystem<NTRenderTarget>::Create(L"BackBuffer", BackBuffer, D3D11_BIND_RENDER_TARGET);
+	//ResourceSystem<NTRenderTarget>::Create(L"Forward", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R8G8B8A8_UNORM, D3D11_USAGE_DEFAULT); // 아니 디폴트인자 썻는데 왜안돼냐 버그진짜;
 
 	// 디퍼드용
-	ResourceSystem<NTRenderTarget>::Create(L"Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
+	ResourceSystem<NTRenderTarget>::Create(L"Color_Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 	ResourceSystem<NTRenderTarget>::Create(L"Position", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 	ResourceSystem<NTRenderTarget>::Create(L"Normal", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 	ResourceSystem<NTRenderTarget>::Create(L"Depth", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 
-	Autoptr<NTMultiRenderTarget> BackMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Forward", L"BackBuffer", L"Forward");
-	BackMRT->CreateDepth(NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU());
+	Autoptr<NTMultiRenderTarget> DeffertMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Defferd", L"Color_Diffuse", L"Position", L"Normal", L"Depth");
+
+	ResourceSystem<NTRenderTarget>::Create(L"Light_Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	ResourceSystem<NTRenderTarget>::Create(L"Light_Specular", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT);
+
+	Autoptr<NTMultiRenderTarget> LightMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Light", L"Light_Diffuse", L"Light_Specular");
+
+	/*Autoptr<NTMultiRenderTarget> BackMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Forward", L"BackBuffer", L"Forward");
+	BackMRT->CreateDepth(NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU());*/
 	return true;
 }
 
@@ -980,6 +1023,79 @@ bool NTDevice::Create3DMaterial()
 	Mesh3DMat->SetVertexShader(L"Mesh3DVtx");
 	Mesh3DMat->SetPixelShader(L"Mesh3DPix");
 	Mesh3DMat->SetBlend(L"AlphaBlend");
+
+	/////////////////////////////////////////////////////////////////// 디버그용
+
+	Autoptr<NTVertexShader> TargetDebugVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"TargetDebugVtx", L"Shader", L"TargetDebug.fx", "VS_TDBG");
+	TargetDebugVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TargetDebugVtx->AddLayoutClose("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> TargetDebugPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"TargetDebugPix", L"Shader", L"TargetDebug.fx", "PS_TDBG");
+
+	Autoptr<NTMaterial> TargetDebugMat = ResourceSystem<NTMaterial>::Create(L"TargetDebugMat");
+	TargetDebugMat->SetVertexShader(L"TargetDebugVtx");
+	TargetDebugMat->SetPixelShader(L"TargetDebugPix");
+	TargetDebugMat->SetBlend(L"AlphaBlend");
+
+	/////////////////////////////////////////////////////////////////// 디버그용
+
+
+	/////////////////////////////////////////////////////////////////// 디퍼드용
+
+	Autoptr<NTVertexShader> DefferdVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefferdVtx", L"Shader", L"Defferd.fx", "VS_Defferd");
+	DefferdVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	DefferdVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdVtx->AddLayout("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdVtx->AddLayout("TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdVtx->AddLayoutClose("BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> DefferdPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefferdPix", L"Shader", L"Defferd.fx", "PS_Defferd");
+
+	Autoptr<NTMaterial> DefferdMat = ResourceSystem<NTMaterial>::Create(L"DefferdMat");
+	DefferdMat->SetVertexShader(L"DefferdVtx");
+	DefferdMat->SetPixelShader(L"DefferdPix");
+	DefferdMat->SetBlend(L"AlphaBlend");
+	
+	///////////////////////////////////////////////////////////////////// 디퍼드용 끝
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 직선광용
+
+	Autoptr<NTVertexShader> DefferdDirLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefferdDirLightVtx", L"Shader", L"Defferd.fx", "VS_DefferdDirLight");
+	DefferdDirLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdDirLightVtx->AddLayoutClose("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> DefferdDirLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefferdDirLightPix", L"Shader", L"Defferd.fx", "PS_DefferdDirLight");
+
+	Autoptr<NTMaterial> DefferdDirLightMat = ResourceSystem<NTMaterial>::Create(L"DefferdDirLightMat");
+	DefferdDirLightMat->SetVertexShader(L"DefferdDirLightVtx");
+	DefferdDirLightMat->SetPixelShader(L"DefferdDirLightPix");
+	DefferdDirLightMat->SetBlend(L"AlphaBlend");
+
+	DefferdDirLightMat->AddTextureData(TEXTYPE::TT_TARGET, 0, L"Position");
+	DefferdDirLightMat->AddTextureData(TEXTYPE::TT_TARGET, 1, L"Normal");
+	DefferdDirLightMat->AddTextureData(TEXTYPE::TT_TARGET, 2, L"Depth");
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 라이트용 끝
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 머지용
+
+	Autoptr<NTVertexShader> DefferdMergeVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefferdMergeVtx", L"Shader", L"Defferd.fx", "VS_DefferdMerge");
+	DefferdMergeVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdMergeVtx->AddLayoutClose("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> DefferdMergePix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefferdMergePix", L"Shader", L"Defferd.fx", "PS_DefferdMerge");
+
+	Autoptr<NTMaterial> DefferdMergeMat = ResourceSystem<NTMaterial>::Create(L"DefferdMergeMat");
+	DefferdMergeMat->SetVertexShader(L"DefferdMergeVtx");
+	DefferdMergeMat->SetPixelShader(L"DefferdMergePix");
+	DefferdMergeMat->SetBlend(L"AlphaBlend");
+
+	DefferdMergeMat->AddTextureData(TEXTYPE::TT_TARGET, 0, L"Color_Diffuse");
+	DefferdMergeMat->AddTextureData(TEXTYPE::TT_TARGET, 1, L"Light_Diffuse");
+	DefferdMergeMat->AddTextureData(TEXTYPE::TT_TARGET, 2, L"Light_Specular");
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 머지용 끝
 
 
 	return true;

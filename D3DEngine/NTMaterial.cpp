@@ -5,6 +5,7 @@
 #include "ResourceSystem.h"
 #include "NTSampler.h"
 #include "NTTexture.h"
+#include "NTRenderTarget.h"
 
 
 NTMaterial::NTMaterial() : VertexShader(nullptr), PixelShader(nullptr), IsOriginal(false)
@@ -87,7 +88,16 @@ void NTMaterial::AddTextureData(TEXTYPE _Type, UINT _TexSlot, const wchar_t * _T
 	TD.Tex_Idx = _TexSlot;
 	TD.Tex_Smp = _SmpSlot;
 	TexData.push_back(TD);
-	SetTexture(_TexSlot, _TexName);
+
+	if (_Type == TEXTYPE::TT_TARGET)
+	{
+		SetTargetTexture(_TexSlot, _TexName);
+	}
+	else
+	{
+		SetTexture(_TexSlot, _TexName);
+	}
+
 	SetSampler(_SmpSlot, _SmpName);
 }
 
@@ -116,6 +126,28 @@ void NTMaterial::SetTexture(unsigned int _Slot, const wchar_t * _TexName)
 	else
 	{
 		FindIter->second = Tex;
+	}
+}
+
+void NTMaterial::SetTargetTexture(unsigned int _Slot, const wchar_t * _TexName)
+{
+	Autoptr<NTRenderTarget> Target = ResourceSystem<NTRenderTarget>::Find(_TexName);
+
+	if (nullptr == Target)
+	{
+		tassert(true);
+		return;
+	}
+
+	std::unordered_map<unsigned int, Autoptr<NTTexture>>::iterator FindIter = TextureMap.find(_Slot);
+
+	if (FindIter == TextureMap.end())
+	{
+		TextureMap.insert(std::unordered_map<unsigned int, Autoptr<NTTexture>>::value_type(_Slot, Target->GetTexture()));
+	}
+	else
+	{
+		FindIter->second = Target->GetTexture();
 	}
 }
 
@@ -158,6 +190,17 @@ void NTMaterial::TextureUpdate()
 	for (; TexStartIter != TexEndIter; ++TexStartIter)
 	{
 		TexStartIter->second->Update(TexStartIter->first);
+	}
+}
+
+void NTMaterial::ResetTexture()
+{
+	TexStartIter = TextureMap.begin();
+	TexEndIter = TextureMap.end();
+
+	for (; TexStartIter != TexEndIter; ++TexStartIter)
+	{
+		TexStartIter->second->Reset(TexStartIter->first);
 	}
 }
 

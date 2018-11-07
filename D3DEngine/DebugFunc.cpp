@@ -7,7 +7,10 @@
 #include "ResourceSystem.h"
 #include "NTFont.h"
 #include "NTWinShortCut.h"
+#include "NTSampler.h"
+#include "NTMultiRenderTarget.h"
 
+bool DebugFunc::bIsDebug = true;
 float DebugFunc::LogSize = 20.0f;
 std::list<DebugFunc::DbgLog>::iterator DebugFunc::ListStartIter;
 std::list<DebugFunc::DbgLog>::iterator DebugFunc::ListEndIter;
@@ -63,7 +66,7 @@ void DebugFunc::DrawCircle(const NTCIRCLE & _Circle, float _Border)
 
 	NTMAT View;
 	NTMAT Proj;
-	View.ViewAtLH(NTVEC::ZERO, NTVEC::FORWARD, NTVEC::UP);
+	View.ViewToLH(NTVEC::ZERO, NTVEC::FORWARD, NTVEC::UP);
 	Proj.OrthographicLH(NTWinShortCut::GetMainWindow().GetWidthf(), NTWinShortCut::GetMainWindow().GetHeightf(), 0.1f, 1000.0f);
 
 	NTMAT Scale;
@@ -113,4 +116,144 @@ void DebugFunc::RenderLog()
 	}
 
 	Log.clear();
+}
+
+void DebugFunc::TargetDebug()
+{
+	Autoptr<NTSampler> Smp = ResourceSystem<NTSampler>::Find(L"DefaultSampler");
+
+	if (nullptr == Smp)
+	{
+		tassert(true);
+		return;
+	}
+
+	std::vector<Autoptr<NTMultiRenderTarget>> Vec = ResourceSystem<NTMultiRenderTarget>::GetAllRes();
+
+	Autoptr<NTMesh> Mesh = ResourceSystem<NTMesh>::Find(L"Rect3DMesh");
+	Autoptr<NTMaterial> Material = ResourceSystem<NTMaterial>::Find(L"TargetDebugMat");
+
+	NTMAT View;
+	NTMAT Proj;
+	View.ViewToLH(NTVEC::ZERO, NTVEC::FORWARD, NTVEC::UP);
+	Proj.OrthographicLH(NTWinShortCut::GetMainWindow().GetWidthf(), NTWinShortCut::GetMainWindow().GetHeightf(), 0.1f, 1000.0f);
+
+	MatrixData MatData;
+
+	int CountX = 0;
+	int CountY = 0;
+	int WCount = 5;
+
+	float SizeX = NTWinShortCut::GetMainWindow().GetWidthf() / WCount;
+	float SizeY = NTWinShortCut::GetMainWindow().GetHeightf() / WCount;
+
+	for (size_t i = 0; i < Vec.size(); i++)
+	{
+		std::vector<Autoptr<NTRenderTarget>> TargetVec = Vec[i]->GetTargetTextureList();
+
+		for (size_t j = 0; j < TargetVec.size(); j++)
+		{
+			NTMAT Scale;
+			NTMAT Pos;
+
+			Scale.Identify();
+			Scale.Scale(NTVEC(SizeX, SizeY, 1.0f));
+			Pos.Identify();
+			Pos.Translate(NTVEC(-NTWinShortCut::GetMainWindow().GetWidthf() * 0.5f + (CountX * SizeX) + (SizeX * 0.5f), NTWinShortCut::GetMainWindow().GetHeightf() * 0.5f + -(CountY * SizeY) - (SizeY * 0.5f), 1.1f));
+
+			NTMAT World = Scale * Pos;
+
+			MatData.View = View;
+			MatData.Projection = Proj;
+			MatData.World = World;
+			MatData.WV = World * View;
+			MatData.WVP = World * View * Proj;
+			MatData.TransposeAll();
+
+			Smp->Update(0);
+
+			if (nullptr == TargetVec[j]->GetTexture()->GetSRV())
+			{
+				tassert(true);
+				return;
+			}
+
+			TargetVec[j]->GetTexture()->Update(0);
+
+			NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
+
+			Material->Update();
+			Mesh->Update();
+			Mesh->Render();
+
+			TargetVec[j]->GetTexture()->Reset(0);
+
+			++CountX;
+
+			if (0 != CountX && 0 == (CountX % WCount))
+			{
+				++CountY;
+				CountX = 0;
+			}
+		}
+	}
+
+	CountX = 0;
+	CountY += 1;
+
+	std::set<Autoptr<NTCamera>>::iterator CamStartIter = NTWinShortCut::GetMainSceneSystem().GetCurScene()->RenderSystem.CameraSet.begin();
+	std::set<Autoptr<NTCamera>>::iterator CamEndIter = NTWinShortCut::GetMainSceneSystem().GetCurScene()->RenderSystem.CameraSet.end();
+
+	for (; CamStartIter != CamEndIter; ++CamStartIter)
+	{
+		Autoptr<NTCamera> Cam = (*CamStartIter);
+
+		std::vector<Autoptr<NTRenderTarget>> TargetVec = Cam->CamTarget->GetTargetTextureList();
+
+		for (size_t j = 0; j < TargetVec.size(); j++)
+		{
+			NTMAT Scale;
+			NTMAT Pos;
+
+			Scale.Identify();
+			Scale.Scale(NTVEC(SizeX, SizeY, 1.0f));
+			Pos.Identify();
+			Pos.Translate(NTVEC((-NTWinShortCut::GetMainWindow().GetWidthf() * 0.5f) + (CountX * SizeX) + (SizeX * 0.5f), NTWinShortCut::GetMainWindow().GetHeightf() * 0.5f + (-CountY * SizeY) - (SizeY * 0.5f), 1.1f));
+
+			NTMAT World = Scale * Pos;
+
+			MatData.View = View;
+			MatData.Projection = Proj;
+			MatData.World = World;
+			MatData.WV = World * View;
+			MatData.WVP = World * View * Proj;
+			MatData.TransposeAll();
+
+			Smp->Update(0);
+
+			if (nullptr == TargetVec[j]->GetTexture()->GetSRV())
+			{
+				tassert(true);
+				return;
+			}
+
+			TargetVec[j]->GetTexture()->Update(0);
+
+			NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
+
+			Material->Update();
+			Mesh->Update();
+			Mesh->Render();
+
+			TargetVec[j]->GetTexture()->Reset(0);
+
+			++CountX;
+
+			if (0 != CountX && 0 == (CountX % WCount))
+			{
+				++CountY;
+				CountX = 0;
+			}
+		}
+	}
 }

@@ -121,9 +121,19 @@ void NTRenderer::TransformConstBufferUpdate()
 	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_PX);
 }
 
-void NTRenderer::MeshToMatUpdate()
+void NTRenderer::MeshUpdate()
 {
-	Material->Update();
-	Mesh->Update();
-	Mesh->Render();
+	if (nullptr != Mesh)
+	{
+		Mesh->Update();
+		Mesh->Render();
+	}
+}
+
+void NTRenderer::MaterialUpdate()
+{
+	if (nullptr != Material)
+	{
+		Material->Update();
+	}
 }
