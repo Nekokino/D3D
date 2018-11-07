@@ -12,6 +12,7 @@ private:
 	std::vector<Autoptr<NTRenderTarget>> RenderTarget;
 	std::vector<ID3D11RenderTargetView*> RenderTargetView;
 
+	bool DefaultDepth;
 	Autoptr<NTTexture> DepthTexture;
 	D3D11_DEPTH_STENCIL_DESC DepthState;
 	ID3D11DepthStencilState* DepthStencilState;
@@ -62,6 +63,8 @@ public:
 	}
 
 	void CreateTarget(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage = D3D11_USAGE_DEFAULT);
+
+	Autoptr<NTTexture> GetTargetTexture(unsigned int _Index);
 public:
 	NTMultiRenderTarget();
 	~NTMultiRenderTarget();

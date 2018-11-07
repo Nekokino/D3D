@@ -23,9 +23,9 @@ private:
 	static bool ZOrderSort(Autoptr<NTRenderer> _Left, Autoptr<NTRenderer> _Right);
 
 private:
-	std::set<Autoptr<NTCamera>> CameraSet;
-	std::set<Autoptr<NTCamera>>::iterator SetStartIter;
-	std::set<Autoptr<NTCamera>>::iterator SetEndIter;
+	std::map<int, Autoptr<NTCamera>> CameraMap;
+	std::map<int, Autoptr<NTCamera>>::iterator CameraMapStartIter;
+	std::map<int, Autoptr<NTCamera>>::iterator CameraMapEndIter;
 
 	std::map<int, std::list<Autoptr<NTRenderer>>> RendererMap;
 	std::map<int, std::list<Autoptr<NTRenderer>>>::iterator GroupFindIter;
@@ -46,8 +46,8 @@ public:
 	std::set<Autoptr<NTLight>>::iterator LightEndIter;
 
 	void PushLight(NTLight* _Camera);
-	void LightCheck(const std::set<Autoptr<NTCamera>>::iterator& _CamIter, int _Group);
-	void Render_Defferd_Light(const std::set<Autoptr<NTCamera>>::iterator& _CamIter, int _Group);
+	void LightCheck(Autoptr<NTCamera> _Camera, int _Group);
+	void Render_Defferd_Light(int _Group);
 
 	/////////////// Light End
 
@@ -57,8 +57,9 @@ private:
 public:
 	void Render();
 
-	void Render_Forward(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index);
-	void Render_Defferd(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index);
+	void Render_Forward(Autoptr<NTCamera> _Camera, std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index);
+	void Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index);
+	void MergeScreen();
 
 	void Release();
 

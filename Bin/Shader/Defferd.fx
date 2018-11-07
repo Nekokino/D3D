@@ -97,19 +97,19 @@ PS_DefferdLightOut PS_DefferdDirLight(VS_DefferdLightOut _In)
 
     float Depth = Tex_2.Sample(Sam_0, _In.Uv).x;
 
-    if (Depth < 0.01f)
+    if (Depth <= 0.01f)
     {
         clip(-1);
     }
 
     float4 ViewPos = Tex_0.Sample(Sam_0, _In.Uv);
-    float4 Normal = Tex_0.Sample(Sam_0, _In.Uv);
+    float4 Normal = Tex_1.Sample(Sam_0, _In.Uv);
 
     LightColor ColorInfo = CalDirLight(ViewPos, Normal, LData);
 
     Out.Diffuse.rgb = ColorInfo.Diffuse.rgb;
     Out.Diffuse.a = 1.0f;
-    Out.Specular.rgb = ColorInfo.Specular.rgb;
+    Out.Specular.rgb = ColorInfo.Specular.rgb + float3(0.1f, 0.1f, 0.1f);
     Out.Specular.a = 1.0f;
 
     return Out;
@@ -129,13 +129,20 @@ PS_MergeOut PS_DefferdMerge(VS_DefferdLightOut _In)
     PS_MergeOut Out = (PS_MergeOut) 0.0f;
 
     float4 Color = Tex_0.Sample(Sam_0, _In.Uv);
-    float4 Diffuse = Tex_0.Sample(Sam_0, _In.Uv);
-    float4 Specular = Tex_0.Sample(Sam_0, _In.Uv);
+    float4 Diffuse = Tex_1.Sample(Sam_0, _In.Uv);
+    float4 Specular = Tex_2.Sample(Sam_0, _In.Uv);
 
+    Color.w = 1.0f;
     Diffuse.w = 0.0f;
     Specular.w = 0.0f;
 
-    Out.MergeColor = Color * Diffuse + Specular + float4(0.1f, 0.1f, 0.1f, 1.0f);
+    if (Out.MergeColor.a != 0.0f)
+    {
+        Out.MergeColor.rgb = float3(0.2f, 0.2f, 0.8f) * Color.a;
+    }
+
+
+    Out.MergeColor.rgb += Color.rgb * Diffuse.rgb + Specular.rgb;
     Out.MergeColor.a = 1.0f;
 
     return Out;

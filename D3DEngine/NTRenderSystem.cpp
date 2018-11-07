@@ -42,25 +42,29 @@ void NTRenderSystem::ResetSampler()
 void NTRenderSystem::Render()
 {
 	NTWinShortCut::GetMainDevice().ClearTarget();
+	NTWinShortCut::GetMainDevice().OMSet();
+
 	ResetSampler();
 
-	SetStartIter = CameraSet.begin();
-	SetEndIter = CameraSet.end();
+	CameraMapStartIter = CameraMap.begin();
+	CameraMapEndIter = CameraMap.end();
 
-	for (; SetStartIter != SetEndIter; ++SetStartIter)
+	for (; CameraMapStartIter != CameraMapEndIter; ++CameraMapStartIter)
 	{
-
 		bool TmpCheck = false;
-		Autoptr<NTCamera> CurCam = (*SetStartIter);
 
-		for (size_t i = 0; i < (*SetStartIter)->RenderGroup.size(); i++)
+		for (size_t i = 0; i < CameraMapStartIter->second->RenderGroup.size(); i++)
 		{
-			GroupFindIter = RendererMap.find((*SetStartIter)->RenderGroup[i]);
+			GroupFindIter = RendererMap.find(CameraMapStartIter->second->RenderGroup[i]);
 
 			if (GroupFindIter == RendererMap.end())
 			{
 				continue;
 			}
+
+			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"Basic");
+
+			
 
 			//ListStartIter = GroupFindIter->second.begin();
 			//ListEndIter = GroupFindIter->second.end();
@@ -81,22 +85,29 @@ void NTRenderSystem::Render()
 			//	}
 			//}
 
-			Render_Defferd(GroupFindIter, i);
+			Render_Defferd(CameraMapStartIter->second, GroupFindIter, i);
+			
+			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"LightDepth");
 
-			Render_Defferd_Light(SetStartIter, (int)i);
+			Render_Defferd_Light((int)i);
 
-			CurCam->CamTarget->Clear();
-			CurCam->CamTarget->OMSet();
-			CurCam->MergeRender();
-			// 여기서 머지해준다.
+			CameraMapStartIter->second->CamTarget->Clear();
+			CameraMapStartIter->second->CamTarget->OMSet();
+			CameraMapStartIter->second->LightMerge();
 
-			Render_Forward(GroupFindIter, i);
+			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"Basic");
+
+			Render_Forward(CameraMapStartIter->second, GroupFindIter, i);
 		}
 	}
 
+	NTWinShortCut::GetMainDevice().OMSet();
+	MergeScreen();
+	
+
 	if (DebugFunc::IsDebug() == true)
 	{
-		NTWinShortCut::GetMainDevice().OMSetDebug();
+		NTWinShortCut::GetMainDevice().SetDepthStencilState(L"Always");
 		NTWinShortCut::GetMainSceneSystem().GetCurScene()->DbgRender();
 		DebugFunc::TargetDebug();
 		DebugFunc::RenderLog();
@@ -105,21 +116,21 @@ void NTRenderSystem::Render()
 	NTWinShortCut::GetMainDevice().Present();
 }
 
-void NTRenderSystem::Render_Forward(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index)
+void NTRenderSystem::Render_Forward(Autoptr<NTCamera> _Camera, std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index)
 {
 
 	ListStartIter = GroupFindIter->second.begin();
 	ListEndIter = GroupFindIter->second.end();
 
-	LightCheck(SetStartIter, (*SetStartIter)->RenderGroup[_Index]);
+	LightCheck(_Camera, _Camera->RenderGroup[_Index]);
 
 	for (; ListStartIter != ListEndIter; ++ListStartIter)
 	{
 		if (0 == (*ListStartIter)->RndOpt.IsDefferdOrForward)
 		{
 			(*ListStartIter)->RenderUpdate();
-			(*ListStartIter)->TransformUpdate(*SetStartIter);
-			(*ListStartIter)->Render(*SetStartIter);
+			(*ListStartIter)->TransformUpdate(_Camera);
+			(*ListStartIter)->Render(_Camera);
 			(*ListStartIter)->MaterialUpdate();
 			(*ListStartIter)->MeshUpdate();
 			(*ListStartIter)->RenderAfterUpdate();
@@ -128,7 +139,7 @@ void NTRenderSystem::Render_Forward(std::map<int, std::list<Autoptr<NTRenderer>>
 	
 }
 
-void NTRenderSystem::Render_Defferd(std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index)
+void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std::list<Autoptr<NTRenderer>>>::iterator _Iter, size_t _Index)
 {
 	Autoptr<NTMultiRenderTarget> DefferdTarget = ResourceSystem<NTMultiRenderTarget>::Find(L"Defferd");
 	DefferdTarget->Clear();
@@ -150,8 +161,8 @@ void NTRenderSystem::Render_Defferd(std::map<int, std::list<Autoptr<NTRenderer>>
 		if (1 == (*ListStartIter)->RndOpt.IsDefferdOrForward)
 		{
 			(*ListStartIter)->RenderUpdate();
-			(*ListStartIter)->TransformUpdate(*SetStartIter);
-			(*ListStartIter)->Render(*SetStartIter);
+			(*ListStartIter)->TransformUpdate(_Camera);
+			(*ListStartIter)->Render(_Camera);
 			DefferdMat->Update();
 			(*ListStartIter)->MeshUpdate();
 			(*ListStartIter)->RenderAfterUpdate();
@@ -173,7 +184,7 @@ bool NTRenderSystem::ZOrderSort(Autoptr<NTRenderer> _Left, Autoptr<NTRenderer> _
 void NTRenderSystem::PushCamera(NTCamera* _Cam)
 {
 	tassert(nullptr == _Cam);
-	CameraSet.insert(_Cam);
+	CameraMap.insert(std::map<int, Autoptr<NTCamera>>::value_type(_Cam->GetOrder(), _Cam));
 }
 
 void NTRenderSystem::PushRenderer(NTRenderer* _Renderer)
@@ -205,6 +216,8 @@ void NTRenderSystem::PushOverRenderer(Autoptr<NTRenderer> _Renderer)
 
 	GroupFindIter->second.push_back(_Renderer);
 }
+
+
 
 void NTRenderSystem::Release()
 {
@@ -258,7 +271,7 @@ void NTRenderSystem::PushLight(NTLight* _Light)
 	LightSet.insert(_Light);
 }
 
-void NTRenderSystem::LightCheck(const std::set<Autoptr<NTCamera>>::iterator& _CamIter, int _Group)
+void NTRenderSystem::LightCheck(Autoptr<NTCamera> _Camera, int _Group)
 {
 	LightStartIter = LightSet.begin();
 	LightEndIter = LightSet.end();
@@ -272,8 +285,8 @@ void NTRenderSystem::LightCheck(const std::set<Autoptr<NTCamera>>::iterator& _Ca
 		if (true == (*LightStartIter)->IsLight(_Group))
 		{
 			Data.ArrLight[Count] = (*LightStartIter)->Data;
-			Data.ArrLight[Count].Dir = -(*_CamIter)->GetView().MulZero(Data.ArrLight[Count].Dir);
-			Data.ArrLight[Count].Pos = -(*_CamIter)->GetView().MulOne(Data.ArrLight[Count].Pos);
+			Data.ArrLight[Count].Dir = -_Camera->GetView().MulZero(Data.ArrLight[Count].Dir);
+			Data.ArrLight[Count].Pos = -_Camera->GetView().MulOne(Data.ArrLight[Count].Pos);
 			++Count;
 			if (10 <= Count)
 			{
@@ -290,7 +303,7 @@ void NTRenderSystem::LightCheck(const std::set<Autoptr<NTCamera>>::iterator& _Ca
 	return;
 }
 
-void NTRenderSystem::Render_Defferd_Light(const std::set<Autoptr<NTCamera>>::iterator & _CamIter, int _Group)
+void NTRenderSystem::Render_Defferd_Light(int _Group)
 {
 	Autoptr<NTMultiRenderTarget> LightTarget = ResourceSystem<NTMultiRenderTarget>::Find(L"Light");
 	LightTarget->Clear();
@@ -306,5 +319,16 @@ void NTRenderSystem::Render_Defferd_Light(const std::set<Autoptr<NTCamera>>::ite
 			Autoptr<NTLight> Light = *LightStartIter;
 			Light->LightRender();
 		}
+	}
+}
+
+void NTRenderSystem::MergeScreen()
+{
+	CameraMapStartIter = CameraMap.begin();
+	CameraMapEndIter = CameraMap.end();
+
+	for (; CameraMapStartIter != CameraMapEndIter; ++CameraMapStartIter)
+	{
+		CameraMapStartIter->second->ScreenMerge();
 	}
 }

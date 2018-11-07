@@ -3,7 +3,7 @@
 #include "NTWinShortCut.h"
 
 
-NTMultiRenderTarget::NTMultiRenderTarget() : DepthTexture(nullptr), DepthStencilState(nullptr)
+NTMultiRenderTarget::NTMultiRenderTarget() : DepthTexture(nullptr), DepthStencilState(nullptr), DefaultDepth(false)
 {
 }
 
@@ -25,10 +25,18 @@ void NTMultiRenderTarget::OMSet()
 	}
 	else
 	{
-		ID3D11DepthStencilView* OldDepth;
-		NTWinShortCut::GetContext()->OMGetRenderTargets(0, nullptr, &OldDepth);
-		NTWinShortCut::GetContext()->OMSetRenderTargets(TargetCount(), &RenderTargetView[0], OldDepth);
-		OldDepth->Release();
+		if (false == DefaultDepth)
+		{
+			ID3D11DepthStencilView* OldDepth;
+			NTWinShortCut::GetContext()->OMGetRenderTargets(0, nullptr, &OldDepth);
+			NTWinShortCut::GetContext()->OMSetRenderTargets(TargetCount(), &RenderTargetView[0], OldDepth);
+			OldDepth->Release();
+		}
+		else
+		{
+			NTWinShortCut::GetContext()->OMSetRenderTargets(TargetCount(), &RenderTargetView[0], NTWinShortCut::GetMainDevice().GetDepth());
+		}
+		
 	}
 }
 
@@ -92,4 +100,9 @@ void NTMultiRenderTarget::CreateTarget(UINT _W, UINT _H, UINT _BindFlag, DXGI_FO
 	RenderTargetView.push_back(Target->GetTexture()->GetRTV());
 	RenderTarget.push_back(Target);
 
+}
+
+Autoptr<NTTexture> NTMultiRenderTarget::GetTargetTexture(unsigned int _Index)
+{
+	return RenderTarget[_Index]->GetTexture();
 }

@@ -201,14 +201,12 @@ void DebugFunc::TargetDebug()
 	CountX = 0;
 	CountY += 1;
 
-	std::set<Autoptr<NTCamera>>::iterator CamStartIter = NTWinShortCut::GetMainSceneSystem().GetCurScene()->RenderSystem.CameraSet.begin();
-	std::set<Autoptr<NTCamera>>::iterator CamEndIter = NTWinShortCut::GetMainSceneSystem().GetCurScene()->RenderSystem.CameraSet.end();
+	std::map<int, Autoptr<NTCamera>>::iterator CamStartIter = NTWinShortCut::GetMainSceneSystem().GetCurScene()->RenderSystem.CameraMap.begin();
+	std::map<int, Autoptr<NTCamera>>::iterator CamEndIter = NTWinShortCut::GetMainSceneSystem().GetCurScene()->RenderSystem.CameraMap.end();
 
 	for (; CamStartIter != CamEndIter; ++CamStartIter)
 	{
-		Autoptr<NTCamera> Cam = (*CamStartIter);
-
-		std::vector<Autoptr<NTRenderTarget>> TargetVec = Cam->CamTarget->GetTargetTextureList();
+		std::vector<Autoptr<NTRenderTarget>> TargetVec = CamStartIter->second->CamTarget->GetTargetTextureList();
 
 		for (size_t j = 0; j < TargetVec.size(); j++)
 		{

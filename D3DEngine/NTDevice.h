@@ -41,13 +41,14 @@ private:
 	ID3D11InfoQueue* InfoQueue = nullptr;
 	
 
-	D3D11_DEPTH_STENCIL_DESC DepthState;
+	/*D3D11_DEPTH_STENCIL_DESC DepthState;
 	ID3D11DepthStencilState* DepthStencilState;
-	ID3D11DepthStencilState* DepthStencilStateDebug;
+	ID3D11DepthStencilState* DepthStencilStateDebug;*/
 
 public:
 	ID3D11Device* GetDevice() { return Device; }
 	ID3D11DeviceContext* GetContext() { return Context; }
+	ID3D11DepthStencilView* GetDepth() { return DepthStencilView; }
 
 	void CallDeviceDebug() // 호출 시점의 살아있는 그래픽 오브젝트들을 표시해줌
 	{
@@ -90,9 +91,44 @@ private:
 	};
 
 private:
-	bool IsAllStateDefault;
-	Autoptr<RasterState> DefaultState;
+	Autoptr<RasterState> DefaultRasterState;
 	std::unordered_map<std::wstring, Autoptr<RasterState>> RasterStateMap;
+
+private:
+	class DepthStencilState : public RefCounter
+	{
+	public:
+		ID3D11DeviceContext* Context;
+		D3D11_DEPTH_STENCIL_DESC Desc;
+		ID3D11DepthStencilState* DSS;
+
+	public:
+		void Update();
+		void Create(ID3D11Device* _Device, ID3D11DeviceContext* _Context, D3D11_DEPTH_STENCIL_DESC _Desc);
+
+	public:
+		~DepthStencilState()
+		{
+			if (nullptr != DSS)
+			{
+				DSS->Release();
+			}
+		}
+	};
+
+private:
+	Autoptr<DepthStencilState> DefaultDepthStencilState;
+	std::unordered_map<std::wstring, Autoptr<DepthStencilState>> DepthStencilStateMap;
+
+private:
+	Autoptr<DepthStencilState> FindDepthStencilState(const wchar_t* _Name);
+
+public:
+	void ResetDepthStencilState();
+	void SetDefaultDepthStencilState(const wchar_t* _Name);
+	void CreateDepthStencilState(const wchar_t* _Name, D3D11_DEPTH_STENCIL_DESC _Desc);
+
+	void SetDepthStencilState(const wchar_t* _Name);
 
 private:
 	Autoptr<RasterState> FindRasterState(const wchar_t* _Name);
@@ -130,8 +166,6 @@ public:
 	void Release();
 	void ResetContext();
 	void OMSet();
-	void OMSetDebug();
-
 
 	/////////////////////////////// ConstBuffer
 

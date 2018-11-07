@@ -28,6 +28,8 @@ public:
 	};
 
 private:
+	int Order;
+
 	NTMAT View;
 	NTMAT Projection;
 	NTMAT VP;
@@ -41,6 +43,11 @@ private:
 	std::vector<int> RenderGroup;
 
 public:
+	int GetOrder()
+	{
+		return Order;
+	}
+
 	const NTMAT& GetView() const
 	{
 		return View;
@@ -57,7 +64,7 @@ public:
 	}
 
 public:
-	bool Init() override;
+	bool Init(int _Order = 0);
 
 	void SetSMode(SIZEMODE _SMode)
 	{
@@ -131,9 +138,11 @@ private:
 private:
 	Autoptr<NTMesh> CamMesh;
 	Autoptr<NTMaterial> CamMaterial;
+	Autoptr<NTMaterial> CamScreenMat;
 
 private:
-	void MergeRender();
+	void LightMerge();
+	void ScreenMerge();
 
 private:
 	Autoptr<NTMultiRenderTarget> CamTarget;

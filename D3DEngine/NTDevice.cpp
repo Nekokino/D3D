@@ -20,8 +20,7 @@
 
 
 
-NTDevice::NTDevice(NTWindow* _Win) : NTWinParent(_Win), Device(nullptr), Context(nullptr), TargetView(nullptr), DepthStencilView(nullptr), DepthStencilTexture(nullptr), SwapChain(nullptr), bInit(false), Color(0.2f, 0.835f, 0.674f, 1.0f), IsAllStateDefault(false)
-, DepthStencilState(nullptr), DepthStencilStateDebug(nullptr)
+NTDevice::NTDevice(NTWindow* _Win) : NTWinParent(_Win), Device(nullptr), Context(nullptr), TargetView(nullptr), DepthStencilView(nullptr), DepthStencilTexture(nullptr), SwapChain(nullptr), bInit(false), Color(0.2f, 0.835f, 0.674f, 1.0f)
 {
 }
 
@@ -64,16 +63,6 @@ void NTDevice::Release()
 		Device->Release();
 	}
 
-	if (nullptr != DepthStencilState)
-	{
-		DepthStencilState->Release();
-	}
-
-	if (nullptr != DepthStencilStateDebug)
-	{
-		DepthStencilStateDebug->Release();
-	}
-
 	if (nullptr != BackBuffer)
 	{
 		BackBuffer->Release();
@@ -92,14 +81,9 @@ void NTDevice::ResetContext()
 void NTDevice::OMSet()
 {
 	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView);
-	Context->OMSetDepthStencilState(DepthStencilState, 1);
+	//Context->OMSetDepthStencilState(DepthStencilState, 1);
 }
 
-void NTDevice::OMSetDebug()
-{
-	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView);
-	Context->OMSetDepthStencilState(DepthStencilStateDebug, 1);
-}
 
 bool NTDevice::Init()
 {
@@ -242,51 +226,7 @@ bool NTDevice::CreateView() // 스왑체인에 사용할 텍스쳐 생성단계
 		return false;
 	}
 
-	DepthState.DepthEnable = TRUE;
-	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	DepthState.DepthFunc = D3D11_COMPARISON_LESS;
-	DepthState.StencilEnable = FALSE;
-	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-
-	const D3D11_DEPTH_STENCILOP_DESC DefaultStencilOpDebug = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
-	DepthState.FrontFace = DefaultStencilOpDebug;
-	DepthState.BackFace = DefaultStencilOpDebug;
-
-	Device->CreateDepthStencilState(&DepthState, &DepthStencilStateDebug);
-
-	if (nullptr == DepthStencilStateDebug)
-	{
-		tassert(true);
-		return false;
-	}
-
-	DepthState.DepthEnable = TRUE;
-	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
-	DepthState.StencilEnable = FALSE;
-	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
-	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
-
-	const D3D11_DEPTH_STENCILOP_DESC DefaultStencilOp = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
-
-	DepthState.FrontFace = DefaultStencilOp;
-	DepthState.BackFace = DefaultStencilOp;
-
-	Device->CreateDepthStencilState(&DepthState, &DepthStencilState);
-
-	if (nullptr == DepthStencilState)
-	{
-		tassert(true);
-		return false;
-	}
-
-	
-
-	
-
 	Context->OMSetRenderTargets(1, &TargetView, DepthStencilView); // 렌더타겟뷰와, 뎁스스텐실 뷰를 OM단계에 전달
-	Context->OMSetDepthStencilState(DepthStencilState, 1);
 
 	return true;
 }
@@ -323,6 +263,8 @@ void NTDevice::Present() // 출력
 	SwapChain->Present(0, 0);
 }
 
+
+
 Autoptr<NTDevice::RasterState> NTDevice::FindRasterState(const wchar_t * _Name)
 {
 	return MapFind<Autoptr<RasterState>>(RasterStateMap, _Name);
@@ -330,7 +272,7 @@ Autoptr<NTDevice::RasterState> NTDevice::FindRasterState(const wchar_t * _Name)
 
 void NTDevice::ResetRasterState()
 {
-	DefaultState->Update();
+	DefaultRasterState->Update();
 }
 
 void NTDevice::SetDefaultRasterState(const wchar_t * _Name)
@@ -349,8 +291,8 @@ void NTDevice::SetDefaultRasterState(const wchar_t * _Name)
 		return;
 	}
 
-	DefaultState = RS;
-	DefaultState->Update();
+	DefaultRasterState = RS;
+	DefaultRasterState->Update();
 
 	return;
 }
@@ -593,6 +535,35 @@ bool NTDevice::Create3DDefault()
 	NTWinShortCut::GetMainDevice().CreateRasterState(L"WBACK", D3D11_FILL_MODE::D3D11_FILL_WIREFRAME, D3D11_CULL_MODE::D3D11_CULL_BACK);
 
 	NTWinShortCut::GetMainDevice().SetDefaultRasterState(L"SBACK");
+
+	D3D11_DEPTH_STENCIL_DESC DepthState;
+
+	DepthState.DepthEnable = TRUE;
+	// MASK_ALL 뎁스비교함. || MASK_ZERO 안함.
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
+
+	DepthState.StencilEnable = FALSE;
+	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+
+	const D3D11_DEPTH_STENCILOP_DESC StencilOp = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
+	DepthState.FrontFace = StencilOp;
+	DepthState.BackFace = StencilOp;
+
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"Debug", DepthState);
+
+	DepthState.DepthFunc = D3D11_COMPARISON_LESS;
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"Basic", DepthState);
+
+	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"Always", DepthState);
+
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"LightDepth", DepthState);
+
+	NTWinShortCut::GetMainDevice().SetDefaultDepthStencilState(L"Basic");
 
 	ResourceSystem<NTTexture>::Load(L"Texture", L"SkyBox.png");
 
@@ -1097,6 +1068,20 @@ bool NTDevice::Create3DMaterial()
 
 	///////////////////////////////////////////////////////////////////// 디퍼드 머지용 끝
 
+	///////////////////////////////////////////////////////////////////// 화면 머지용
+
+	Autoptr<NTVertexShader> ScreenMergeVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"ScreenMergeVtx", L"Shader", L"ScreenMerge.fx", "VS_ScreenMerge");
+	ScreenMergeVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	ScreenMergeVtx->AddLayoutClose("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> ScreenMergePix = ResourceSystem<NTPixelShader>::LoadFromKey(L"ScreenMergePix", L"Shader", L"ScreenMerge.fx", "PS_ScreenMerge");
+
+	Autoptr<NTMaterial> ScreenMergeMat = ResourceSystem<NTMaterial>::Create(L"ScreenMergeMat");
+	ScreenMergeMat->SetVertexShader(L"ScreenMergeVtx");
+	ScreenMergeMat->SetPixelShader(L"ScreenMergePix");
+
+	///////////////////////////////////////////////////////////////////// 화면 머지용
+
 
 	return true;
 }
@@ -1138,4 +1123,78 @@ bool NTDevice::CreateConstBuffer(GlobalConstBuffer * _Buf)
 Autoptr<NTDevice::GlobalConstBuffer> NTDevice::FindConstBuffer(const wchar_t * _Name)
 {
 	return MapFind<Autoptr<NTDevice::GlobalConstBuffer>>(ConstBufferMap, _Name);
+}
+
+
+void NTDevice::DepthStencilState::Update()
+{
+	Context->OMSetDepthStencilState(DSS, 0);
+}
+
+void NTDevice::DepthStencilState::Create(ID3D11Device * _Device, ID3D11DeviceContext * _Context, D3D11_DEPTH_STENCIL_DESC _Desc)
+{
+	if (nullptr == _Context)
+	{
+		tassert(true);
+		return;
+	}
+
+	Context = _Context;
+
+	if (S_OK != _Device->CreateDepthStencilState(&_Desc, &DSS))
+	{
+		return;
+	}
+}
+
+Autoptr<NTDevice::DepthStencilState> NTDevice::FindDepthStencilState(const wchar_t * _Name)
+{
+	return MapFind<Autoptr<DepthStencilState>>(DepthStencilStateMap, _Name);
+}
+
+
+void NTDevice::ResetDepthStencilState()
+{
+	DefaultDepthStencilState->Update();
+}
+
+void NTDevice::SetDefaultDepthStencilState(const wchar_t* _Name)
+{
+	Autoptr<DepthStencilState> DSS = MapFind<Autoptr<DepthStencilState>>(DepthStencilStateMap, _Name);
+
+	if (nullptr == DSS)
+	{
+		tassert(true);
+		return;
+	}
+
+	if (nullptr == DSS->DSS)
+	{
+		tassert(true);
+		return;
+	}
+
+	DefaultDepthStencilState = DSS;
+	DefaultDepthStencilState->Update();
+	return;
+}
+
+void NTDevice::CreateDepthStencilState(const wchar_t* _Name, D3D11_DEPTH_STENCIL_DESC _Desc)
+{
+	DepthStencilState* DSS = new DepthStencilState();
+	DSS->Create(Device, Context, _Desc);
+	DepthStencilStateMap.insert(std::unordered_map<std::wstring, Autoptr<DepthStencilState>>::value_type(_Name, DSS));
+}
+
+void NTDevice::SetDepthStencilState(const wchar_t* _Name)
+{
+	Autoptr<DepthStencilState> DSS = MapFind<Autoptr<DepthStencilState>>(DepthStencilStateMap, _Name);
+
+	if (nullptr == DSS)
+	{
+		tassert(true);
+		return;
+	}
+
+	DSS->Update();
 }

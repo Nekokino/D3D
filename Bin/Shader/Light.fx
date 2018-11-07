@@ -19,14 +19,17 @@ class LightData
 LightColor CalDirLight(float4 _ViewPos, float4 _ViewNormal, LightData _LightInfo)
 {
     LightColor CalColor = (LightColor) 0.0f;
+    CalColor.Diffuse = (float4) 0.0f;
+    CalColor.Specular = (float4) 0.0f;
+    CalColor.Ambient = (float4) 0.0f;
 
-    float4 Light = _LightInfo.Dir;
+    float4 Light = -_LightInfo.Dir;
 
     CalColor.Diffuse = _LightInfo.Color.Diffuse * saturate(dot(_ViewNormal, normalize(Light)));
     Light = normalize(Light);
 
-    float4 Reflect = normalize(2.0f * dot(Light, _ViewNormal) * _ViewNormal - Light);
-    float4 Eye = normalize(-_ViewPos);
+    float3 Reflect = normalize(2.0f * dot(Light, _ViewNormal) * _ViewNormal - Light);
+    float3 Eye = normalize(-_ViewPos);
 
     CalColor.Specular = _LightInfo.Color.Specular * pow(saturate(dot(Eye, Reflect)), 1);
     CalColor.Ambient = _LightInfo.Color.Ambient;

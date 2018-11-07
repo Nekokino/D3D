@@ -2,7 +2,7 @@
 #include "NTRenderTarget.h"
 #include "NTWinShortCut.h"
 
-NTRenderTarget::NTRenderTarget() : Color(NTVEC{ 0.0f, 0.0f, 0.0f, 1.0f })
+NTRenderTarget::NTRenderTarget() : Color(NTVEC{ 0.768f, 0.866f, 0.945f, 1.0f })
 {
 }
 
