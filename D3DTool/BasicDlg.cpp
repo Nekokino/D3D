@@ -82,8 +82,9 @@ BOOL BasicDlg::OnInitDialog()
 
 	Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
 	Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
-	PP->GetTransform()->SetWorldPosition(NTVEC(0.0f, 0.0f, 0.0f));
-	PP->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
+	PP->SetLightType(NTLight::LightType::Point);
+	PP->GetTransform()->SetWorldRotation(NTVEC(45.0f, 0.0f, 0.0f));
+	PP->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
 	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
 
 	//Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);

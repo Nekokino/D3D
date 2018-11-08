@@ -3,6 +3,7 @@
 #include <list>
 #include <set>
 
+class NTCamera;
 class NTMesh;
 class NTMaterial;
 class NTLight : public NTStCom
@@ -54,8 +55,11 @@ private:
 	std::set<int> RenderGroup;
 
 public:
+	MatrixData MatData;
 	Autoptr<NTMesh> LightMesh;
 	Autoptr<NTMaterial> LightMat;
+	Autoptr<NTMesh> VolumeMesh;
+	Autoptr<NTMaterial> VolumeMaterial;
 
 public:
 	virtual bool Init();
@@ -100,7 +104,7 @@ public:
 	void SetLightType(LightType _Type);
 
 private:
-	void LightRender();
+	void LightRender(Autoptr<NTCamera> _Cam);
 
 public:
 	NTLight();

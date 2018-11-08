@@ -43,6 +43,21 @@ private:
 public:
 	bool IsWorldUpdated() { return bWorld; }
 
+	NTMAT GetScaleMat()
+	{
+		return ScaleMatrix;
+	}
+
+	NTMAT GetRotationMat()
+	{
+		return RotationMatrix;
+	}
+
+	NTMAT GetPositionMat()
+	{
+		return PositionMatrix;
+	}
+
 	NTVEC GetLocalPosition() const
 	{
 		return LocalPosition;

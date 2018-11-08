@@ -70,7 +70,8 @@ PS_DefferdOut PS_Defferd(Vtx_Out _In)
     Out.Normal = _In.Normal;
     Out.Normal.a = 1.0f;
     Out.Position = _In.ViewPos;
-    Out.Depth.xyzw = Out.Position.z;
+    Out.Depth.x = Out.Position.z;
+    Out.Depth.w = 1.0f;
 
     return Out;
 }

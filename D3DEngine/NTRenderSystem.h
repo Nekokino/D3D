@@ -47,7 +47,7 @@ public:
 
 	void PushLight(NTLight* _Camera);
 	void LightCheck(Autoptr<NTCamera> _Camera, int _Group);
-	void Render_Defferd_Light(int _Group);
+	void Render_Defferd_Light(Autoptr<NTCamera> _Cam, int _Group);
 
 	/////////////// Light End
 

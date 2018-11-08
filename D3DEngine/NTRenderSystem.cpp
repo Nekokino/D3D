@@ -89,7 +89,7 @@ void NTRenderSystem::Render()
 			
 			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"LightDepth");
 
-			Render_Defferd_Light((int)i);
+			Render_Defferd_Light(CameraMapStartIter->second, (int)i);
 
 			CameraMapStartIter->second->CamTarget->Clear();
 			CameraMapStartIter->second->CamTarget->OMSet();
@@ -303,7 +303,7 @@ void NTRenderSystem::LightCheck(Autoptr<NTCamera> _Camera, int _Group)
 	return;
 }
 
-void NTRenderSystem::Render_Defferd_Light(int _Group)
+void NTRenderSystem::Render_Defferd_Light(Autoptr<NTCamera> _Cam, int _Group)
 {
 	Autoptr<NTMultiRenderTarget> LightTarget = ResourceSystem<NTMultiRenderTarget>::Find(L"Light");
 	LightTarget->Clear();
@@ -317,7 +317,8 @@ void NTRenderSystem::Render_Defferd_Light(int _Group)
 		if (true == (*LightStartIter)->IsLight(_Group))
 		{
 			Autoptr<NTLight> Light = *LightStartIter;
-			Light->LightRender();
+			Light->LightRender(_Cam);
+			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"LightDepth");
 		}
 	}
 }

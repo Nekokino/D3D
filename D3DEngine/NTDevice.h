@@ -95,6 +95,15 @@ private:
 	std::unordered_map<std::wstring, Autoptr<RasterState>> RasterStateMap;
 
 private:
+	Autoptr<RasterState> FindRasterState(const wchar_t* _Name);
+
+public:
+	void ResetRasterState();
+	void SetDefaultRasterState(const wchar_t* _Name);
+	void CreateRasterState(const wchar_t* _Name, D3D11_FILL_MODE _FillMode, D3D11_CULL_MODE _CullMode);
+	void SetRasterState(const wchar_t* _Name);
+
+private:
 	class DepthStencilState : public RefCounter
 	{
 	public:
@@ -103,7 +112,7 @@ private:
 		ID3D11DepthStencilState* DSS;
 
 	public:
-		void Update();
+		void Update(unsigned int _Ref = 0);
 		void Create(ID3D11Device* _Device, ID3D11DeviceContext* _Context, D3D11_DEPTH_STENCIL_DESC _Desc);
 
 	public:
@@ -128,15 +137,7 @@ public:
 	void SetDefaultDepthStencilState(const wchar_t* _Name);
 	void CreateDepthStencilState(const wchar_t* _Name, D3D11_DEPTH_STENCIL_DESC _Desc);
 
-	void SetDepthStencilState(const wchar_t* _Name);
-
-private:
-	Autoptr<RasterState> FindRasterState(const wchar_t* _Name);
-
-public:
-	void ResetRasterState();
-	void SetDefaultRasterState(const wchar_t* _Name);
-	void CreateRasterState(const wchar_t* _Name, D3D11_FILL_MODE _FillMode, D3D11_CULL_MODE _CullMode);
+	void SetDepthStencilState(const wchar_t* _Name, unsigned int _Ref = 0);
 	
 public:
 	bool CreateSwapChain();

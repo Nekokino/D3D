@@ -304,6 +304,19 @@ void NTDevice::CreateRasterState(const wchar_t * _Name, D3D11_FILL_MODE _FillMod
 	RasterStateMap.insert(std::unordered_map<std::wstring, Autoptr<RasterState>>::value_type(_Name, RS));
 }
 
+void NTDevice::SetRasterState(const wchar_t * _Name)
+{
+	Autoptr<RasterState> RS = MapFind<Autoptr<RasterState>>(RasterStateMap, _Name);
+
+	if (nullptr == RS)
+	{
+		tassert(true);
+		return;
+	}
+
+	RS->Update();
+}
+
 bool NTDevice::DefaultInit()
 {
 
@@ -547,7 +560,7 @@ bool NTDevice::Create3DDefault()
 	DepthState.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
 	DepthState.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
 
-	const D3D11_DEPTH_STENCILOP_DESC StencilOp = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
+	D3D11_DEPTH_STENCILOP_DESC StencilOp = { D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_ALWAYS };
 	DepthState.FrontFace = StencilOp;
 	DepthState.BackFace = StencilOp;
 
@@ -562,6 +575,57 @@ bool NTDevice::Create3DDefault()
 	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
 	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
 	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"LightDepth", DepthState);
+
+	/////////////////////////////////////////////////////////// º¼·ý¸Þ½¬¿ë µª½º ½ºÅ×ÀÌÆ®
+
+	// º¼·ý¸Þ½¬ Back
+
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	DepthState.DepthFunc = D3D11_COMPARISON_GREATER;
+	DepthState.StencilEnable = TRUE;
+
+	D3D11_DEPTH_STENCILOP_DESC LightStencil;
+	LightStencil.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	LightStencil.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	LightStencil.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	LightStencil.StencilPassOp = D3D11_STENCIL_OP_REPLACE;
+
+	DepthState.FrontFace = LightStencil;
+	DepthState.BackFace = LightStencil;
+
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"BackStencil", DepthState);
+
+	// º¼·ý¸Þ½¬ Front
+
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	DepthState.DepthFunc = D3D11_COMPARISON_LESS;
+	DepthState.StencilEnable = TRUE;
+
+	LightStencil.StencilFunc = D3D11_COMPARISON_EQUAL;
+	LightStencil.StencilFailOp = D3D11_STENCIL_OP_ZERO;
+	LightStencil.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+	LightStencil.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+
+	DepthState.FrontFace = LightStencil;
+	DepthState.BackFace = LightStencil;
+
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"FrontStencil", DepthState);
+
+	// º¼·ý¸Þ½¬ Pass
+
+	DepthState.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+	DepthState.DepthFunc = D3D11_COMPARISON_ALWAYS;
+	DepthState.StencilEnable = TRUE;
+
+	LightStencil.StencilFunc = D3D11_COMPARISON_EQUAL;
+	LightStencil.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	LightStencil.StencilDepthFailOp = D3D11_STENCIL_OP_ZERO;
+	LightStencil.StencilPassOp = D3D11_STENCIL_OP_ZERO;
+
+	DepthState.FrontFace = LightStencil;
+	DepthState.BackFace = LightStencil;
+
+	NTWinShortCut::GetMainDevice().CreateDepthStencilState(L"PassStencil", DepthState);
 
 	NTWinShortCut::GetMainDevice().SetDefaultDepthStencilState(L"Basic");
 
@@ -1082,6 +1146,19 @@ bool NTDevice::Create3DMaterial()
 
 	///////////////////////////////////////////////////////////////////// È­¸é ¸ÓÁö¿ë
 
+	///////////////////////////////////////////////////////////////////// º¼·ý¸Þ½¬
+
+	Autoptr<NTVertexShader> VolumeVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"VolumeVtx", L"Shader", L"VolumeMesh.fx", "VS_Volume");
+	VolumeVtx->AddLayoutClose("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> VolumePix = ResourceSystem<NTPixelShader>::LoadFromKey(L"VolumePix", L"Shader", L"VolumeMesh.fx", "PS_Volume");
+
+	Autoptr<NTMaterial> VolumeMat = ResourceSystem<NTMaterial>::Create(L"VolumeMat");
+	VolumeMat->SetVertexShader(L"VolumeVtx");
+	VolumeMat->SetPixelShader(L"VolumePix");
+
+	///////////////////////////////////////////////////////////////////// º¼·ý¸Þ½¬
+
 
 	return true;
 }
@@ -1126,9 +1203,9 @@ Autoptr<NTDevice::GlobalConstBuffer> NTDevice::FindConstBuffer(const wchar_t * _
 }
 
 
-void NTDevice::DepthStencilState::Update()
+void NTDevice::DepthStencilState::Update(unsigned int _Ref)
 {
-	Context->OMSetDepthStencilState(DSS, 0);
+	Context->OMSetDepthStencilState(DSS, _Ref);
 }
 
 void NTDevice::DepthStencilState::Create(ID3D11Device * _Device, ID3D11DeviceContext * _Context, D3D11_DEPTH_STENCIL_DESC _Desc)
@@ -1186,7 +1263,7 @@ void NTDevice::CreateDepthStencilState(const wchar_t* _Name, D3D11_DEPTH_STENCIL
 	DepthStencilStateMap.insert(std::unordered_map<std::wstring, Autoptr<DepthStencilState>>::value_type(_Name, DSS));
 }
 
-void NTDevice::SetDepthStencilState(const wchar_t* _Name)
+void NTDevice::SetDepthStencilState(const wchar_t* _Name, unsigned int _Ref)
 {
 	Autoptr<DepthStencilState> DSS = MapFind<Autoptr<DepthStencilState>>(DepthStencilStateMap, _Name);
 
@@ -1196,5 +1273,5 @@ void NTDevice::SetDepthStencilState(const wchar_t* _Name)
 		return;
 	}
 
-	DSS->Update();
+	DSS->Update(_Ref);
 }
