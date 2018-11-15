@@ -47,7 +47,7 @@ LightColor CalDirLight(float4 _ViewPos, float4 _ViewNormal, LightData _LightInfo
     float3 Reflect = normalize(2.0f * dot(Light, _ViewNormal) * _ViewNormal - Light);
     float3 Eye = normalize(-_ViewPos);
 
-    CalColor.Specular = _LightInfo.Color.Specular * pow(saturate(dot(Eye, Reflect)), 1) * Factor;
+    CalColor.Specular = _LightInfo.Color.Specular * pow(saturate(dot(Eye, Reflect)), 1); // * Factor 뺏는데 더 자연스러운듯?
     CalColor.Ambient = _LightInfo.Color.Ambient;
 
     return CalColor;

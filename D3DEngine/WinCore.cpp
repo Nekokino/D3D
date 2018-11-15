@@ -7,6 +7,7 @@
 #include "ResourceSystem.h"
 #include "NTCollisionComponent.h"
 #include "NTSoundDevice.h"
+#include "NTFBX.h"
 
 /////// ºô´õ ////////
 
@@ -89,6 +90,7 @@ void WinCore::InitCore(HINSTANCE _hInst, const wchar_t* _MainWindowName, HWND _h
 
 	NTSoundDevice::Init();
 	PathSystem::Init();
+	NTFbxLoader::FbxInit();
 	PathSystem::CreatePath(L"Shader");
 	PathSystem::CreatePath(L"Texture");
 	PathSystem::CreatePath(L"Data");

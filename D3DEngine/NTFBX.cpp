@@ -2,16 +2,72 @@
 #include "PreCom.h"
 #include "DirectValueHeader.h"
 #include <atlstr.h>
+#include <algorithm>
 
-NTFBXLoader::NTFBXLoader() : Manager(nullptr), Scene(nullptr), NewFbx(nullptr), BoneCount(0)
+FbxAMatrix NTFbxLoader::MatReflect;
+
+NTFbxLoader::NTFbxLoader() : Manager(nullptr), Scene(nullptr), NewFbx(nullptr), BoneCount(0)
 {
 }
 
-NTFBXLoader::~NTFBXLoader()
+NTFbxLoader::~NTFbxLoader()
 {
 }
 
-void NTFBXLoader::Load(const wchar_t * _Path)
+void NTFbxLoader::FbxInit()
+{
+	MatReflect[0] = FbxVector4{ 1, 0, 0, 0 };
+	MatReflect[1] = FbxVector4{ 0, 0, 1, 0 };
+	MatReflect[2] = FbxVector4{ 0, 1, 0, 0 };
+	MatReflect[3] = FbxVector4{ 0, 0, 0, 1 };
+}
+
+NTVEC NTFbxLoader::GetMaterialColor(FbxSurfaceMaterial * _FbxMatData, const char * _MaterialColorName, const char * _MaterialFactorName)
+{
+	FbxDouble3 FbxColor;
+	FbxDouble Factor = 0;
+
+	FbxProperty MaterialColorPro = _FbxMatData->FindProperty(_MaterialColorName);
+	FbxProperty MaterialFactorPro = _FbxMatData->FindProperty(_MaterialFactorName);
+
+	if (MaterialColorPro.IsValid())
+	{
+		FbxColor = MaterialColorPro.Get<FbxDouble3>();
+	}
+
+	if (MaterialFactorPro.IsValid())
+	{
+		Factor = MaterialFactorPro.Get<FbxDouble>();
+	}
+
+	return NTVEC((float)(FbxColor.mData[0] * Factor), (float)(FbxColor.mData[1] * Factor), (float)(FbxColor.mData[2] * Factor), (float)Factor);
+}
+
+std::wstring NTFbxLoader::GetMaterialTextureName(FbxSurfaceMaterial * _FbxMaterialData, const char * _MaterialTextureName)
+{
+	std::string Name = "";
+
+	FbxProperty MaterialTextureNamePro = _FbxMaterialData->FindProperty(_MaterialTextureName);
+
+	if (MaterialTextureNamePro.IsValid())
+	{
+		UINT Count = MaterialTextureNamePro.GetSrcObjectCount();
+
+		if (0 != Count)
+		{
+			FbxFileTexture* FbxTexture = MaterialTextureNamePro.GetSrcObject<FbxFileTexture>(0);
+			if (nullptr != FbxTexture)
+			{
+				Name = FbxTexture->GetFileName();
+			}
+		}
+	}
+
+	return CA2W(Name.c_str()).m_psz;
+}
+
+
+void NTFbxLoader::LoadFbx(const wchar_t * _Path)
 {
 	NewFbx = new NTFBX();
 
@@ -58,7 +114,7 @@ void NTFBXLoader::Load(const wchar_t * _Path)
 	delete NewFbx;
 }
 
-void NTFBXLoader::CalBoneCount(FbxNode * _Node)
+void NTFbxLoader::CalBoneCount(FbxNode * _Node)
 {
 	++BoneCount;
 	int Count = _Node->GetChildCount();
@@ -68,7 +124,7 @@ void NTFBXLoader::CalBoneCount(FbxNode * _Node)
 	}
 }
 
-void NTFBXLoader::LoadBone(FbxNode* _Node, unsigned int _Depth, NTBone * _Parent)
+void NTFbxLoader::LoadBone(FbxNode* _Node, unsigned int _Depth, NTBone * _Parent)
 {
 	FbxNodeAttribute* Attr = _Node->GetNodeAttribute();
 
@@ -97,7 +153,7 @@ void NTFBXLoader::LoadBone(FbxNode* _Node, unsigned int _Depth, NTBone * _Parent
 	}
 }
 
-void NTFBXLoader::AniCheck()
+void NTFbxLoader::AniCheck()
 {
 	Scene->FillAnimStackNameArray(NewFbx->AniNameArray);
 
@@ -121,21 +177,18 @@ void NTFBXLoader::AniCheck()
 		NewInfo->Mode = Scene->GetGlobalSettings().GetTimeMode();
 		NewInfo->TimeLength = NewInfo->EndTime.GetFrameCount(NewInfo->Mode) - NewInfo->StartTime.GetFrameCount(NewInfo->Mode);
 
+		NewInfo->Index = i;
+		NewFbx->AniVec.push_back(NewInfo);
+
 		NewFbx->AniMap.insert(std::map<std::wstring, NTFbxAniInfo*>::value_type(NewInfo->AniName, NewInfo));
 	}
 }
 
-void NTFBXLoader::Triangulate(FbxNode * _Node)
+void NTFbxLoader::Triangulate(FbxNode * _Node)
 {
 	FbxNodeAttribute* Attr = _Node->GetNodeAttribute();
 
-	if (nullptr == Attr)
-	{
-		tassert(true);
-		return;
-	}
-
-	if (Attr->GetAttributeType() == FbxNodeAttribute::eMesh)
+	if (nullptr != Attr && Attr->GetAttributeType() == FbxNodeAttribute::eMesh)
 	{
 		FbxGeometryConverter Con(Manager);
 		Con.Triangulate(Attr, true);
@@ -148,7 +201,11 @@ void NTFBXLoader::Triangulate(FbxNode * _Node)
 	}
 }
 
-void NTFBXLoader::FbxMeshData(FbxNode * _Node)
+void NTFbxLoader::FbxMaterial(FbxNode * _Node)
+{
+}
+
+void NTFbxLoader::FbxMeshData(FbxNode * _Node)
 {
 	FbxNodeAttribute* Attr = _Node->GetNodeAttribute();
 
@@ -184,6 +241,27 @@ void NTFBXLoader::FbxMeshData(FbxNode * _Node)
 
 			FbxGeometryElementMaterial* Mtrl = NewMesh->GetElementMaterial();
 
+			NewMeshData->MatDataVec.reserve(MtrCount);
+
+			for (int i = 0; i < MtrCount; i++)
+			{
+				FbxSurfaceMaterial* MtrlSur = _Node->GetMaterial(i);
+
+				NTFbxMatData* NewMat = new NTFbxMatData();
+
+				NewMat->Info.Diffuse = GetMaterialColor(MtrlSur, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor);
+				NewMat->Info.Specular = GetMaterialColor(MtrlSur, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
+				NewMat->Info.Ambient = GetMaterialColor(MtrlSur, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
+				NewMat->Info.Emissive = GetMaterialColor(MtrlSur, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor);
+
+				NewMat->Diffuse = GetMaterialTextureName(MtrlSur, FbxSurfaceMaterial::sDiffuse);
+				NewMat->Specular = GetMaterialTextureName(MtrlSur, FbxSurfaceMaterial::sSpecular);
+				NewMat->Bump = GetMaterialTextureName(MtrlSur, FbxSurfaceMaterial::sNormalMap);
+				NewMat->Emissive = GetMaterialTextureName(MtrlSur, FbxSurfaceMaterial::sEmissive);
+
+				NewMeshData->MatDataVec.push_back(NewMat);
+			}
+
 			int IdxSize = NewMesh->GetPolygonSize(0);
 
 			if (3 != IdxSize)
@@ -199,7 +277,7 @@ void NTFBXLoader::FbxMeshData(FbxNode * _Node)
 			{
 				for (int j = 0; j < IdxSize; j++)
 				{
-					Tmp.p[j] = NewMesh->GetPolygonVertex(i, j);
+					Tmp.p[j] = (DWORD)NewMesh->GetPolygonVertex(i, j);
 					FbxNormal(NewMesh, NewMeshData, Tmp.p[j], CurVtx);
 					FbxTangent(NewMesh, NewMeshData, Tmp.p[j], CurVtx);
 					FbxBiNormal(NewMesh, NewMeshData, Tmp.p[j], CurVtx);
@@ -207,11 +285,13 @@ void NTFBXLoader::FbxMeshData(FbxNode * _Node)
 					++CurVtx;
 				}
 
-				UINT SubIdx = Mtrl->GetIndexArray().GetAt(i);
+				int SubIdx = Mtrl->GetIndexArray().GetAt(i);
 				NewMeshData->IdxVec[SubIdx].push_back(Tmp.p[0]);
 				NewMeshData->IdxVec[SubIdx].push_back(Tmp.p[2]);
 				NewMeshData->IdxVec[SubIdx].push_back(Tmp.p[1]);
 			}
+			
+			// 머티리얼 데이터 로드
 
 			if (false == NewFbx->AniMap.empty())
 			{
@@ -223,9 +303,15 @@ void NTFBXLoader::FbxMeshData(FbxNode * _Node)
 			}
 		}
 	}
+
+	int ChildCount = _Node->GetChildCount();
+	for (int i = 0; i < ChildCount; i++)
+	{
+		FbxMeshData(_Node->GetChild(i));
+	}
 }
 
-void NTFBXLoader::FbxNormal(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
+void NTFbxLoader::FbxNormal(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
 {
 	int Count = _Mesh->GetElementNormalCount();
 
@@ -270,7 +356,7 @@ void NTFBXLoader::FbxNormal(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _I
 
 }
 
-void NTFBXLoader::FbxTangent(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
+void NTFbxLoader::FbxTangent(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
 {
 	int Count = _Mesh->GetElementTangentCount();
 
@@ -314,7 +400,7 @@ void NTFBXLoader::FbxTangent(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _
 	_MeshData->TangentVec[_Idx].w = 1.0f;
 }
 
-void NTFBXLoader::FbxBiNormal(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
+void NTFbxLoader::FbxBiNormal(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
 {
 	int Count = _Mesh->GetElementBinormalCount();
 
@@ -358,7 +444,7 @@ void NTFBXLoader::FbxBiNormal(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD 
 	_MeshData->BiNormalVec[_Idx].w = 1.0f;
 }
 
-void NTFBXLoader::FbxUv(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
+void NTFbxLoader::FbxUv(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, DWORD _Vtx)
 {
 	int Count = _Mesh->GetElementUVCount();
 
@@ -400,7 +486,7 @@ void NTFBXLoader::FbxUv(FbxMesh * _Mesh, NTFbxMeshData * _MeshData, DWORD _Idx, 
 	_MeshData->UvVec[_Idx].y = (float)(1.0f - Data.mData[1]);
 }
 
-void NTFBXLoader::FbxAniData(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
+void NTFbxLoader::FbxAniData(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
 {
 	int Count = _Mesh->GetDeformerCount(FbxDeformer::eSkin);
 
@@ -429,6 +515,8 @@ void NTFBXLoader::FbxAniData(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
 
 			for (int j = 0; j < ClusterCount; j++)
 			{
+				// 결합부위 정점이 클러스터
+				// 클러스터가 모여서 조인트가 된다.
 				FbxCluster* Cluster = Skin->GetCluster(j);
 
 				if (nullptr == Cluster || nullptr == Cluster->GetLink())
@@ -444,25 +532,131 @@ void NTFBXLoader::FbxAniData(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
 					return;
 				}
 
-				FbxAMatrix NodeTransform = GetFbxTransform(_Mesh->GetNode());
+				Bone->BoneMat = GetFbxTransform(_Mesh->GetNode());
+
+				FbxWeightsAndIndices(Cluster, Bone, _MeshData);
+				FbxOffset(Cluster, Bone, _MeshData);
+				FbxFrameMat(_Mesh->GetNode(), Cluster, Bone, _MeshData);
 			}
+		}
+	}
+
+	WICheck(_Mesh, _MeshData);
+}
+
+void NTFbxLoader::FbxWeightsAndIndices(FbxCluster* _Cluster, NTBone* _Bone, NTFbxMeshData* _MeshData)
+{
+	int IndexCount = _Cluster->GetControlPointIndicesCount();
+
+	WI Tmp;
+
+	for (int i = 0; i < IndexCount; i++)
+	{
+		Tmp.BoneIdx = _Bone->Index;
+		Tmp.Weights = _Cluster->GetControlPointWeights()[i];
+		Tmp.IndicesIdx = _Cluster->GetControlPointIndices()[i];
+		_MeshData->WIVec[Tmp.IndicesIdx].push_back(Tmp);
+	}
+}
+
+void NTFbxLoader::FbxOffset(FbxCluster* _Cluster, NTBone* _Bone, NTFbxMeshData* _MeshData)
+{
+	FbxAMatrix ClusterTransform;
+	FbxAMatrix ClusterLinkTransform;
+
+	_Cluster->GetTransformMatrix(ClusterTransform);
+	_Cluster->GetTransformLinkMatrix(ClusterLinkTransform);
+
+	FbxAMatrix Offset;
+
+	// 클러스터 단위의 오프셋 행렬을 구하는 과정
+	// 노드와 링크된 다른 행렬의 역행렬 * 나의 행렬 * 본의 베이스 행렬
+
+	Offset = ClusterLinkTransform.Inverse() * ClusterTransform * _Bone->BoneMat;
+
+
+	// 프로젝트의 축의 방향과 Max의 축의 방향이 다르므로 보정해준다.
+	Offset = MatReflect * Offset * MatReflect;
+
+	_Bone->OffsetMat = Offset;
+}
+
+void NTFbxLoader::FbxFrameMat(FbxNode* _Node, FbxCluster* _Cluster, NTBone* _Bone, NTFbxMeshData* _MeshData)
+{
+	FbxTime::EMode TimeMode = Scene->GetGlobalSettings().GetTimeMode();
+
+	for (size_t i = 0; i < NewFbx->AniVec.size(); i++)
+	{
+		FbxLongLong StartFrame = NewFbx->AniVec[i]->StartTime.GetFrameCount(TimeMode);
+		FbxLongLong EndFrame = NewFbx->AniVec[i]->EndTime.GetFrameCount(TimeMode);
+
+		for (FbxLongLong i = StartFrame; i < EndFrame; ++i)
+		{
+			NTKeyFrame Frame = {};
+			FbxTime Time = 0;
+
+			Time.SetFrame(i, TimeMode);
+
+			FbxAMatrix TransformMat = _Node->EvaluateGlobalTransform(Time) * _Bone->BoneMat;
+			FbxAMatrix TransformCur = TransformMat.Inverse() * _Cluster->GetLink()->EvaluateGlobalTransform(Time);
+
+			TransformCur = MatReflect * TransformCur * MatReflect;
+
+			Frame.Time = Time.GetSecondDouble();
+			Frame.FrameMat = TransformMat;
+			NewFbx->BoneVec[_Bone->Index]->KeyFrameVec.push_back(Frame);
 		}
 	}
 }
 
-void NTFBXLoader::FbxWeightsAndIndices()
+void NTFbxLoader::WICheck(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
 {
+	std::vector<std::vector<WI>>::iterator Iter = _MeshData->WIVec.begin();
+
+	for (size_t i = 0, VertexIndex = 0; i < _MeshData->WIVec.size(); ++i, ++VertexIndex)
+	{
+		if (_MeshData->WIVec[i].size() > 1)
+		{
+			std::sort((*Iter).begin(), (*Iter).end(), [](const WI& _Left, const WI& _Right)
+			{
+				return _Left.Weights > _Right.Weights;
+			}
+			);
+
+			double Weight = 0.0f;
+			for (int i = 0; i < (int)(*Iter).size(); i++)
+			{
+				Weight += (*Iter)[i].Weights;
+			}
+
+			double Revision = 0.0f;
+			if (Weight > 1.0f)
+			{
+				Revision = 1.0f - Weight;
+				(*Iter)[0].Weights += Revision;
+			}
+
+			if ((*Iter).size() >= 4)
+			{
+				(*Iter).erase((*Iter).begin() + 4, (*Iter).end());
+			}
+		}
+
+		NTVEC Weights = {};
+		NTVEC Indices = {};
+
+		for (size_t i = 0; i < (*Iter).size(); i++)
+		{
+			Weights.s[i] = (float)(*Iter)[i].Weights;
+			Indices.s[i] = (float)(*Iter)[i].BoneIdx;
+		}
+
+		_MeshData->WeightsVec[VertexIndex] = Weights;
+		_MeshData->IndicesVec[VertexIndex] = Indices;
+	}
 }
 
-void NTFBXLoader::FbxOffset()
-{
-}
-
-void NTFBXLoader::FbxFrameMat()
-{
-}
-
-FbxAMatrix NTFBXLoader::GetFbxTransform(FbxNode * _Node)
+FbxAMatrix NTFbxLoader::GetFbxTransform(FbxNode * _Node)
 {
 	const FbxVector4 T = _Node->GetGeometricTranslation(FbxNode::eSourcePivot);
 	const FbxVector4 R = _Node->GetGeometricRotation(FbxNode::eSourcePivot);

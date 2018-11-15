@@ -45,6 +45,10 @@ void RightView::Dump(CDumpContext& dc) const
 {
 	CView::Dump(dc);
 }
+
+#endif
+#endif //_DEBUG
+
 BOOL RightView::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT & rect, CWnd * pParentWnd, UINT nID, CCreateContext * pContext)
 {
 	CView::Create(lpszClassName, lpszWindowName, dwStyle, rect, pParentWnd, nID, pContext);
@@ -53,8 +57,6 @@ BOOL RightView::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwSt
 	Dlg.ShowWindow(SW_SHOW);
 	return 0;
 }
-#endif
-#endif //_DEBUG
 
 
 // RightView 메시지 처리기입니다.

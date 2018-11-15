@@ -23,7 +23,7 @@ class NTTexture : public NTResource
 private:
 	DirectX::ScratchImage Image;
 	ID3D11Texture2D* Tex2D;
-	
+
 	ID3D11ShaderResourceView* SRV;
 	ID3D11RenderTargetView* RTV;
 	ID3D11DepthStencilView* DSV;
@@ -78,4 +78,3 @@ public:
 	NTTexture();
 	~NTTexture();
 };
-
