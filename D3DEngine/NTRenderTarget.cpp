@@ -14,6 +14,12 @@ NTRenderTarget::~NTRenderTarget()
 
 bool NTRenderTarget::Create(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage)
 {
+	return Create(_W, _H, NTVEC{ 0.768f, 0.866f, 0.945f, 1.0f }, _BindFlag, _Format, _Usage);
+}
+
+bool NTRenderTarget::Create(UINT _W, UINT _H, NTVEC _Color, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage)
+{
+
 	Texture = new NTTexture();
 	if (false == Texture->Create(_W, _H, _BindFlag, _Format, _Usage))
 	{
@@ -21,6 +27,8 @@ bool NTRenderTarget::Create(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Forma
 		tassert(true);
 		return false;
 	}
+
+	Color = _Color;
 
 	return true;
 }

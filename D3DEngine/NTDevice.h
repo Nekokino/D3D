@@ -138,6 +138,9 @@ public:
 	void CreateDepthStencilState(const wchar_t* _Name, D3D11_DEPTH_STENCIL_DESC _Desc);
 
 	void SetDepthStencilState(const wchar_t* _Name, unsigned int _Ref = 0);
+
+public:
+	void SetBlendState(const wchar_t* _Name);
 	
 public:
 	bool CreateSwapChain();

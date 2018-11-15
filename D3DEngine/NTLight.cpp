@@ -30,16 +30,22 @@ bool NTLight::Init()
 
 void NTLight::EndUpdate()
 {
+	
+
+}
+
+void NTLight::CalLightData(Autoptr<NTCamera> _Cam)
+{
 	Data.Dir = GetTransform()->GetWorldForward();
 	Data.Pos = GetTransform()->GetWorldPosition();
 	Data.Type = Type;
+	Data.Range = GetTransform()->GetWorldScale().x;
 
-	wchar_t Arr[256] = {};
-	swprintf_s(Arr, L"LightDir : %f %f %f", Data.Dir.x, Data.Dir.y, Data.Dir.z);
-	DebugFunc::DrawLog(Arr);
-	swprintf_s(Arr, L"LightPos : %f %f %f", Data.Pos.x, Data.Pos.y, Data.Pos.z);
-	DebugFunc::DrawLog(Arr);
+	Data.Dir = _Cam->GetView().MulZero(Data.Dir);
+	Data.Pos = _Cam->GetView().MulOne(Data.Pos);
+	Data.InvDir = -Data.Dir;
 }
+
 
 void NTLight::SetLightType(LightType _Type)
 {
@@ -61,7 +67,7 @@ void NTLight::SetLightType(LightType _Type)
 	}
 
 	VolumeMaterial = ResourceSystem<NTMaterial>::Find(L"VolumeMat");
-	LightMat = ResourceSystem<NTMaterial>::Find(L"DefferdDirLightMat");
+	LightMat = ResourceSystem<NTMaterial>::Find(L"DefferdLightMat");
 }
 
 void NTLight::LightRender(Autoptr<NTCamera> _Cam)
@@ -76,8 +82,7 @@ void NTLight::LightRender(Autoptr<NTCamera> _Cam)
 
 	if (Type == LightType::Point)
 	{
-		NTWinShortCut::GetMainDevice().SetDepthStencilState(L"PassStencil", 1);
-
+		NTWinShortCut::GetMainDevice().SetBlendState(L"Volume");
 		NTMAT Scale;
 		Scale.Scale(NTVEC(Transform->GetWorldScale().x, Transform->GetWorldScale().x, Transform->GetWorldScale().x));
 
@@ -108,6 +113,8 @@ void NTLight::LightRender(Autoptr<NTCamera> _Cam)
 		VolumeMaterial->Update();
 		VolumeMesh->Update();
 		VolumeMesh->Render();
+
+		NTWinShortCut::GetMainDevice().SetDepthStencilState(L"PassStencil", 1);
 	}
 
 	else if (Type == LightType::Spot)
@@ -116,9 +123,10 @@ void NTLight::LightRender(Autoptr<NTCamera> _Cam)
 	}
 	else
 	{
-		NTWinShortCut::GetMainDevice().SetDepthStencilState(L"PassStencil", 1);
+		NTWinShortCut::GetMainDevice().SetDepthStencilState(L"PassStencil", 0);
 	}
 
+	NTWinShortCut::GetMainDevice().SetBlendState(L"LightOne");
 	LightMat->Update();
 	LightMat->TextureUpdate();
 	LightMesh->Update();

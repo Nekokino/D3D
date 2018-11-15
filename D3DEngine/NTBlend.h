@@ -10,6 +10,7 @@ private:
 
 public:
 	bool Create();
+	bool Create(D3D11_BLEND_DESC _Desc);
 	bool Update();
 public:
 	NTBlend();

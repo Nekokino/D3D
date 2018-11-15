@@ -17,6 +17,7 @@ public:
 
 public:
 	bool Create(UINT _W, UINT _H, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT);
+	bool Create(UINT _W, UINT _H, NTVEC _Color, UINT _BindFlag, DXGI_FORMAT _Format, D3D11_USAGE _Usage = D3D11_USAGE::D3D11_USAGE_DEFAULT);
 	bool Create(ID3D11Texture2D* _Tex2D, UINT _BindFlag);
 
 	void Clear();

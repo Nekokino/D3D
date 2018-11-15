@@ -73,7 +73,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
     <TargetExt>.lib</TargetExt>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\Bin\;..\FMOD\lib\</LibraryPath>
     <TargetName>$(ProjectName)D32</TargetName>
   </PropertyGroup>
@@ -81,7 +81,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
     <TargetExt>.lib</TargetExt>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;..\Bin\;..\FMOD\lib\</LibraryPath>
     <TargetName>$(ProjectName)D64</TargetName>
   </PropertyGroup>
@@ -89,7 +89,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
     <TargetExt>.lib</TargetExt>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\Bin\;..\FMOD\lib\</LibraryPath>
     <TargetName>$(ProjectName)R32</TargetName>
   </PropertyGroup>
@@ -97,7 +97,7 @@
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
     <TargetExt>.lib</TargetExt>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\FMOD\inc;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;..\Bin\;..\FMOD\lib\</LibraryPath>
     <TargetName>$(ProjectName)R64</TargetName>
   </PropertyGroup>
@@ -190,6 +190,7 @@
     <ClInclude Include="NTColorMeshRenderer.h" />
     <ClInclude Include="NTComponent.h" />
     <ClInclude Include="NTDevice.h" />
+    <ClInclude Include="NTFBX.h" />
     <ClInclude Include="NTFileStream.h" />
     <ClInclude Include="NTFont.h" />
     <ClInclude Include="NTFontRenderer.h" />
@@ -254,6 +255,7 @@
     <ClCompile Include="NTColorMeshRenderer.cpp" />
     <ClCompile Include="NTComponent.cpp" />
     <ClCompile Include="NTDevice.cpp" />
+    <ClCompile Include="NTFBX.cpp" />
     <ClCompile Include="NTFileStream.cpp" />
     <ClCompile Include="NTFont.cpp" />
     <ClCompile Include="NTFontRenderer.cpp" />

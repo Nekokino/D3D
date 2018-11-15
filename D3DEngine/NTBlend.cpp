@@ -41,6 +41,19 @@ bool NTBlend::Create()
 	return true;
 }
 
+bool NTBlend::Create(D3D11_BLEND_DESC _Desc)
+{
+	Desc = _Desc;
+
+	if (S_OK != NTWinShortCut::GetDevice()->CreateBlendState(&_Desc, &BlendState))
+	{
+		tassert(true);
+		return false;
+	}
+
+	return true;
+}
+
 bool NTBlend::Update()
 {
 	NTWinShortCut::GetContext()->OMSetBlendState(BlendState, Color.s, 0xffffffff);

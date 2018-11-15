@@ -629,6 +629,52 @@ bool NTDevice::Create3DDefault()
 
 	NTWinShortCut::GetMainDevice().SetDefaultDepthStencilState(L"Basic");
 
+	////////////////////////// 블렌드 스테이트
+
+	D3D11_BLEND_DESC Desc;
+
+	Desc.AlphaToCoverageEnable = false;
+	Desc.IndependentBlendEnable = true;
+
+
+	///// 디퓨즈 블렌드
+	Desc.RenderTarget[0].BlendEnable = true;
+	Desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	Desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	Desc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	Desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+
+	Desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	Desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	Desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	///// 스펙큘러 블렌드
+	Desc.RenderTarget[1].BlendEnable = true;
+	Desc.RenderTarget[1].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	Desc.RenderTarget[1].BlendOp = D3D11_BLEND_OP_ADD;
+	Desc.RenderTarget[1].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	Desc.RenderTarget[1].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
+	Desc.RenderTarget[1].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	Desc.RenderTarget[1].SrcBlendAlpha = D3D11_BLEND_ONE;
+	Desc.RenderTarget[1].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+	Desc.RenderTarget[2] = D3D11_RENDER_TARGET_BLEND_DESC();
+	Desc.RenderTarget[3] = D3D11_RENDER_TARGET_BLEND_DESC();
+	Desc.RenderTarget[4] = D3D11_RENDER_TARGET_BLEND_DESC();
+	Desc.RenderTarget[5] = D3D11_RENDER_TARGET_BLEND_DESC();
+	Desc.RenderTarget[6] = D3D11_RENDER_TARGET_BLEND_DESC();
+	Desc.RenderTarget[7] = D3D11_RENDER_TARGET_BLEND_DESC();
+	
+	ResourceSystem<NTBlend>::Create(L"LightOne", Desc);
+
+	Desc.RenderTarget[0] = D3D11_RENDER_TARGET_BLEND_DESC();
+	Desc.RenderTarget[0].RenderTargetWriteMask = 0;
+
+	ResourceSystem<NTBlend>::Create(L"Volume", Desc);
+
 	ResourceSystem<NTTexture>::Load(L"Texture", L"SkyBox.png");
 
 	return true;
@@ -643,12 +689,12 @@ bool NTDevice::CreateDefaultRenderTarget()
 	ResourceSystem<NTRenderTarget>::Create(L"Color_Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 	ResourceSystem<NTRenderTarget>::Create(L"Position", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 	ResourceSystem<NTRenderTarget>::Create(L"Normal", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
-	ResourceSystem<NTRenderTarget>::Create(L"Depth", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
+	ResourceSystem<NTRenderTarget>::Create(L"Depth", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), NTCOLOR(0.0f, 0.0f, 0.0f, 1.0f), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DEFAULT);
 
 	Autoptr<NTMultiRenderTarget> DeffertMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Defferd", L"Color_Diffuse", L"Position", L"Normal", L"Depth");
 
-	ResourceSystem<NTRenderTarget>::Create(L"Light_Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT);
-	ResourceSystem<NTRenderTarget>::Create(L"Light_Specular", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	ResourceSystem<NTRenderTarget>::Create(L"Light_Diffuse", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), NTCOLOR(0.0f, 0.0f, 0.0f, 1.0f), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT);
+	ResourceSystem<NTRenderTarget>::Create(L"Light_Specular", NTWinShortCut::GetMainWindow().GetWidthU(), NTWinShortCut::GetMainWindow().GetHeightU(), NTCOLOR(0.0f, 0.0f, 0.0f, 1.0f), D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT);
 
 	Autoptr<NTMultiRenderTarget> LightMRT = ResourceSystem<NTMultiRenderTarget>::Create(L"Light", L"Light_Diffuse", L"Light_Specular");
 
@@ -1096,20 +1142,20 @@ bool NTDevice::Create3DMaterial()
 
 	///////////////////////////////////////////////////////////////////// 디퍼드 직선광용
 
-	Autoptr<NTVertexShader> DefferdDirLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefferdDirLightVtx", L"Shader", L"Defferd.fx", "VS_DefferdDirLight");
-	DefferdDirLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
-	DefferdDirLightVtx->AddLayoutClose("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	Autoptr<NTVertexShader> DefferdLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DeffedLightVtx", L"Shader", L"Defferd.fx", "VS_DefferdLight");
+	DefferdLightVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdLightVtx->AddLayoutClose("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
 
-	Autoptr<NTPixelShader> DefferdDirLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefferdDirLightPix", L"Shader", L"Defferd.fx", "PS_DefferdDirLight");
+	Autoptr<NTPixelShader> DefferdLightPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefferdLightPix", L"Shader", L"Defferd.fx", "PS_DefferdLight");
 
-	Autoptr<NTMaterial> DefferdDirLightMat = ResourceSystem<NTMaterial>::Create(L"DefferdDirLightMat");
-	DefferdDirLightMat->SetVertexShader(L"DefferdDirLightVtx");
-	DefferdDirLightMat->SetPixelShader(L"DefferdDirLightPix");
-	DefferdDirLightMat->SetBlend(L"AlphaBlend");
+	Autoptr<NTMaterial> DefferdLightMat = ResourceSystem<NTMaterial>::Create(L"DefferdLightMat");
+	DefferdLightMat->SetVertexShader(L"DeffedLightVtx");
+	DefferdLightMat->SetPixelShader(L"DefferdLightPix");
+	DefferdLightMat->SetBlend(L"LightOne");
 
-	DefferdDirLightMat->AddTextureData(TEXTYPE::TT_TARGET, 0, L"Position");
-	DefferdDirLightMat->AddTextureData(TEXTYPE::TT_TARGET, 1, L"Normal");
-	DefferdDirLightMat->AddTextureData(TEXTYPE::TT_TARGET, 2, L"Depth");
+	DefferdLightMat->AddTextureData(TEXTYPE::TT_TARGET, 0, L"Position");
+	DefferdLightMat->AddTextureData(TEXTYPE::TT_TARGET, 1, L"Normal");
+	DefferdLightMat->AddTextureData(TEXTYPE::TT_TARGET, 2, L"Depth");
 
 	///////////////////////////////////////////////////////////////////// 디퍼드 라이트용 끝
 
@@ -1156,6 +1202,7 @@ bool NTDevice::Create3DMaterial()
 	Autoptr<NTMaterial> VolumeMat = ResourceSystem<NTMaterial>::Create(L"VolumeMat");
 	VolumeMat->SetVertexShader(L"VolumeVtx");
 	VolumeMat->SetPixelShader(L"VolumePix");
+	VolumeMat->SetBlend(L"Volume");
 
 	///////////////////////////////////////////////////////////////////// 볼륨메쉬
 
@@ -1274,4 +1321,17 @@ void NTDevice::SetDepthStencilState(const wchar_t* _Name, unsigned int _Ref)
 	}
 
 	DSS->Update(_Ref);
+}
+
+void NTDevice::SetBlendState(const wchar_t * _Name)
+{
+	Autoptr<NTBlend> Blend = ResourceSystem<NTBlend>::Find(_Name);
+
+	if (Blend == nullptr)
+	{
+		tassert(true);
+		return;
+	}
+
+	Blend->Update();
 }

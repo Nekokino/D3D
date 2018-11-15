@@ -202,6 +202,7 @@
     <ClInclude Include="NTRenderTarget.h">
       <Filter>04 Resource\Resource\07 RenderTarget</Filter>
     </ClInclude>
+    <ClInclude Include="NTFBX.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -372,6 +373,7 @@
     <ClCompile Include="NTRenderTarget.cpp">
       <Filter>04 Resource\Resource\07 RenderTarget</Filter>
     </ClCompile>
+    <ClCompile Include="NTFBX.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01 Core">

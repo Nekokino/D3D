@@ -284,9 +284,9 @@ void NTRenderSystem::LightCheck(Autoptr<NTCamera> _Camera, int _Group)
 	{
 		if (true == (*LightStartIter)->IsLight(_Group))
 		{
+			Autoptr<NTLight> Light = (*LightStartIter);
+			Light->CalLightData(_Camera);
 			Data.ArrLight[Count] = (*LightStartIter)->Data;
-			Data.ArrLight[Count].Dir = -_Camera->GetView().MulZero(Data.ArrLight[Count].Dir);
-			Data.ArrLight[Count].Pos = -_Camera->GetView().MulOne(Data.ArrLight[Count].Pos);
 			++Count;
 			if (10 <= Count)
 			{
@@ -317,6 +317,7 @@ void NTRenderSystem::Render_Defferd_Light(Autoptr<NTCamera> _Cam, int _Group)
 		if (true == (*LightStartIter)->IsLight(_Group))
 		{
 			Autoptr<NTLight> Light = *LightStartIter;
+			Light->CalLightData(_Cam);
 			Light->LightRender(_Cam);
 			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"LightDepth");
 		}

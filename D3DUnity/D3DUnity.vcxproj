@@ -76,25 +76,25 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\Bin\;..\FMOD\lib\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;..\Bin\;..\FMOD\lib\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86;..\Bin\;..\FMOD\lib\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\Bin\</OutDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);..\D3DEngine\;..\D3DClient\;..\D3DMaker\;..\D3DTool\;..\FMOD\inc\;..\FBX\include;</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;..\Bin\;..\FMOD\lib\</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

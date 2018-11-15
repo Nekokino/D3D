@@ -32,6 +32,7 @@ public:
 		LightColor Color;
 		NTVEC Pos;
 		NTVEC Dir;
+		NTVEC InvDir;
 		float Range;
 		float Angle;
 		int Type;
@@ -105,7 +106,7 @@ public:
 
 private:
 	void LightRender(Autoptr<NTCamera> _Cam);
-
+	void CalLightData(Autoptr<NTCamera> _Cam);
 public:
 	NTLight();
 	~NTLight();

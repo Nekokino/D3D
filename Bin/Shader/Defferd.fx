@@ -84,7 +84,7 @@ static matrix DirMat =
     { 0.0f, 0.0f, 0.0f, 1.0f }
 };
 
-VS_DefferdLightOut VS_DefferdDirLight(VS_DefferdLightIn _In)
+VS_DefferdLightOut VS_DefferdLight(VS_DefferdLightIn _In)
 {
     VS_DefferdLightOut Out = (VS_DefferdLightOut) 0.0f;
     Out.Pos = mul(_In.Pos, DirMat);
@@ -92,7 +92,7 @@ VS_DefferdLightOut VS_DefferdDirLight(VS_DefferdLightIn _In)
     return Out;
 }
 
-PS_DefferdLightOut PS_DefferdDirLight(VS_DefferdLightOut _In)
+PS_DefferdLightOut PS_DefferdLight(VS_DefferdLightOut _In)
 {
     PS_DefferdLightOut Out = (PS_DefferdLightOut) 0.0f;
 

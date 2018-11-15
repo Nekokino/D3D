@@ -14,6 +14,7 @@
 #include "NTColorMeshRenderer.cpp"
 #include "NTComponent.cpp"
 #include "NTDevice.cpp"
+#include "NTFBX.cpp"
 #include "NTFileStream.cpp"
 #include "NTFont.cpp"
 #include "NTFontRenderer.cpp"
