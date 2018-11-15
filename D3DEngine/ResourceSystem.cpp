@@ -155,3 +155,8 @@ void PathSystem::CreateAllPathChild(const wchar_t* _RootPath, const wchar_t* _Up
 
 	FindClose(Finder);
 }
+
+std::wstring PathSystem::FindPathString(const wchar_t * _Key)
+{
+	return FindPath(_Key);
+}

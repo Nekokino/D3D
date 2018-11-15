@@ -25,6 +25,7 @@ public:
 	static bool IsFile(const wchar_t* _Path);
 	static void CreateAllPath(const wchar_t* _RootPath);
 	static void CreateAllPathChild(const wchar_t* _RootPath, const wchar_t* _UpperPath, const wchar_t* _Path);
+	static std::wstring FindPathString(const wchar_t* _Key);
 
 private:
 	static void Init();

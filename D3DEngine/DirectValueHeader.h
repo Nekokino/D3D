@@ -57,7 +57,15 @@ public:
 class IDX32
 {
 public:
-	DWORD _1, _2, _3;
+	union
+	{
+		struct
+		{
+			DWORD _1, _2, _3;
+		};
+
+		DWORD p[3];
+	};
 
 	MemS(DWORD)
 

@@ -93,6 +93,7 @@ void WinCore::InitCore(HINSTANCE _hInst, const wchar_t* _MainWindowName, HWND _h
 	PathSystem::CreatePath(L"Texture");
 	PathSystem::CreatePath(L"Data");
 	PathSystem::CreatePath(L"Sound");
+	PathSystem::CreatePath(L"Mesh");
 	TimeSystem::Init();
 	NTCollisionComponent::CollsionInit();
 }

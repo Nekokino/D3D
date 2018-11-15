@@ -14,6 +14,7 @@
 #include <NTImage.h>
 #include <NT3DMeshRenderer.h>
 #include <NTLight.h>
+#include <NTFBX.h>
 
 
 
@@ -64,6 +65,11 @@ BOOL BasicDlg::OnInitDialog()
 
 	ResourceSystem<NTTexture>::Load(L"Texture", L"rock2.png");
 	ResourceSystem<NTTexture>::Load(L"Texture", L"rock2_bump.png");
+
+	NTFBXLoader FBXLoader;
+
+	FBXLoader.Load((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str());
+	FBXLoader.Load((PathSystem::FindPathString(L"Mesh") + L"Warehouse01.FBX").c_str());
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
 
