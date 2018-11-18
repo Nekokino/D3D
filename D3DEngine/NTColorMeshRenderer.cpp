@@ -34,7 +34,7 @@ void NTColorMeshRenderer::Render(Autoptr<NTCamera> _Camera)
 
 	NTMAT aa = GetSubWorldMat();
 
-	Material->Update();
-	Mesh->Update();
-	Mesh->Render();
+	MaterialVec[0]->Update();
+	MeshVec[0]->Update();
+	MeshVec[0]->Render();
 }

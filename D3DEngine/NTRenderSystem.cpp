@@ -128,11 +128,36 @@ void NTRenderSystem::Render_Forward(Autoptr<NTCamera> _Camera, std::map<int, std
 	{
 		if (0 == (*ListStartIter)->RndOpt.IsDefferdOrForward)
 		{
-			(*ListStartIter)->RenderUpdate();
 			(*ListStartIter)->TransformUpdate(_Camera);
-			(*ListStartIter)->Render(_Camera);
-			(*ListStartIter)->MaterialUpdate();
-			(*ListStartIter)->MeshUpdate();
+			(*ListStartIter)->TransformConstBufferUpdate();
+			(*ListStartIter)->RenderUpdate();
+			if (NTDRAWMODE::BASE == (*ListStartIter)->RndOpt.DrawMode)
+			{
+				for (UINT i = 0; i < (UINT)(*ListStartIter)->GetMeshCount(); i++)
+				{
+					for (UINT j = 0; j < (UINT)(*ListStartIter)->GetMaterialCount(); j++)
+					{
+						(*ListStartIter)->Render(_Camera);
+						(*ListStartIter)->MaterialTextureNSamplerUpdate(j);
+						(*ListStartIter)->MaterialConstBufferUpdate(j);
+						(*ListStartIter)->MaterialUpdate(j);
+						(*ListStartIter)->MeshUpdate(j);
+					}
+				}
+			}
+			else if (NTDRAWMODE::DATA == (*ListStartIter)->RndOpt.DrawMode)
+			{
+				for (UINT i = 0; i < (UINT)(*ListStartIter)->DrawDataVec.size(); i++)
+				{
+					(*ListStartIter)->Render(_Camera);
+					(*ListStartIter)->MaterialTextureNSamplerUpdate((*ListStartIter)->DrawDataVec[i].Mat);
+					(*ListStartIter)->MaterialConstBufferUpdate((*ListStartIter)->DrawDataVec[i].Mat);
+					(*ListStartIter)->MaterialUpdate((*ListStartIter)->DrawDataVec[i].Mat);
+					(*ListStartIter)->TargetMeshUpdate((*ListStartIter)->DrawDataVec[i].Mesh, (*ListStartIter)->DrawDataVec[i].Vtx, (*ListStartIter)->DrawDataVec[i].Sub);
+
+				}
+			}
+
 			(*ListStartIter)->RenderAfterUpdate();
 		}
 	}
@@ -146,6 +171,13 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 	DefferdTarget->OMSet();
 
 	Autoptr<NTMaterial> DefferdMat = ResourceSystem<NTMaterial>::Find(L"DefferdMat");
+	Autoptr<NTMaterial> DefferdAniMat = ResourceSystem<NTMaterial>::Find(L"DefferdAniMat");
+
+	if (nullptr == DefferdAniMat)
+	{
+		tassert(true);
+		return;
+	}
 
 	if (DefferdMat == nullptr)
 	{
@@ -160,11 +192,52 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 	{
 		if (1 == (*ListStartIter)->RndOpt.IsDefferdOrForward)
 		{
-			(*ListStartIter)->RenderUpdate();
 			(*ListStartIter)->TransformUpdate(_Camera);
-			(*ListStartIter)->Render(_Camera);
-			DefferdMat->Update();
-			(*ListStartIter)->MeshUpdate();
+			(*ListStartIter)->TransformConstBufferUpdate();
+			(*ListStartIter)->RenderUpdate();
+			if (NTDRAWMODE::BASE == (*ListStartIter)->RndOpt.DrawMode)
+			{
+				for (UINT i = 0; i < (UINT)(*ListStartIter)->GetMeshCount(); i++)
+				{
+					for (UINT j = 0; j < (UINT)(*ListStartIter)->GetMaterialCount(); j++)
+					{
+						(*ListStartIter)->Render(_Camera);
+						(*ListStartIter)->MaterialTextureNSamplerUpdate(j);
+						(*ListStartIter)->MaterialConstBufferUpdate(j);
+
+						if (1 == (*ListStartIter)->RndOpt.IsBoneAni)
+						{
+							DefferdAniMat->Update();
+						}
+						else
+						{
+							DefferdMat->Update();
+						}
+						(*ListStartIter)->MeshUpdate(i);
+					}
+				}
+			}
+			else if (NTDRAWMODE::DATA == (*ListStartIter)->RndOpt.DrawMode)
+			{
+				for (UINT i = 0; i < (UINT)(*ListStartIter)->DrawDataVec.size(); i++)
+				{
+					DrawData Data = (*ListStartIter)->DrawDataVec[i];
+					(*ListStartIter)->Render(_Camera);
+					(*ListStartIter)->MaterialTextureNSamplerUpdate((*ListStartIter)->DrawDataVec[i].Mat);
+					(*ListStartIter)->MaterialConstBufferUpdate((*ListStartIter)->DrawDataVec[i].Mat);
+
+					if (1 == (*ListStartIter)->RndOpt.IsBoneAni)
+					{
+						DefferdAniMat->Update();
+					}
+					else
+					{
+						DefferdMat->Update();
+					}
+
+					(*ListStartIter)->TargetMeshUpdate((*ListStartIter)->DrawDataVec[i].Mesh, (*ListStartIter)->DrawDataVec[i].Vtx, (*ListStartIter)->DrawDataVec[i].Sub);
+				}
+			}
 			(*ListStartIter)->RenderAfterUpdate();
 		}
 	}

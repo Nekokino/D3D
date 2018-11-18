@@ -1140,6 +1140,27 @@ bool NTDevice::Create3DMaterial()
 	
 	///////////////////////////////////////////////////////////////////// 디퍼드용 끝
 
+	/////////////////////////////////////////////////////////////////// 디퍼드 애니메이션용
+
+	Autoptr<NTVertexShader> DefferdAniVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefferdAniVtx", L"Shader", L"DefferdAni.fx", "VS_DefferdAni");
+	DefferdAniVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdAniVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	DefferdAniVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdAniVtx->AddLayout("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdAniVtx->AddLayout("TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdAniVtx->AddLayout("BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdAniVtx->AddLayout("WEIGHTS", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	DefferdAniVtx->AddLayoutClose("BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> DefferdAniPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DefferdAniPix", L"Shader", L"DefferdAni.fx", "PS_DefferdAni");
+
+	Autoptr<NTMaterial> DefferdAniMat = ResourceSystem<NTMaterial>::Create(L"DefferdAniMat");
+	DefferdAniMat->SetVertexShader(L"DefferdAniVtx");
+	DefferdAniMat->SetPixelShader(L"DefferdAniPix");
+	DefferdAniMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 애니메이션용 끝
+
 	///////////////////////////////////////////////////////////////////// 디퍼드 직선광용
 
 	Autoptr<NTVertexShader> DefferdLightVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DeffedLightVtx", L"Shader", L"Defferd.fx", "VS_DefferdLight");

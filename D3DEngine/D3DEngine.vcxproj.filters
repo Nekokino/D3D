@@ -203,6 +203,10 @@
       <Filter>04 Resource\Resource\07 RenderTarget</Filter>
     </ClInclude>
     <ClInclude Include="NTFBX.h" />
+    <ClInclude Include="NTBoneAniRenderer.h">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="NTFbxData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -374,6 +378,10 @@
       <Filter>04 Resource\Resource\07 RenderTarget</Filter>
     </ClCompile>
     <ClCompile Include="NTFBX.cpp" />
+    <ClCompile Include="NTBoneAniRenderer.cpp">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NTFbxData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01 Core">

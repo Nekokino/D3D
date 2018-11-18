@@ -22,7 +22,7 @@
 class NTKeyFrame
 {
 public:
-	FbxMatrix FrameMat;
+	FbxAMatrix FrameMat;
 	double Time;
 };
 
@@ -65,8 +65,26 @@ class WI // Weights And Indices
 {
 public:
 	int BoneIdx;
-	int IndicesIdx;
+	int Indices;
 	double Weights;
+};
+
+class NTFbxVtxData
+{
+public:
+	NTVEC Pos;
+	NTVEC2 Uv;
+	NTVEC Color;
+	NTVEC Normal;
+	NTVEC Tangent;
+	NTVEC BiNormal;
+	NTVEC Weights;
+	NTVEC Indices;
+
+	NTFbxVtxData() : Color(NTVEC::ONE)
+	{
+
+	}
 };
 
 class NTFbxMeshData
@@ -74,34 +92,19 @@ class NTFbxMeshData
 public:
 	std::wstring Name;
 
-	std::vector<NTVEC> PosVec;
-	std::vector<NTVEC> NormalVec;
-	std::vector<NTVEC> TangentVec;
-	std::vector<NTVEC> BiNormalVec;
-	std::vector<NTVEC2> UvVec;
+	std::vector<NTFbxVtxData> VtxVec;
 
 	std::vector<std::vector<UINT>> IdxVec;
 
 	std::vector<NTFbxMatData*> MatDataVec;
 
-	NTFbxMatData MatData;
-
 	std::vector<std::vector<WI>> WIVec;
 
 	bool bAnimated;
 
-	std::vector<NTVEC> IndicesVec;
-	std::vector<NTVEC> WeightsVec;
-
 	void SetVtxCount(UINT _Count)
 	{
-		PosVec.resize(_Count);
-		NormalVec.resize(_Count);
-		TangentVec.resize(_Count);
-		BiNormalVec.resize(_Count);
-		UvVec.resize(_Count);
-		IndicesVec.resize(_Count);
-		WeightsVec.resize(_Count);
+		VtxVec.resize(_Count);
 		WIVec.resize(_Count);
 	}
 
@@ -131,7 +134,6 @@ public:
 	std::vector<NTBone*> BoneVec;
 	std::multimap<std::wstring, NTBone*> BoneMap;
 
-	FbxArray<FbxString*> AniNameArray;
 	std::vector<NTFbxAniInfo*> AniVec;
 	std::map<std::wstring, NTFbxAniInfo*> AniMap;
 
@@ -146,11 +148,6 @@ public:
 		for (size_t i = 0; i < BoneVec.size(); i++)
 		{
 			delete BoneVec[i];
-		}
-
-		for (int i = 0; i < AniNameArray.GetCount(); i++)
-		{
-			delete AniNameArray[i];
 		}
 
 		for (size_t i = 0; i < AniVec.size(); i++)
@@ -169,6 +166,9 @@ class NTFbxLoader
 {
 public:
 	static void FbxInit();
+	static NTMAT FbxMatConvert(const FbxMatrix& _Mat);
+	static NTVEC FbxVec4Convert(const FbxVector4& _Vec);
+	static NTVEC FbxQuaternionConvert(const FbxQuaternion& _Q);
 
 private:
 	static FbxAMatrix MatReflect;
@@ -180,6 +180,8 @@ public:
 public:
 	// 기본 데이터
 	void LoadFbx(const wchar_t* _Path);
+
+private:
 	void CalBoneCount(FbxNode* _Node);
 
 	// 본 정보
@@ -189,7 +191,8 @@ public:
 	void AniCheck();
 	void Triangulate(FbxNode* _Node);
 
-	void FbxMaterial(FbxNode* _Node);
+	void FbxMaterial(NTFbxMeshData* _MeshData, FbxSurfaceMaterial* _SurMat);
+	void FbxMeshCon(NTFbxMeshData* _MeshData, FbxMesh* _Mesh);
 
 	// 메쉬(& 정점)
 	void FbxMeshData(FbxNode* _Node);

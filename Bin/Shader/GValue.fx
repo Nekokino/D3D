@@ -21,5 +21,9 @@ cbuffer RenderOption : register(b11)
     int IsDefferdOrForward;
     int IsLightVtxOrPix;
     int TexCount;
+    int IsAni;
+    int Dummy01;
+    int Dummy02;
+    int Dummy03;
     TexData TexArr[8];
 }

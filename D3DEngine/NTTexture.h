@@ -28,6 +28,8 @@ private:
 	ID3D11RenderTargetView* RTV;
 	ID3D11DepthStencilView* DSV;
 
+	D3D11_MAPPED_SUBRESOURCE SubData;
+
 public:
 	float GetWidth()
 	{
@@ -45,6 +47,8 @@ public:
 	}
 
 	NTCOLOR GetPixel(int _X, int _Y);
+
+	void SetPixel(void* _Src, size_t _Size);
 
 	ID3D11ShaderResourceView* GetSRV()
 	{

@@ -27,36 +27,75 @@ bool NTRenderer::Init(int _Order)
 	return true;
 }
 
-Autoptr<NTMaterial> NTRenderer::GetMaterial()
+Autoptr<NTMaterial> NTRenderer::GetMaterial(int _Index)
 {
-	if (true == Material->IsOriginal)
+	if (MaterialVec[_Index]->IsOriginal == true)
 	{
-		Material = Material->Clone();
+		MaterialVec[_Index] = MaterialVec[_Index]->Clone();
 	}
 
-	return Material;
+	return MaterialVec[_Index];
 }
 
-bool NTRenderer::SetMesh(const wchar_t* _Mesh)
+void NTRenderer::AddDrawData(UINT _Mesh, UINT _Vtx, UINT _Sub, UINT _Mat)
 {
-	Mesh = ResourceSystem<NTMesh>::Find(_Mesh);
-	tassert(nullptr == Mesh);
+	DrawDataVec.push_back({ _Mesh, _Vtx, _Sub, _Mat });
+}
 
-	if (nullptr == Mesh)
+bool NTRenderer::SetMesh(const wchar_t* _Mesh, size_t _Index)
+{
+	if (MeshVec.size() <= _Index)
 	{
+		MeshVec.resize(_Index + 1);
+	}
+
+	MeshVec[_Index] = ResourceSystem<NTMesh>::Find(_Mesh);
+
+	if (nullptr == MeshVec[_Index])
+	{
+		tassert(true);
 		return false;
 	}
 
 	return true;
 }
 
-bool NTRenderer::SetMaterial(const wchar_t* _Material)
+bool NTRenderer::SetMaterial(const wchar_t* _Material, size_t _Index)
 {
-	Material = ResourceSystem<NTMaterial>::Find(_Material);
-	tassert(nullptr == Material);
-
-	if (nullptr == Material)
+	if (MaterialVec.size() <= _Index)
 	{
+		MaterialVec.resize(_Index + 1);
+	}
+
+	MaterialVec[_Index] = ResourceSystem<NTMaterial>::Find(_Material);
+
+	if (nullptr == MaterialVec[_Index])
+	{
+		tassert(true);
+		return false;
+	}
+
+	return true;
+}
+
+bool NTRenderer::SetMesh(Autoptr<NTMesh> _Mesh, size_t _Index)
+{
+	if (nullptr == _Mesh)
+	{
+		tassert(true);
+		return false;
+	}
+
+	if (MeshVec.size() <= _Index)
+	{
+		MeshVec.resize(_Index + 1);
+	}
+
+	MeshVec[_Index] = _Mesh;
+
+	if (nullptr == MeshVec[_Index])
+	{
+		tassert(true);
 		return false;
 	}
 
@@ -80,12 +119,6 @@ void NTRenderer::RenderUpdate()
 	{
 		RasterState->Update();
 	}
-
-	if (nullptr != Material)
-	{
-		Material->TextureUpdate();
-		Material->SamplerUpdate();
-	}
 }
 
 void NTRenderer::RenderAfterUpdate()
@@ -105,35 +138,75 @@ void NTRenderer::TransformUpdate(Autoptr<NTCamera> _Cam)
 	MatData.Projection = _Cam->GetProjection().RVTranspose();
 	MatData.WV = (Transform->GetWorldMatrixConst() * _Cam->GetView()).RVTranspose();
 	MatData.WVP = (Transform->GetWorldMatrixConst() * _Cam->GetView() * _Cam->GetProjection()).RVTranspose();
-
-	TransformConstBufferUpdate();
 }
 
 void NTRenderer::TransformConstBufferUpdate()
 {
-	if (nullptr != Material)
-	{
-		RndOpt.TexCount = Material->SetTextureData(RndOpt.ArrTex);
-	}
 	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
 	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PX);
+}
+
+void NTRenderer::MaterialConstBufferUpdate(int _Index)
+{
+	if (nullptr != MaterialVec[_Index])
+	{
+		RndOpt.TexCount = MaterialVec[_Index]->SetTextureData(RndOpt.ArrTex);
+	}
+
 	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_VS);
 	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_PX);
 }
 
-void NTRenderer::MeshUpdate()
+void NTRenderer::MaterialTextureNSamplerUpdate(int _Index)
 {
-	if (nullptr != Mesh)
+	if (nullptr != MaterialVec[_Index])
 	{
-		Mesh->Update();
-		Mesh->Render();
+		MaterialVec[_Index]->TextureUpdate();
+		MaterialVec[_Index]->SamplerUpdate();
+	}
+	else
+	{
+		tassert(true);
+		return;
 	}
 }
 
-void NTRenderer::MaterialUpdate()
+void NTRenderer::TargetMeshUpdate(UINT _Mesh, UINT _Vtx, UINT _Idx)
 {
-	if (nullptr != Material)
+	if (nullptr != MeshVec[_Mesh])
 	{
-		Material->Update();
+		MeshVec[_Mesh]->UpdateAndRender(_Vtx, _Idx);
+	}
+	else
+	{
+		tassert(true);
+		return;
+	}
+}
+
+void NTRenderer::MeshUpdate(int _Index)
+{
+	if (nullptr != MeshVec[_Index])
+	{
+		MeshVec[_Index]->Update();
+		MeshVec[_Index]->Render();
+	}
+	else
+	{
+		tassert(true);
+		return;
+	}
+}
+
+void NTRenderer::MaterialUpdate(int _Index)
+{
+	if (nullptr != MaterialVec[_Index])
+	{
+		MaterialVec[_Index]->Update();
+	}
+	else
+	{
+		tassert(true);
+		return;
 	}
 }

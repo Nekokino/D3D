@@ -15,6 +15,7 @@
 #include <NT3DMeshRenderer.h>
 #include <NTLight.h>
 #include <NTFBX.h>
+#include <NTBoneAniRenderer.h>
 
 
 
@@ -70,6 +71,7 @@ BOOL BasicDlg::OnInitDialog()
 
 	//FBXLoader.LoadFbx((PathSystem::FindPathString(L"Mesh") + L"Warehouse01.FBX").c_str());
 	//FBXLoader.LoadFbx((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str());
+	//FBXLoader.LoadFbx((PathSystem::FindPathString(L"Mesh") + L"unitychan.fbx").c_str());
 	
 
 	// TODO:  여기에 추가 초기화 작업을 추가합니다.
@@ -87,19 +89,19 @@ BOOL BasicDlg::OnInitDialog()
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
 
-	Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
-	Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
+	//Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
+	//Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
 
-	PP->SetLightType(NTLight::LightType::Point);
-	PP->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
-	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
+	//PP->SetLightType(NTLight::LightType::Point);
+	//PP->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
+	//PP->PushLightLayer(0, 1, 2, 3, 4, 5);
 
-	Autoptr<NTObject> Light2 = TabScene->CreateObject(L"PixLight2", 0);
-	Autoptr<NTLight> a = Light2->AddComponent<NTLight>();
-	a->SetLightType(NTLight::LightType::Point);
-	a->GetTransform()->SetWorldPosition(NTVEC(30.0f, 0.0f, 0.0f));
-	a->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
-	a->PushLightLayer(0, 1, 2, 3, 4, 5);
+	//Autoptr<NTObject> Light2 = TabScene->CreateObject(L"PixLight2", 0);
+	//Autoptr<NTLight> a = Light2->AddComponent<NTLight>();
+	//a->SetLightType(NTLight::LightType::Point);
+	//a->GetTransform()->SetWorldPosition(NTVEC(30.0f, 0.0f, 0.0f));
+	//a->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
+	//a->PushLightLayer(0, 1, 2, 3, 4, 5);
 
 	Autoptr<NTObject> Light3 = TabScene->CreateObject(L"PixLight3", 0);
 	Autoptr<NTLight> b = Light3->AddComponent<NTLight>();
@@ -135,8 +137,17 @@ BOOL BasicDlg::OnInitDialog()
 	SphereRight->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
 	SphereRight->GetTransform()->SetLocalPosition(NTVEC{ 15.0f, 0.0f, 0.0f });
 	Autoptr<NT3DMeshRenderer> SphereRightMesh = SphereRight->AddComponent<NT3DMeshRenderer>();
-	//SphereRightMesh->SetMaterial(L"PixelLightMat");
+	SphereRightMesh->RndOpt.IsDefferdOrForward = 0;
 	SphereRightMesh->SetMesh(L"Sphere");
+
+	Autoptr<NTObject> TestAniobj = TabScene->CreateObject(L"TestAniObj", 0);
+	TestAniobj->GetTransform()->SetLocalScale(NTVEC(1.0f, 1.0f, 1.0f));
+	TestAniobj->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, 0.0f));
+	Autoptr<NTBoneAniRenderer> TestAniRenderer = TestAniobj->AddComponent<NTBoneAniRenderer>();
+	//TestAniRenderer->Test((PathSystem::FindPathString(L"Mesh") + L"Warehouse01.FBX").c_str());
+	//TestAniRenderer->RndOpt.IsBoneAni = 0;
+	TestAniRenderer->Test((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str());
+	//TestAniRenderer->Test((PathSystem::FindPathString(L"Mesh") + L"unitychan.fbx").c_str());
 	
 
 	return TRUE;  // return TRUE unless you set the focus to a control

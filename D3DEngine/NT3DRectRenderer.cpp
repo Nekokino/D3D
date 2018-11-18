@@ -29,11 +29,11 @@ void NT3DRectRenderer::Render(Autoptr<NTCamera> _Camera)
 	MatData.Projection = _Camera->GetProjection();
 	MatData.WVP = (MatData.World * MatData.View * MatData.Projection).RTranspose();
 
-	Material->GetVertexShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
+	MaterialVec[0]->GetVertexShader()->SetConstBuffer<MatrixData>(L"MatData", MatData);
 
-	Material->Update();
-	Mesh->Update();
-	Mesh->Render();
+	MaterialVec[0]->Update();
+	MeshVec[0]->Update();
+	MeshVec[0]->Render();
 }
 
 bool NT3DRectRenderer::Init(int _Order)

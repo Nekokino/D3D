@@ -3,22 +3,13 @@
 #include "NTWinShortCut.h"
 
 
-NTMesh::NTMesh() : VertexBuffer(nullptr), IndexBuffer(nullptr)
+NTMesh::NTMesh() : DrawMode(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST)
 {
 }
 
 
 NTMesh::~NTMesh()
 {
-	if (nullptr != VertexBuffer)
-	{
-		VertexBuffer->Release();
-	}
-
-	if (nullptr != IndexBuffer)
-	{
-		IndexBuffer->Release();
-	}
 }
 
 bool NTMesh::Create(UINT _VertexCount, UINT _VertexSize, D3D11_USAGE _VertexUsage, void* _VertexMem, UINT _IndexCount, UINT _IndexSize,
@@ -29,80 +20,116 @@ bool NTMesh::Create(UINT _VertexCount, UINT _VertexSize, D3D11_USAGE _VertexUsag
 		return false;
 	}
 
-	if (false == CreateIndex(_IndexCount, _IndexSize, _IndexUsage, _IndexMem))
+	if (false == CreateIndex(_IndexCount, _IndexSize, _IndexUsage, _IndexFormat, _IndexMem))
 	{
 		return false;
 	}
 
-	IndexFormat = _IndexFormat;
 	DrawMode = _DrawMode;
-	VertexSize = _VertexSize;
-	IndexCount = _IndexCount;
 
 	return true;
 }
 
 bool NTMesh::CreateVertex(UINT _VertexCount, UINT _VertexSize, D3D11_USAGE _VertexUsage, void* _VertexMem)
 {
-	D3D11_BUFFER_DESC tBD = D3D11_BUFFER_DESC();
+	NTVertexBuffer* Info = new NTVertexBuffer();
 
-	tBD.ByteWidth = _VertexCount * _VertexSize;
-	tBD.Usage = _VertexUsage;
+	Info->VtxCount = _VertexCount;
+	Info->VtxSize = _VertexSize;
+	Info->BufDesc.ByteWidth = _VertexCount * _VertexSize;
+	Info->BufDesc.Usage = _VertexUsage;
 
-	if (D3D11_USAGE_DYNAMIC == tBD.Usage)
+	if (D3D11_USAGE_DYNAMIC == Info->BufDesc.Usage)
 	{
-		tBD.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		Info->BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	}
 
-	tBD.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	Info->BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA tSub = D3D11_SUBRESOURCE_DATA();
 	tSub.pSysMem = _VertexMem;
 
-	if (S_OK != NTWinShortCut::GetDevice()->CreateBuffer(&tBD, &tSub, &VertexBuffer))
+	if (S_OK != NTWinShortCut::GetDevice()->CreateBuffer(&Info->BufDesc, &tSub, &Info->VtxBuf))
 	{
+		tassert(true);
 		return false;
 	}
+
+	BufSizeVec.push_back(Info->VtxSize);
+	VtxBufVec.push_back(Info->VtxBuf);
+	VtxBufInfoVec.push_back(Info);
 
 	return true;
 }
 
-bool NTMesh::CreateIndex(UINT _TriangleCount, UINT _IndexSize, D3D11_USAGE _IndexUsage, void* _IndexMem)
+bool NTMesh::CreateIndex(UINT _IndexCount, UINT _IndexSize, D3D11_USAGE _IndexUsage, DXGI_FORMAT _Format, void* _IndexMem)
 {
-	D3D11_BUFFER_DESC tBD = D3D11_BUFFER_DESC();
+	NTIndexBuffer* Info = new NTIndexBuffer();
 
-	tBD.ByteWidth = _TriangleCount * _IndexSize;
-	tBD.Usage = _IndexUsage;
+	Info->IdxCount = _IndexCount;
+	Info->IdxSize = _IndexSize;
+	Info->IdxFormat = _Format;
+	Info->BufDesc.ByteWidth = _IndexCount * _IndexSize;
+	Info->BufDesc.Usage = _IndexUsage;
 
-	if (D3D11_USAGE_DYNAMIC == tBD.Usage)
+	if (D3D11_USAGE_DYNAMIC == Info->BufDesc.Usage)
 	{
-		tBD.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		Info->BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 	}
 
-	tBD.BindFlags = D3D11_BIND_INDEX_BUFFER;
+	Info->BufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 	D3D11_SUBRESOURCE_DATA tSub = D3D11_SUBRESOURCE_DATA();
 	tSub.pSysMem = _IndexMem;
 
-	if (S_OK != NTWinShortCut::GetDevice()->CreateBuffer(&tBD, &tSub, &IndexBuffer))
+	if (S_OK != NTWinShortCut::GetDevice()->CreateBuffer(&Info->BufDesc, &tSub, &Info->IdxBuf))
 	{
+		tassert(true);
 		return false;
 	}
+
+	IdxBufVec.push_back(Info);
 
 	return true;
 }
 
-void NTMesh::Update()
+void NTMesh::Update(UINT _StartVtx, UINT _VtxCount, UINT* _Off)
 {
-	UINT Off = 0;
-	UINT Size = VertexSize;
+	UINT Idx = 0;
+	UINT* Off = _Off;
 
-	NTWinShortCut::GetContext()->IASetVertexBuffers(0, 1, &VertexBuffer, &Size, &Off);
+	if (nullptr == _Off)
+	{
+		Off = &Idx;
+	}
+
+	NTWinShortCut::GetContext()->IASetVertexBuffers(_StartVtx, _VtxCount, &VtxBufVec[0], &BufSizeVec[0], Off);
 	NTWinShortCut::GetContext()->IASetPrimitiveTopology(DrawMode);
-	NTWinShortCut::GetContext()->IASetIndexBuffer(IndexBuffer, IndexFormat, 0);
+
 }
 
-void NTMesh::Render()
+void NTMesh::Render(UINT _StartIdx, UINT _EndIndex, UINT* _Off)
 {
-	NTWinShortCut::GetContext()->DrawIndexed(IndexCount, 0, 0);
+	UINT Idx = 0;
+	UINT* Off = _Off;
+
+	if (nullptr == _Off)
+	{
+		Off = &Idx;
+	}
+
+	for (size_t i = _StartIdx; i < _EndIndex; i++)
+	{
+		NTWinShortCut::GetContext()->IASetIndexBuffer(IdxBufVec[i]->IdxBuf, IdxBufVec[i]->IdxFormat, Off[i]);
+		NTWinShortCut::GetContext()->DrawIndexed(IdxBufVec[i]->IdxCount, 0, 0);
+	}
+}
+
+void NTMesh::UpdateAndRender(UINT _Vtx, UINT _Sub)
+{
+	UINT Idx = 0;
+	NTWinShortCut::GetContext()->IASetVertexBuffers(_Vtx, 1, &VtxBufVec[0], &BufSizeVec[0], &Idx);
+	NTWinShortCut::GetContext()->IASetPrimitiveTopology(DrawMode);
+	NTWinShortCut::GetContext()->IASetIndexBuffer(IdxBufVec[_Sub]->IdxBuf, IdxBufVec[_Sub]->IdxFormat, 0);
+	NTWinShortCut::GetContext()->DrawIndexed(IdxBufVec[_Sub]->IdxCount, 0, 0);
 }

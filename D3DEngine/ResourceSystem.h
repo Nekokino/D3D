@@ -384,6 +384,23 @@ public:
 		return NewRes;
 	}
 
+	static Autoptr<Res> Load(const wchar_t* _Path)
+	{
+		Res* NewRes = new Res();
+
+		NewRes->SetPath(_Path);
+		NewRes->SetName(NewRes->GetFullFileName());
+
+		if (false == NewRes->Load())
+		{
+			delete NewRes;
+			return nullptr;
+		}
+
+		ResMap.insert(std::unordered_map<std::wstring, Autoptr<Res>>::value_type(NewRes->GetFullFileName(), NewRes));
+		return NewRes;
+	}
+
 
 	template<typename V1, typename V2>
 	static Autoptr<Res> Load(const wchar_t* _Path, const wchar_t* _Name, V1 _1, V2 _2)

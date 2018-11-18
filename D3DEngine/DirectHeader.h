@@ -501,6 +501,7 @@ class NTMAT
 public:
 	union
 	{
+		float m[4][4];
 		DirectX::XMFLOAT4X4 Matrix;
 
 		struct

@@ -35,12 +35,7 @@ Vtx_Out VS_Defferd(Vtx_In _In)
     Out.Normal = normalize(mul(_In.Normal, WV));
     Out.Tangent = normalize(mul(_In.Tangent, WV));
     Out.BiNormal = normalize(mul(_In.BiNormal, WV));
-
-    if (0 == IsLight)
-    {
-        return Out;
-    }
-
+    
     return Out;
 }
 
@@ -134,7 +129,7 @@ PS_MergeOut PS_DefferdMerge(VS_DefferdLightOut _In)
     float4 Specular = Tex_2.Sample(Sam_0, _In.Uv);
 
     Color.w = 1.0f;
-    Diffuse.w = 0.0f;
+    Diffuse.w = 1.0f;
     Specular.w = 0.0f;
 
     if (Out.MergeColor.a != 0.0f)

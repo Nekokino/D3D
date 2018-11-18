@@ -36,14 +36,14 @@ void NT3DGrid::TransformUpdate(Autoptr<NTCamera> _Camera)
 	NTRenderer::TransformConstBufferUpdate();
 	
 
-	Material->Update();
-	Mesh->Update();
-	Mesh->Render();
+	MaterialVec[0]->Update();
+	MeshVec[0]->Update();
+	MeshVec[0]->Render();
 }
 
 void NT3DGrid::Render(Autoptr<NTCamera> _Camera)
 {
-	Material->GetPixelShader()->SetConstBuffer<NTVEC>(L"GridData", GridData);
+	MaterialVec[0]->GetPixelShader()->SetConstBuffer<NTVEC>(L"GridData", GridData);
 }
 
 void NT3DGrid::DbgRender()

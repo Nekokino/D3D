@@ -5,6 +5,7 @@
 
 NTTexture::NTTexture() : Tex2D(nullptr), SRV(nullptr), RTV(nullptr), DSV(nullptr)
 {
+	SubData = D3D11_MAPPED_SUBRESOURCE();
 }
 
 
@@ -44,6 +45,22 @@ NTCOLOR NTTexture::GetPixel(int _X, int _Y)
 
 	NTCOLOR Return = { (float)Color.b, (float)Color.g, (float)Color.r, (float)Color.a };
 	return Return;
+}
+
+void NTTexture::SetPixel(void * _Src, size_t _Size)
+{
+	size_t TexSize = DirectHelper::GetFormatSize(Image.GetMetadata().format) * Image.GetMetadata().width * Image.GetMetadata().height;
+
+	if (TexSize < _Size)
+	{
+		return;
+	}
+
+	NTWinShortCut::GetContext()->Map(Tex2D, 0, D3D11_MAP_WRITE_DISCARD, 0, &SubData);
+
+	memcpy_s(SubData.pData, TexSize, _Src, _Size);
+
+	NTWinShortCut::GetContext()->Unmap(Tex2D, 0);
 }
 
 bool NTTexture::Load()

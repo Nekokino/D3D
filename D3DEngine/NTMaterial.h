@@ -9,6 +9,7 @@ enum TEXTYPE
 	TT_COLOR,
 	TT_BUMP,
 	TT_TARGET,
+	TT_SPEC,
 };
 
 class TextureData

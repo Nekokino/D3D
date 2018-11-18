@@ -35,11 +35,11 @@ void NTSecondUVRenderer::Render(Autoptr<NTCamera> _Camera)
 
 	SubTranformUpdate();
 
-	Material->Update();
+	MaterialVec[0]->Update();
 	Image->GetSamp()->Update(0);
 	Image->GetTex()->Update(0);
-	Mesh->Update();
-	Mesh->Render();
+	MeshVec[0]->Update();
+	MeshVec[0]->Render();
 
 	NTWinShortCut::GetMainDevice().ResetContext();
 }
