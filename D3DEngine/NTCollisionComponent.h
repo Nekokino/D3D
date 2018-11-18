@@ -4,6 +4,7 @@
 #include "MathSystem.h"
 #include <set>
 #include <functional>
+#include <DirectXCollision.h>
 
 enum COLTYPE
 {

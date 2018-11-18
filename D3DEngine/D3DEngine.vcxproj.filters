@@ -2,13 +2,13 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClInclude Include="CustomMacro.h">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClInclude>
     <ClInclude Include="DirectHeader.h">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClInclude>
     <ClInclude Include="DirectValueHeader.h">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClInclude>
     <ClInclude Include="InputSystem.h">
       <Filter>03 System</Filter>
@@ -170,10 +170,10 @@
       <Filter>05 Object\Component\EngineComponent</Filter>
     </ClInclude>
     <ClInclude Include="StlAssist.h">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClInclude>
     <ClInclude Include="PreCom.h">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClInclude>
     <ClInclude Include="NTColorMeshRenderer.h">
       <Filter>05 Object\Component\EngineComponent\02 Render\2D</Filter>
@@ -207,10 +207,16 @@
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClInclude>
     <ClInclude Include="NTFbxData.h" />
+    <ClInclude Include="NTThread.h">
+      <Filter>08 Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="CritSec.h">
+      <Filter>08 Thread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClCompile>
     <ClCompile Include="InputSystem.cpp">
       <Filter>03 System</Filter>
@@ -348,7 +354,7 @@
       <Filter>05 Object\Component\EngineComponent</Filter>
     </ClCompile>
     <ClCompile Include="PreCom.cpp">
-      <Filter>08 Header</Filter>
+      <Filter>09 Header</Filter>
     </ClCompile>
     <ClCompile Include="NTColorMeshRenderer.cpp">
       <Filter>05 Object\Component\EngineComponent\02 Render\2D</Filter>
@@ -382,6 +388,12 @@
       <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
     </ClCompile>
     <ClCompile Include="NTFbxData.cpp" />
+    <ClCompile Include="NTThread.cpp">
+      <Filter>08 Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="CritSec.cpp">
+      <Filter>08 Thread</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="01 Core">
@@ -404,9 +416,6 @@
     </Filter>
     <Filter Include="07 I/O">
       <UniqueIdentifier>{0b58346b-c4ac-485e-b4c6-2a0df5b456e8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="08 Header">
-      <UniqueIdentifier>{92ff58a4-6fc6-4846-8178-79fcc34e454c}</UniqueIdentifier>
     </Filter>
     <Filter Include="02 Window\SubSystem">
       <UniqueIdentifier>{121166b8-4b9b-47ff-9163-5a6a94058255}</UniqueIdentifier>
@@ -479,6 +488,12 @@
     </Filter>
     <Filter Include="04 Resource\Resource\07 RenderTarget">
       <UniqueIdentifier>{5c491cbe-b535-418e-a01b-4cc274d74401}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08 Thread">
+      <UniqueIdentifier>{03a3a8f8-33d3-4e98-9f49-ddd30d078275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09 Header">
+      <UniqueIdentifier>{92ff58a4-6fc6-4846-8178-79fcc34e454c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -85,11 +85,11 @@ void NTRenderSystem::Render()
 			//	}
 			//}
 
-			Render_Defferd(CameraMapStartIter->second, GroupFindIter, i);
+			Render_Defferd(CameraMapStartIter->second, GroupFindIter, GroupFindIter->first);
 			
 			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"LightDepth");
 
-			Render_Defferd_Light(CameraMapStartIter->second, (int)i);
+			Render_Defferd_Light(CameraMapStartIter->second, GroupFindIter->first);
 
 			CameraMapStartIter->second->CamTarget->Clear();
 			CameraMapStartIter->second->CamTarget->OMSet();
@@ -97,7 +97,7 @@ void NTRenderSystem::Render()
 
 			NTWinShortCut::GetMainDevice().SetDepthStencilState(L"Basic");
 
-			Render_Forward(CameraMapStartIter->second, GroupFindIter, i);
+			Render_Forward(CameraMapStartIter->second, GroupFindIter, GroupFindIter->first);
 		}
 	}
 
@@ -122,7 +122,7 @@ void NTRenderSystem::Render_Forward(Autoptr<NTCamera> _Camera, std::map<int, std
 	ListStartIter = GroupFindIter->second.begin();
 	ListEndIter = GroupFindIter->second.end();
 
-	LightCheck(_Camera, _Camera->RenderGroup[_Index]);
+	LightCheck(_Camera, _Index);
 
 	for (; ListStartIter != ListEndIter; ++ListStartIter)
 	{

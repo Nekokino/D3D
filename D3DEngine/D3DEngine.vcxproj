@@ -169,6 +169,7 @@
     <None Include="DirectXTex.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CritSec.h" />
     <ClInclude Include="CustomMacro.h" />
     <ClInclude Include="DebugFunc.h" />
     <ClInclude Include="DirectHeader.h" />
@@ -226,6 +227,7 @@
     <ClInclude Include="NTSubTransform.h" />
     <ClInclude Include="NTSwitcher.h" />
     <ClInclude Include="NTTexture.h" />
+    <ClInclude Include="NTThread.h" />
     <ClInclude Include="NTTransform.h" />
     <ClInclude Include="NTTypeParent.h" />
     <ClInclude Include="NTVertexShader.h" />
@@ -241,6 +243,7 @@
     <ClInclude Include="WinCore.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CritSec.cpp" />
     <ClCompile Include="DebugFunc.cpp" />
     <ClCompile Include="DirectHeader.cpp" />
     <ClCompile Include="InputSystem.cpp" />
@@ -290,6 +293,7 @@
     <ClCompile Include="NTSubTransform.cpp" />
     <ClCompile Include="NTSwitcher.cpp" />
     <ClCompile Include="NTTexture.cpp" />
+    <ClCompile Include="NTThread.cpp" />
     <ClCompile Include="NTTransform.cpp" />
     <ClCompile Include="NTVertexShader.cpp" />
     <ClCompile Include="NTWindow.cpp" />

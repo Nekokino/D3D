@@ -14,23 +14,87 @@ NTBoneAniRenderer::NTBoneAniRenderer() : UpdateTime(0.0f), FrameCount(30), CurTi
 
 NTBoneAniRenderer::~NTBoneAniRenderer()
 {
-	if (nullptr != Loader)
-	{
-		delete Loader;
-	}
 }
 
 void NTBoneAniRenderer::Test(const wchar_t * _Path)
 {
-	Loader = new NTFbxLoader();
+	FbxMesh = ResourceSystem<NTFbxData>::Load(_Path);
+	InitMesh();
+}
 
-	Loader->LoadFbx(_Path);
+void NTBoneAniRenderer::SetFbx(const wchar_t * _Name)
+{
+	FbxMesh = ResourceSystem<NTFbxData>::Find(_Name);
+	InitMesh();
+}
 
-	NTFBX* Fbx = Loader->NewFbx;
-
-	for (size_t MeshIdx = 0; MeshIdx < Fbx->MeshDataVec.size() ; MeshIdx++)
+void NTBoneAniRenderer::EndUpdate()
+{
+	if (FbxMesh == nullptr)
 	{
-		NTFbxMeshData* MeshData = Fbx->MeshDataVec[MeshIdx];
+		return;
+	}
+
+	if (0 >= FbxMesh->Data.AniVec.size())
+	{
+		return;
+	}
+
+	CurTime = 0.0f;
+
+	UpdateTime += TimeSystem::DeltaTime();
+
+	if (UpdateTime >= FbxMesh->Data.AniVec[ClipIndex].TimeLength)
+	{
+		UpdateTime = 0.0f;
+	}
+
+	CurTime = (float)(FbxMesh->Data.AniVec[ClipIndex].StartTime.GetSecondDouble() + UpdateTime);
+
+	int FrameIndex = (int)(CurTime * FrameCount);
+	int NextFrameIndex = 0;
+
+	if (FrameIndex >= FbxMesh->Data.AniVec[ClipIndex].TimeLength - 1)
+	{
+		UpdateTime = 0.0f;
+		FrameIndex = 0;
+	}
+
+	NextFrameIndex = FrameIndex + 1;
+
+	for (size_t i = 0; i < FbxMesh->Data.BoneVec.size(); i++)
+	{
+		if (FbxMesh->Data.BoneVec[i]->KeyFrameVec.empty())
+		{
+			CurAniMatData[i] = FbxMesh->Data.BoneVec[i]->BoneMat;
+			continue;
+		}
+
+		NTKeyFrame& CurFrame = FbxMesh->Data.BoneVec[i]->KeyFrameVec[FrameIndex];
+		NTKeyFrame& NextFrame = FbxMesh->Data.BoneVec[i]->KeyFrameVec[NextFrameIndex];
+
+		float FrameTime = (float)CurFrame.Time;
+		float NextFrameTime = (float)NextFrame.Time;
+
+		float Percent = (CurTime - FrameTime) / (1.0f / FrameCount);
+
+		DirectX::XMVECTOR S = DirectX::XMVectorLerp(CurFrame.S, NextFrame.S, Percent);
+		DirectX::XMVECTOR T = DirectX::XMVectorLerp(CurFrame.T, NextFrame.T, Percent);
+		DirectX::XMVECTOR Q = DirectX::XMQuaternionSlerp(CurFrame.Q, NextFrame.Q, Percent);
+
+		DirectX::XMVECTOR Zero = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+
+		CurAniMatData[i] = FbxMesh->Data.BoneVec[i]->OffsetMat * DirectX::XMMatrixAffineTransformation(S, Zero, Q, T);
+	}
+
+	BoneTex->SetPixel(&CurAniMatData[0], sizeof(NTMAT) * CurAniMatData.size());
+}
+
+void NTBoneAniRenderer::InitMesh()
+{
+	for (size_t MeshIdx = 0; MeshIdx < FbxMesh->Data.MeshVec.size(); MeshIdx++)
+	{
+		NTFbxBiMeshData* MeshData = FbxMesh->Data.MeshVec[MeshIdx];
 
 		if (nullptr == MeshData)
 		{
@@ -41,7 +105,7 @@ void NTBoneAniRenderer::Test(const wchar_t * _Path)
 		Autoptr<NTMesh> NewMesh = new NTMesh();
 		NewMesh->SetDrawMode(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		if (false == NewMesh->CreateVertex((UINT)MeshData->VtxVec.size(), sizeof(NTFbxVtxData), D3D11_USAGE_DYNAMIC, &MeshData->VtxVec[0]))
+		if (false == NewMesh->CreateVertex(MeshData->VtxCount, MeshData->VtxSize, MeshData->Usage, MeshData->BDVtx))
 		{
 			tassert(true);
 			return;
@@ -49,12 +113,14 @@ void NTBoneAniRenderer::Test(const wchar_t * _Path)
 
 		for (size_t SubIdx = 0; SubIdx < MeshData->IdxVec.size(); SubIdx++)
 		{
-			NewMesh->CreateIndex((UINT)MeshData->IdxVec[SubIdx].size(), IDX32::MemberSize(), D3D11_USAGE_DEFAULT, IDX32::GetFormat(), &MeshData->IdxVec[SubIdx][0]);
+			NTFbxBiIndexData* Data = &MeshData->IdxVec[SubIdx];
+
+			NewMesh->CreateIndex(Data->IdxCount, Data->IdxSize, Data->Usage, Data->Format, Data->BDIdx);
 		}
 
 		SetMesh(NewMesh, (int)MeshIdx);
 
-		for (UINT MatIdx = 0; MatIdx < (UINT)MeshData->MatDataVec.size(); MatIdx++)
+		for (UINT MatIdx = 0; MatIdx < (UINT)MeshData->MatVec.size(); MatIdx++)
 		{
 			switch (RndOpt.IsDefferdOrForward)
 			{
@@ -68,23 +134,23 @@ void NTBoneAniRenderer::Test(const wchar_t * _Path)
 
 			Autoptr<NTMaterial> CloneMat = GetMaterial(MatIdx);
 
-			NTFbxMatData* Data = MeshData->MatDataVec[MatIdx];
+			NTFbxMatData* Data = &MeshData->MatVec[MatIdx];
 
 			if (Data->Diffuse != L"")
 			{
-				Autoptr<NTTexture> Tex = ResourceSystem<NTTexture>::Load(Data->Diffuse.c_str());
+				Autoptr<NTTexture> Tex = ResourceSystem<NTTexture>::Load(Data->Diffuse);
 				CloneMat->AddTextureData(TEXTYPE::TT_COLOR, 0, Tex->GetFullFileName());
 			}
 
 			if (Data->Bump != L"")
 			{
-				Autoptr<NTTexture> Tex = ResourceSystem<NTTexture>::Load(Data->Bump.c_str());
+				Autoptr<NTTexture> Tex = ResourceSystem<NTTexture>::Load(Data->Bump);
 				CloneMat->AddTextureData(TEXTYPE::TT_BUMP, 1, Tex->GetFullFileName());
 			}
 
 			if (Data->Specular != L"")
 			{
-				Autoptr<NTTexture> Tex = ResourceSystem<NTTexture>::Load(Data->Specular.c_str());
+				Autoptr<NTTexture> Tex = ResourceSystem<NTTexture>::Load(Data->Specular);
 				CloneMat->AddTextureData(TEXTYPE::TT_SPEC, 2, Tex->GetFullFileName());
 			}
 
@@ -92,85 +158,15 @@ void NTBoneAniRenderer::Test(const wchar_t * _Path)
 		}
 	}
 
-	if (0 >= Loader->NewFbx->AniVec.size())
+	if (0 >= FbxMesh->Data.AniVec.size())
 	{
 		return;
 	}
 
 	BoneTex = new NTTexture();
-	BoneTex->Create(Loader->BoneCount * 4, 1, D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DYNAMIC);
+	BoneTex->Create((UINT)FbxMesh->Data.BoneVec.size() * 4, 1, D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DYNAMIC);
 
-	CurAniMatData.resize(Loader->BoneCount);
-}
-
-void NTBoneAniRenderer::EndUpdate()
-{
-	if (0 >= Loader->NewFbx->AniVec.size())
-	{
-		return;
-	}
-
-	CurTime = 0.0f;
-
-	NTFBX* Fbx = Loader->NewFbx;
-
-	UpdateTime += TimeSystem::DeltaTime();
-
-	if (UpdateTime >= Fbx->AniVec[ClipIndex]->TimeLength)
-	{
-		UpdateTime = 0.0f;
-	}
-
-	CurTime = (float)(Fbx->AniVec[ClipIndex]->StartTime.GetSecondDouble() + UpdateTime);
-
-	int FrameIndex = (int)(CurTime * FrameCount);
-	int NextFrameIndex = 0;
-
-	if (FrameIndex >= Fbx->AniVec[ClipIndex]->TimeLength - 1)
-	{
-		UpdateTime = 0.0f;
-		FrameIndex = 0;
-	}
-
-	NextFrameIndex = FrameIndex + 1;
-
-	for (size_t i = 0; i < Loader->BoneCount; i++)
-	{
-		if (Fbx->BoneVec[i]->KeyFrameVec.empty())
-		{
-			CurAniMatData[i] = NTFbxLoader::FbxMatConvert(Fbx->BoneVec[i]->BoneMat);
-			continue;
-		}
-
-		NTKeyFrame& CurFrame = Fbx->BoneVec[i]->KeyFrameVec[FrameIndex];
-		NTKeyFrame& NextFrame = Fbx->BoneVec[i]->KeyFrameVec[NextFrameIndex];
-
-		float FrameTime = (float)CurFrame.Time;
-		float NextFrameTime = (float)NextFrame.Time;
-
-		float Percent = (CurTime - FrameTime) / (1.0f / FrameCount);
-
-		DirectX::XMVECTOR SC = NTFbxLoader::FbxVec4Convert(CurFrame.FrameMat.GetS());
-		DirectX::XMVECTOR SN = NTFbxLoader::FbxVec4Convert(NextFrame.FrameMat.GetS());
-
-		DirectX::XMVECTOR TC = NTFbxLoader::FbxVec4Convert(CurFrame.FrameMat.GetT());
-		DirectX::XMVECTOR TN = NTFbxLoader::FbxVec4Convert(NextFrame.FrameMat.GetT());
-
-		DirectX::XMVECTOR QC = NTFbxLoader::FbxQuaternionConvert(CurFrame.FrameMat.GetQ());
-		DirectX::XMVECTOR QN = NTFbxLoader::FbxQuaternionConvert(NextFrame.FrameMat.GetQ());
-
-		DirectX::XMVECTOR S = DirectX::XMVectorLerp(SC, SN, Percent);
-		DirectX::XMVECTOR T = DirectX::XMVectorLerp(TC, TN, Percent);
-		DirectX::XMVECTOR Q = DirectX::XMQuaternionSlerp(QC, QN, Percent);
-
-		DirectX::XMVECTOR Zero = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
-
-		NTMAT OffsetMat = NTFbxLoader::FbxMatConvert(Fbx->BoneVec[i]->OffsetMat);
-
-		CurAniMatData[i] = OffsetMat * DirectX::XMMatrixAffineTransformation(S, Zero, Q, T);
-	}
-
-	BoneTex->SetPixel(&CurAniMatData[0], sizeof(NTMAT) * CurAniMatData.size());
+	CurAniMatData.resize(FbxMesh->Data.BoneVec.size());
 }
 
 void NTBoneAniRenderer::Render(Autoptr<NTCamera> _Camera)

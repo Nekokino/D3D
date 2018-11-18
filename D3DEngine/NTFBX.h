@@ -22,19 +22,23 @@
 class NTKeyFrame
 {
 public:
-	FbxAMatrix FrameMat;
+	NTVEC S;
+	NTVEC T;
+	NTVEC Q;
 	double Time;
 };
 
 class NTBone
 {
 public:
-	std::wstring Name;
+	wchar_t Name[512] = {};
 	unsigned int Depth;
 	unsigned int Index;
 	NTBone* Parent;
-	FbxAMatrix OffsetMat;
-	FbxAMatrix BoneMat;
+	NTMAT OffsetMat;
+	NTMAT BoneMat;
+	FbxAMatrix OffsetAMat;
+	FbxAMatrix BoneAMat;
 	std::vector<NTKeyFrame> KeyFrameVec;
 };
 
@@ -54,11 +58,11 @@ class NTFbxMatData
 {
 public:
 	MaterialInfo Info;
-	std::wstring Name;
-	std::wstring Diffuse;
-	std::wstring Bump;
-	std::wstring Specular;
-	std::wstring Emissive;
+	wchar_t Name[512] = {};
+	wchar_t Diffuse[512] = {};
+	wchar_t Bump[512] = {};
+	wchar_t Specular[512] = {};
+	wchar_t Emissive[512] = {};
 };
 
 class WI // Weights And Indices
@@ -90,13 +94,13 @@ public:
 class NTFbxMeshData
 {
 public:
-	std::wstring Name;
+	wchar_t Name[512] = {};
 
 	std::vector<NTFbxVtxData> VtxVec;
 
 	std::vector<std::vector<UINT>> IdxVec;
 
-	std::vector<NTFbxMatData*> MatDataVec;
+	std::vector<NTFbxMatData> MatDataVec;
 
 	std::vector<std::vector<WI>> WIVec;
 
@@ -107,21 +111,13 @@ public:
 		VtxVec.resize(_Count);
 		WIVec.resize(_Count);
 	}
-
-	~NTFbxMeshData()
-	{
-		for (size_t i = 0; i < MatDataVec.size(); i++)
-		{
-			delete MatDataVec[i];
-		}
-	}
 };
 
 class NTFbxAniInfo
 {
 public:
 	int Index;
-	std::wstring AniName;
+	wchar_t AniName[512] = {};
 	FbxTime StartTime;
 	FbxTime EndTime;
 	FbxLongLong TimeLength;
@@ -134,7 +130,7 @@ public:
 	std::vector<NTBone*> BoneVec;
 	std::multimap<std::wstring, NTBone*> BoneMap;
 
-	std::vector<NTFbxAniInfo*> AniVec;
+	std::vector<NTFbxAniInfo> AniVec;
 	std::map<std::wstring, NTFbxAniInfo*> AniMap;
 
 	std::vector<NTFbxMeshData*> MeshDataVec;
@@ -150,11 +146,6 @@ public:
 			delete BoneVec[i];
 		}
 
-		for (size_t i = 0; i < AniVec.size(); i++)
-		{
-			delete AniVec[i];
-		}
-
 		for (size_t i = 0; i < MeshDataVec.size(); i++)
 		{
 			delete MeshDataVec[i];
@@ -167,6 +158,7 @@ class NTFbxLoader
 public:
 	static void FbxInit();
 	static NTMAT FbxMatConvert(const FbxMatrix& _Mat);
+	static FbxMatrix NTMATConvert(const NTMAT& _Mat);
 	static NTVEC FbxVec4Convert(const FbxVector4& _Vec);
 	static NTVEC FbxQuaternionConvert(const FbxQuaternion& _Q);
 

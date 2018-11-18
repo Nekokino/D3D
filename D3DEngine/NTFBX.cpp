@@ -55,6 +55,21 @@ NTMAT NTFbxLoader::FbxMatConvert(const FbxMatrix & _Mat)
 	return Return;
 }
 
+FbxMatrix NTFbxLoader::NTMATConvert(const NTMAT & _Mat)
+{
+	FbxMatrix Return;
+
+	for (int y = 0; y < 4; y++)
+	{
+		for (int x = 0; x < 4; x++)
+		{
+			Return.Set(y, x, _Mat.m[y][x]);
+		}
+	}
+
+	return Return;
+}
+
 NTVEC NTFbxLoader::FbxVec4Convert(const FbxVector4 & _Vec)
 {
 	NTVEC Return;
@@ -120,7 +135,7 @@ std::wstring NTFbxLoader::GetMaterialTextureName(FbxSurfaceMaterial * _FbxMateri
 		}
 	}
 
-	return CA2W(Name.c_str()).m_psz;
+	return CA2W(Name.c_str(), CP_UTF8).m_psz;
 }
 
 
@@ -192,7 +207,8 @@ void NTFbxLoader::LoadBone(FbxNode* _Node, unsigned int _Depth, NTBone * _Parent
 	if (nullptr != Attr && Attr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 	{
 		NewBone = new NTBone();
-		NewBone->Name = CA2W(_Node->GetName()).m_psz;
+		std::wstring Name = CA2W(_Node->GetName(), CP_UTF8).m_psz;
+		memcpy_s(NewBone->Name, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
 		NewBone->Depth = _Depth++;
 		NewBone->Index = (int)NewFbx->BoneVec.size();
 		NewBone->Parent = _Parent;
@@ -218,6 +234,8 @@ void NTFbxLoader::AniCheck()
 
 	Scene->FillAnimStackNameArray(AniNameArray);
 
+	NewFbx->AniVec.resize(AniNameArray.GetCount());
+
 	for (int i = 0; i < AniNameArray.GetCount(); i++)
 	{
 		FbxAnimStack* AniStack = Scene->FindMember<FbxAnimStack>(AniNameArray[i]->Buffer());
@@ -227,21 +245,21 @@ void NTFbxLoader::AniCheck()
 			continue;
 		}
 
-		NTFbxAniInfo* NewInfo = new NTFbxAniInfo();
+		NTFbxAniInfo NewInfo;
 
-		NewInfo->AniName = CA2W(AniStack->GetName());
+		std::wstring Name = CA2W(AniStack->GetName(), CP_UTF8).m_psz;
+		memcpy_s(NewInfo.AniName, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
 
 		FbxTakeInfo* TakeInfo = Scene->GetTakeInfo(AniStack->GetName());
-		NewInfo->StartTime = TakeInfo->mLocalTimeSpan.GetStart();
-		NewInfo->EndTime = TakeInfo->mLocalTimeSpan.GetStop();
+		NewInfo.StartTime = TakeInfo->mLocalTimeSpan.GetStart();
+		NewInfo.EndTime = TakeInfo->mLocalTimeSpan.GetStop();
 
-		NewInfo->Mode = Scene->GetGlobalSettings().GetTimeMode();
-		NewInfo->TimeLength = NewInfo->EndTime.GetFrameCount(NewInfo->Mode) - NewInfo->StartTime.GetFrameCount(NewInfo->Mode);
+		NewInfo.Mode = Scene->GetGlobalSettings().GetTimeMode();
+		NewInfo.TimeLength = NewInfo.EndTime.GetFrameCount(NewInfo.Mode) - NewInfo.StartTime.GetFrameCount(NewInfo.Mode);
 
-		NewInfo->Index = i;
-		NewFbx->AniVec.push_back(NewInfo);
-
-		NewFbx->AniMap.insert(std::map<std::wstring, NTFbxAniInfo*>::value_type(NewInfo->AniName, NewInfo));
+		NewInfo.Index = i;
+		NewFbx->AniVec[i] = NewInfo;
+		NewFbx->AniMap.insert(std::map<std::wstring, NTFbxAniInfo*>::value_type(NewInfo.AniName, &NewFbx->AniVec[i]));
 	}
 
 	for (int i = 0; i < AniNameArray.GetCount(); i++)
@@ -318,17 +336,21 @@ void NTFbxLoader::FbxMeshCon(NTFbxMeshData * _MeshData, FbxMesh * _Mesh)
 
 void NTFbxLoader::FbxMaterial(NTFbxMeshData* _MeshData, FbxSurfaceMaterial* _SurMat)
 {
-	NTFbxMatData* NewMat = new NTFbxMatData();
+	NTFbxMatData NewMat;
 
-	NewMat->Info.Diffuse = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor);
-	NewMat->Info.Ambient = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
-	NewMat->Info.Emissive = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor);
-	NewMat->Info.Specular = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
+	NewMat.Info.Diffuse = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sDiffuse, FbxSurfaceMaterial::sDiffuseFactor);
+	NewMat.Info.Ambient = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sAmbient, FbxSurfaceMaterial::sAmbientFactor);
+	NewMat.Info.Emissive = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sEmissive, FbxSurfaceMaterial::sEmissiveFactor);
+	NewMat.Info.Specular = GetMaterialColor(_SurMat, FbxSurfaceMaterial::sSpecular, FbxSurfaceMaterial::sSpecularFactor);
 
-	NewMat->Diffuse = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sDiffuse);
-	NewMat->Emissive = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sEmissive);
-	NewMat->Bump = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sNormalMap);
-	NewMat->Specular = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sSpecular);
+	std::wstring Name = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sDiffuse);
+	memcpy_s(NewMat.Diffuse, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
+	Name = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sEmissive);
+	memcpy_s(NewMat.Emissive, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
+	Name = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sNormalMap);
+	memcpy_s(NewMat.Bump, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
+	Name = GetMaterialTextureName(_SurMat, FbxSurfaceMaterial::sSpecular);
+	memcpy_s(NewMat.Specular, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
 
 	_MeshData->MatDataVec.push_back(NewMat);
 }
@@ -346,7 +368,8 @@ void NTFbxLoader::FbxMeshData(FbxNode * _Node)
 			NTFbxMeshData* NewMeshData = new NTFbxMeshData();
 			NewFbx->MeshDataVec.push_back(NewMeshData);
 
-			NewMeshData->Name = CA2W(NewMesh->GetName(), CP_UTF8);
+			std::wstring Name = CA2W(NewMesh->GetName(), CP_UTF8).m_psz;
+			memcpy_s(NewMeshData->Name, sizeof(wchar_t) * 512, Name.c_str(), Name.size() * 2);
 
 			int MtrCount = _Node->GetMaterialCount();
 
@@ -594,7 +617,7 @@ void NTFbxLoader::FbxAniData(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
 					continue;
 				}
 
-				NTBone* Bone = NewFbx->FindBone(CA2W(Cluster->GetLink()->GetName()).m_psz);
+				NTBone* Bone = NewFbx->FindBone(CA2W(Cluster->GetLink()->GetName(), CP_UTF8).m_psz);
 
 				if (nullptr == Bone)
 				{
@@ -602,7 +625,8 @@ void NTFbxLoader::FbxAniData(FbxMesh * _Mesh, NTFbxMeshData * _MeshData)
 					return;
 				}
 
-				Bone->BoneMat = GetFbxTransform(_Mesh->GetNode());
+				Bone->BoneAMat = GetFbxTransform(_Mesh->GetNode());
+				Bone->BoneMat = FbxMatConvert(Bone->BoneAMat);
 
 				FbxWeightsAndIndices(Cluster, Bone, _MeshData);
 				FbxOffset(Cluster, Bone, _MeshData);
@@ -642,13 +666,14 @@ void NTFbxLoader::FbxOffset(FbxCluster* _Cluster, NTBone* _Bone, NTFbxMeshData* 
 	// 클러스터 단위의 오프셋 행렬을 구하는 과정
 	// 노드와 링크된 다른 행렬의 역행렬 * 나의 행렬 * 본의 베이스 행렬
 
-	Offset = ClusterLinkTransform.Inverse() * ClusterTransform * _Bone->BoneMat;
+	Offset = ClusterLinkTransform.Inverse() * ClusterTransform * _Bone->BoneAMat;
 
 
 	// 프로젝트의 축의 방향과 Max의 축의 방향이 다르므로 보정해준다.
 	Offset = MatReflect * Offset * MatReflect;
 
-	_Bone->OffsetMat = Offset;
+	_Bone->OffsetAMat = Offset;
+	_Bone->OffsetMat = FbxMatConvert(Offset);
 }
 
 void NTFbxLoader::FbxFrameMat(FbxNode* _Node, FbxCluster* _Cluster, NTBone* _Bone, NTFbxMeshData* _MeshData)
@@ -657,8 +682,8 @@ void NTFbxLoader::FbxFrameMat(FbxNode* _Node, FbxCluster* _Cluster, NTBone* _Bon
 
 	for (size_t i = 0; i < NewFbx->AniVec.size(); i++)
 	{
-		FbxLongLong StartFrame = NewFbx->AniVec[i]->StartTime.GetFrameCount(TimeMode);
-		FbxLongLong EndFrame = NewFbx->AniVec[i]->EndTime.GetFrameCount(TimeMode);
+		FbxLongLong StartFrame = NewFbx->AniVec[i].StartTime.GetFrameCount(TimeMode);
+		FbxLongLong EndFrame = NewFbx->AniVec[i].EndTime.GetFrameCount(TimeMode);
 
 		for (FbxLongLong i = StartFrame; i < EndFrame; ++i)
 		{
@@ -667,13 +692,18 @@ void NTFbxLoader::FbxFrameMat(FbxNode* _Node, FbxCluster* _Cluster, NTBone* _Bon
 
 			Time.SetFrame(i, TimeMode);
 
-			FbxAMatrix TransformMat = _Node->EvaluateGlobalTransform(Time) * _Bone->BoneMat;
+			FbxAMatrix TransformMat = _Node->EvaluateGlobalTransform(Time) * _Bone->BoneAMat;
 			FbxAMatrix TransformCur = TransformMat.Inverse() * _Cluster->GetLink()->EvaluateGlobalTransform(Time);
 
 			TransformCur = MatReflect * TransformCur * MatReflect;
 
 			Frame.Time = Time.GetSecondDouble();
-			Frame.FrameMat = TransformCur;
+			//Frame.FrameMat = TransformCur;
+
+			Frame.S = NTFbxLoader::FbxVec4Convert(TransformCur.GetS());
+			Frame.T = NTFbxLoader::FbxVec4Convert(TransformCur.GetT());
+			Frame.Q = NTFbxLoader::FbxQuaternionConvert(TransformCur.GetQ());
+
 			NewFbx->BoneVec[_Bone->Index]->KeyFrameVec.push_back(Frame);
 		}
 	}

@@ -1,11 +1,12 @@
 #pragma once
 #include "NTRenderer.h"
 #include "NTFBX.h"
+#include "NTFbxData.h"
 
 class NTBoneAniRenderer : public NTRenderer
 {
 private:
-	NTFbxLoader* Loader;
+	Autoptr<NTFbxData> FbxMesh;
 
 	int ClipIndex;
 	int FrameCount;
@@ -17,6 +18,7 @@ private:
 
 public:
 	void Test(const wchar_t* _Path);
+	void SetFbx(const wchar_t* _Name);
 
 public:
 	std::vector<NTMAT> CurAniMatData;
@@ -25,6 +27,9 @@ public:
 
 public:
 	void EndUpdate();
+
+private:
+	void InitMesh();
 
 public:
 	void Render(Autoptr<NTCamera> _Camera);

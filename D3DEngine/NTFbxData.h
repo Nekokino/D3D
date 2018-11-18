@@ -2,6 +2,12 @@
 #include "NTFBX.h"
 #include "NTResource.h"
 
+enum LOADMODE
+{
+	FBXMODE,
+	BIMODE,
+};
+
 class NTFbxBiBoneData
 {
 public:
@@ -53,6 +59,8 @@ public:
 
 public:
 	void NTFbxConvert(NTFBX* _Data);
+	void SaveNTFbx(const wchar_t* _Path);
+	void LoadNTFbx(const wchar_t* _Path);
 
 public:
 	~NTFbxBinary()
@@ -74,8 +82,8 @@ public:
 	NTFbxBinary Data;
 
 public:
-	bool Load(bool _bLoad = false);
-	void SaveBinaryData();
+	bool Load(LOADMODE _Mode = LOADMODE::BIMODE);
+	void SaveBinaryData(const wchar_t* _Path);
 public:
 	NTFbxData();
 	~NTFbxData();

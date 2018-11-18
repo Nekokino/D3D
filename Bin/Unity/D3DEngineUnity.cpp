@@ -1,3 +1,4 @@
+#include "CritSec.cpp"
 #include "DebugFunc.cpp"
 #include "DirectHeader.cpp"
 #include "InputSystem.cpp"
@@ -47,6 +48,7 @@
 #include "NTSubTransform.cpp"
 #include "NTSwitcher.cpp"
 #include "NTTexture.cpp"
+#include "NTThread.cpp"
 #include "NTTransform.cpp"
 #include "NTVertexShader.cpp"
 #include "NTWindow.cpp"

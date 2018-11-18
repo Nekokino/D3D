@@ -7,9 +7,9 @@ public:
 	void Write(void* _Buf, int _ByteSize);
 
 	template<typename T>
-	void Write2(T* _Buf, int _ByteSize)
+	void Write(T& _Buf)
 	{
-		NTFileStream::Write((void*)_Buf, _ByteSize);
+		Write((void*)&_Buf, sizeof(T));
 	}
 public:
 	NTWriteStream(const wchar_t* _Path);

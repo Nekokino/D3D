@@ -16,6 +16,8 @@
 #include <NTLight.h>
 #include <NTFBX.h>
 #include <NTBoneAniRenderer.h>
+#include <NTFbxData.h>
+#include <NTThread.h>
 
 
 
@@ -42,6 +44,8 @@ void BasicDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(BasicDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &BasicDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &BasicDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_LOAD, &BasicDlg::OnBnClickedLoad)
+	ON_BN_CLICKED(IDC_CREATE, &BasicDlg::OnBnClickedCreate)
 END_MESSAGE_MAP()
 
 
@@ -140,16 +144,35 @@ BOOL BasicDlg::OnInitDialog()
 	SphereRightMesh->RndOpt.IsDefferdOrForward = 0;
 	SphereRightMesh->SetMesh(L"Sphere");
 
-	Autoptr<NTObject> TestAniobj = TabScene->CreateObject(L"TestAniObj", 0);
-	TestAniobj->GetTransform()->SetLocalScale(NTVEC(1.0f, 1.0f, 1.0f));
-	TestAniobj->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, 0.0f));
-	Autoptr<NTBoneAniRenderer> TestAniRenderer = TestAniobj->AddComponent<NTBoneAniRenderer>();
-	//TestAniRenderer->Test((PathSystem::FindPathString(L"Mesh") + L"Warehouse01.FBX").c_str());
-	//TestAniRenderer->RndOpt.IsBoneAni = 0;
-	TestAniRenderer->Test((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str());
-	//TestAniRenderer->Test((PathSystem::FindPathString(L"Mesh") + L"unitychan.fbx").c_str());
+	
 	
 
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 예외: OCX 속성 페이지는 FALSE를 반환해야 합니다.
+}
+
+unsigned int __stdcall FbxLoadingThreadFunc(void* _Arg)
+{
+	Autoptr<NTFbxData> FbxData = ResourceSystem<NTFbxData>::Load((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str(), LOADMODE::FBXMODE);
+	FbxData->SaveBinaryData((PathSystem::FindPathString(L"Data") + L"Monster3.NTFBX").c_str());
+
+	return 0;
+}
+
+void BasicDlg::OnBnClickedLoad()
+{
+	NTThread::NTStartThread(L"Load1", FbxLoadingThreadFunc);
+}
+
+void BasicDlg::OnBnClickedCreate()
+{
+	Autoptr<NTScene> TabScene = NTWinShortCut::GetMainSceneSystem().FindScene(SceneName.GetString());
+	
+	Autoptr<NTObject> TestAniobj = TabScene->CreateObject(L"TestAniObj", 0);
+	TestAniobj->GetTransform()->SetLocalScale(NTVEC(1.0f, 1.0f, 1.0f));
+	TestAniobj->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, 0.0f));
+	Autoptr<NTBoneAniRenderer> TestAniRenderer = TestAniobj->AddComponent<NTBoneAniRenderer>();
+
+	Autoptr<NTFbxData> FbxData = ResourceSystem<NTFbxData>::Load((PathSystem::FindPathString(L"Data") + L"Monster3.NTFBX").c_str());
+	TestAniRenderer->SetFbx(L"Monster3.NTFBX");
 }
