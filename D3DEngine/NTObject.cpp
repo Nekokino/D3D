@@ -4,8 +4,9 @@
 #include "NTScene.h"
 #include "NTWinShortCut.h"
 #include "NTRenderSystem.h"
-#include "NT2DCollisionSystem.h"
+#include "NTCollisionSystem.h"
 #include "NT2DCollision.h"
+#include "NT3DCollisionBase.h"
 #include "NTRenderer.h"
 
 NTObject::NTObject() : Transform(nullptr), Parent(nullptr)
@@ -357,19 +358,21 @@ void NTObject::PushOverRenderer(NTRenderSystem * _RendSys)
 	}
 }
 
-void NTObject::PushOverCollider2D(NT2DCollisionSystem * _2DColSys)
+void NTObject::PushOverCollider(NTCollisionSystem * _2DColSys, NTCollisionSystem* _3DColSys)
 {
 	ListStartIter = ComList.begin();
 	ListEndIter = ComList.end();
 
 	for (; ListStartIter != ListEndIter; ++ListStartIter)
 	{
-		if (false == (*ListStartIter)->IsParent<NT2DCollision>())
+		if (true == (*ListStartIter)->IsParent<NT2DCollisionBase>())
 		{
-			continue;
+			_2DColSys->Push((*ListStartIter));
 		}
-
-		_2DColSys->Push((*ListStartIter));
+		else if (true == (*ListStartIter)->IsParent<NT3DCollisionBase>())
+		{
+			_3DColSys->Push((*ListStartIter));
+		}
 	}
 
 	ChildStartIter = ChildList.begin();
@@ -377,6 +380,6 @@ void NTObject::PushOverCollider2D(NT2DCollisionSystem * _2DColSys)
 
 	for (; ChildStartIter != ChildEndIter; ++ChildStartIter)
 	{
-		(*ChildStartIter)->PushOverCollider2D(_2DColSys);
+		(*ChildStartIter)->PushOverCollider(_2DColSys, _3DColSys);
 	}
 }

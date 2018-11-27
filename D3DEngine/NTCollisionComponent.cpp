@@ -30,6 +30,9 @@ void NTCollisionComponent::CollsionInit()
 	ColFunction[CT_2D_POINT][CT_2D_CIRCLE] = &NTCollisionFunction::P2CFigure;
 	ColFunction[CT_2D_RECT][CT_2D_CIRCLE] = &NTCollisionFunction::R2CFigure;
 	ColFunction[CT_2D_CIRCLE][CT_2D_RECT] = &NTCollisionFunction::C2RFigure;
+	ColFunction[CT_3D_SPHERE][CT_3D_SPHERE] = &NTCollisionFunction::S2SFigure;
+	ColFunction[CT_3D_SPHERE][CT_3D_RAY] = &NTCollisionFunction::S2RayFigure;
+	ColFunction[CT_3D_RAY][CT_3D_SPHERE] = &NTCollisionFunction::Ray2SFigure;
 }
 
 bool NTCollisionComponent::Init()
@@ -42,14 +45,14 @@ void NTCollisionComponent::CollisionFigureUpdate()
 
 }
 
-bool NTCollisionComponent::ColCheck(NTCollisionComponent* _Col)
+void NTCollisionComponent::ColCheck(NTCollisionComponent* _Col)
 {
 	if (nullptr == ColFunction)
 	{
-		return false;
+		return;
 	}
 
-	bool Check = ColFunction[Figure->Type][_Col->Figure->Type](Figure, _Col->Figure);
+	bool Check = FigureCheck(_Col->Figure);
 
 	if (true == Check)
 	{
@@ -76,7 +79,22 @@ bool NTCollisionComponent::ColCheck(NTCollisionComponent* _Col)
 		}
 	}
 
-	return false;
+	return;
+}
+
+bool NTCollisionComponent::FigureCheck(NTCollisionFigure * _Figure)
+{
+	if (nullptr == _Figure)
+	{
+		return false;
+	}
+
+	if (_Figure->Type == CT_MAX || Figure->Type == CT_MAX)
+	{
+		return false;
+	}
+
+	return ColFunction[Figure->Type][_Figure->Type](Figure, _Figure);
 }
 
 void NTCollisionComponent::CallEnterList(NTCollisionComponent * _Right)

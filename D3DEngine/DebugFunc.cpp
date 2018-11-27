@@ -102,6 +102,15 @@ void DebugFunc::DrawLog(wchar_t * _Str, NTVEC _Color)
 	Log.push_back({ _Str , _Color });
 }
 
+void DebugFunc::DrawDbgMesh(Autoptr<NTMesh> _Mesh)
+{
+	Autoptr<NTMaterial> Material = ResourceSystem<NTMaterial>::Find(L"DbgMat");
+
+	Material->Update();
+	_Mesh->Update();
+	_Mesh->Render();
+}
+
 void DebugFunc::RenderLog()
 {
 	ListStartIter = Log.begin();

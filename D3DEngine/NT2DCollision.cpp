@@ -24,7 +24,7 @@ bool NT2DCollision::Init(int _Order)
 {
 	Order = _Order;
 
-	GetScene()->_2DCollsionSystem.Push(this);
+	GetScene()->_2DCollisionSystem.Push(this);
 
 	return true;
 }

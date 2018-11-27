@@ -18,6 +18,8 @@
 #include <NTBoneAniRenderer.h>
 #include <NTFbxData.h>
 #include <NTThread.h>
+#include <NTSphere.h>
+#include <NTRay.h>
 
 
 
@@ -38,6 +40,7 @@ BasicDlg::~BasicDlg()
 void BasicDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BONETREE, BoneTree);
 }
 
 
@@ -46,6 +49,7 @@ BEGIN_MESSAGE_MAP(BasicDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &BasicDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_LOAD, &BasicDlg::OnBnClickedLoad)
 	ON_BN_CLICKED(IDC_CREATE, &BasicDlg::OnBnClickedCreate)
+	ON_NOTIFY(TVN_SELCHANGED, IDC_BONETREE, &BasicDlg::OnTvnSelchangedBonetree)
 END_MESSAGE_MAP()
 
 
@@ -144,6 +148,17 @@ BOOL BasicDlg::OnInitDialog()
 	SphereRightMesh->RndOpt.IsDefferdOrForward = 0;
 	SphereRightMesh->SetMesh(L"Sphere");
 
+	TabScene->_3DCollisionSystem.Link(101, 100);
+	TabScene->_3DCollisionSystem.Link(100, 101);
+
+	Autoptr<NTSphere> ColLeft = SphereLeft->AddComponent<NTSphere>(100);
+	Autoptr<NTSphere> ColRight = SphereRight->AddComponent<NTSphere>(101);
+
+	Autoptr<NTRay> RayCol = TabScene->GetMainCamera()->AddComponent<NTRay>(101);
+	RayCol->EnterFunc(this, &BasicDlg::ColTest);
+
+	ColLeft->EnterFunc(this, &BasicDlg::ColTest);
+	ColRight->EnterFunc(this, &BasicDlg::ColTest);
 	
 	
 
@@ -153,8 +168,10 @@ BOOL BasicDlg::OnInitDialog()
 
 unsigned int __stdcall FbxLoadingThreadFunc(void* _Arg)
 {
-	Autoptr<NTFbxData> FbxData = ResourceSystem<NTFbxData>::Load((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str(), LOADMODE::FBXMODE);
-	FbxData->SaveBinaryData((PathSystem::FindPathString(L"Data") + L"Monster3.NTFBX").c_str());
+	Autoptr<NTFbxData> FbxData = ResourceSystem<NTFbxData>::Load((PathSystem::FindPathString(L"Mesh") + L"Warehouse01.FBX").c_str(), LOADMODE::FBXMODE);
+	FbxData->SaveBinaryData((PathSystem::FindPathString(L"Data") + L"Warehouse01.NTFBX").c_str());
+
+	OutputDebugString(L"Fbx Load Complete...");
 
 	return 0;
 }
@@ -174,5 +191,70 @@ void BasicDlg::OnBnClickedCreate()
 	Autoptr<NTBoneAniRenderer> TestAniRenderer = TestAniobj->AddComponent<NTBoneAniRenderer>();
 
 	Autoptr<NTFbxData> FbxData = ResourceSystem<NTFbxData>::Load((PathSystem::FindPathString(L"Data") + L"Monster3.NTFBX").c_str());
+	
+	
 	TestAniRenderer->SetFbx(L"Monster3.NTFBX");
+
+	//HTREEITEM FolderItem = ResTree.InsertItem(FindData.cFileName, _ParentItem);
+	//ResTree.SetItemData(FolderItem, 0);
+	//GetResource(FindData.cFileName, FolderItem);
+
+	NTFbxLoader FbxBoneLoader;
+	FbxBoneLoader.LoadFbxBone((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str());
+
+	BoneTree.DeleteAllItems();
+
+	for (size_t i = 0; i < FbxBoneLoader.NewFbx->BoneVec.size(); i++)
+	{
+		if (FbxBoneLoader.NewFbx->BoneVec[i]->Parent == nullptr)
+		{
+			HTREEITEM Item = BoneTree.InsertItem(FbxBoneLoader.NewFbx->BoneVec[i]->Name, nullptr);
+			BoneTree.SetItemData(Item, (DWORD_PTR)FbxData->FindBone(FbxBoneLoader.NewFbx->BoneVec[i]->Name));
+		}
+		else
+		{
+			HTREEITEM ParentItem = FindTreeItem(FbxBoneLoader.NewFbx->BoneVec[i]->Parent->Name, BoneTree, BoneTree.GetRootItem());
+			HTREEITEM Item = BoneTree.InsertItem(FbxBoneLoader.NewFbx->BoneVec[i]->Name, ParentItem);
+			BoneTree.SetItemData(Item, (DWORD_PTR)FbxData->FindBone(FbxBoneLoader.NewFbx->BoneVec[i]->Name));
+		}
+	}
+
+	Autoptr<NTObject> BoneSphere = TabScene->CreateObject(L"Left", 0);
+	BoneSphere->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
+	BoneSphere->GetTransform()->SetLocalPosition(NTVEC{ 0.0f, 0.0f, 0.0f });
+	Autoptr<NT3DMeshRenderer> BoneSphereMesh = BoneSphere->AddComponent<NT3DMeshRenderer>();
+	BoneSphereMesh->SetMesh(L"Sphere");
+	BoneSphereMesh->RndOpt.IsLight = 1;
+	BoneSphereMesh->SetMaterial(L"Mesh3DMat");
+	BoneSphereMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_COLOR, 0, L"rock2.png");
+	BoneSphereMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_BUMP, 1, L"rock2_bump.png");
+
+	MT = BoneSphere->AddComponent<MoveTest>();
+
+	MT->SetAniRenderer(TestAniRenderer);
+}
+
+void BasicDlg::ColTest(NTCollisionComponent * _Left, NTCollisionComponent * _Right)
+{
+	int a = 0;
+
+	// 레이 스피어 충돌 확인해볼것,.
+}
+
+
+void BasicDlg::OnTvnSelchangedBonetree(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMTREEVIEW pNMTreeView = reinterpret_cast<LPNMTREEVIEW>(pNMHDR);
+
+	UpdateData(TRUE);
+
+	CString BoneName;
+
+	BoneName = BoneTree.GetItemText(pNMTreeView->itemNew.hItem);
+
+	MT->SetBoneName(BoneName);
+
+	UpdateData(FALSE);
+
+	*pResult = 0;
 }

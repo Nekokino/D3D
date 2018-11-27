@@ -31,9 +31,6 @@
     <ClInclude Include="NTRenderSystem.h">
       <Filter>02 Window\SubSystem\02 Scene\01 Render</Filter>
     </ClInclude>
-    <ClInclude Include="NT2DCollisionSystem.h">
-      <Filter>02 Window\SubSystem\02 Scene\02 Collsion</Filter>
-    </ClInclude>
     <ClInclude Include="NTSceneSystem.h">
       <Filter>02 Window\SubSystem\02 Scene</Filter>
     </ClInclude>
@@ -114,12 +111,6 @@
     </ClInclude>
     <ClInclude Include="NTRenderer.h">
       <Filter>05 Object\Component\EngineComponent\02 Render</Filter>
-    </ClInclude>
-    <ClInclude Include="NT2DCollision.h">
-      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub</Filter>
-    </ClInclude>
-    <ClInclude Include="NT2DCollisionBase.h">
-      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub</Filter>
     </ClInclude>
     <ClInclude Include="NTCollisionComponent.h">
       <Filter>05 Object\Component\EngineComponent\03 Collision</Filter>
@@ -213,6 +204,24 @@
     <ClInclude Include="CritSec.h">
       <Filter>08 Thread</Filter>
     </ClInclude>
+    <ClInclude Include="NTCollisionSystem.h">
+      <Filter>02 Window\SubSystem\02 Scene\02 Collsion</Filter>
+    </ClInclude>
+    <ClInclude Include="NT2DCollision.h">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="NT2DCollisionBase.h">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="NT3DCollisionBase.h">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="NTSphere.h">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="NTRay.h">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\3D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -238,9 +247,6 @@
     </ClCompile>
     <ClCompile Include="NTRenderSystem.cpp">
       <Filter>02 Window\SubSystem\02 Scene\01 Render</Filter>
-    </ClCompile>
-    <ClCompile Include="NT2DCollisionSystem.cpp">
-      <Filter>02 Window\SubSystem\02 Scene\02 Collsion</Filter>
     </ClCompile>
     <ClCompile Include="NTSceneSystem.cpp">
       <Filter>02 Window\SubSystem\02 Scene</Filter>
@@ -313,12 +319,6 @@
     </ClCompile>
     <ClCompile Include="NTRenderer.cpp">
       <Filter>05 Object\Component\EngineComponent\02 Render</Filter>
-    </ClCompile>
-    <ClCompile Include="NT2DCollision.cpp">
-      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub</Filter>
-    </ClCompile>
-    <ClCompile Include="NT2DCollisionBase.cpp">
-      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub</Filter>
     </ClCompile>
     <ClCompile Include="NTCollisionComponent.cpp">
       <Filter>05 Object\Component\EngineComponent\03 Collision</Filter>
@@ -393,6 +393,24 @@
     </ClCompile>
     <ClCompile Include="CritSec.cpp">
       <Filter>08 Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="NTCollisionSystem.cpp">
+      <Filter>02 Window\SubSystem\02 Scene\02 Collsion</Filter>
+    </ClCompile>
+    <ClCompile Include="NT2DCollision.cpp">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="NT2DCollisionBase.cpp">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="NT3DCollisionBase.cpp">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="NTRay.cpp">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NTSphere.cpp">
+      <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\3D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -494,6 +512,12 @@
     </Filter>
     <Filter Include="09 Header">
       <UniqueIdentifier>{92ff58a4-6fc6-4846-8178-79fcc34e454c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Object\Component\EngineComponent\03 Collision\Sub\2D">
+      <UniqueIdentifier>{770b9c67-4f02-4632-9c70-4c936009bf43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05 Object\Component\EngineComponent\03 Collision\Sub\3D">
+      <UniqueIdentifier>{cf0ece4d-59ae-407f-918f-5d8d4b8976ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

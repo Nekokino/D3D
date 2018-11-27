@@ -29,7 +29,8 @@ void NTScene::Progress()
 	FinalUpdate();
 	DbgUpdate();
 
-	_2DCollsionSystem.Progress();
+	_2DCollisionSystem.Progress();
+	_3DCollisionSystem.Progress();
 }
 
 void NTScene::PreUpdate()
@@ -150,7 +151,8 @@ void NTScene::DbgRender()
 void NTScene::Release()
 {
 	RenderSystem.Release();
-	_2DCollsionSystem.Release();
+	_2DCollisionSystem.Release();
+	_3DCollisionSystem.Release();
 
 	MapStartIter = ObjectMap.begin();
 	MapEndIter = ObjectMap.end();
@@ -341,7 +343,7 @@ void NTScene::PushOverObject(NTObject * _Obj)
 	ObjIter->second.push_back(_Obj);
 
 	_Obj->PushOverRenderer(&RenderSystem);
-	_Obj->PushOverCollider2D(&_2DCollsionSystem);
+	_Obj->PushOverCollider(&_2DCollisionSystem, &_3DCollisionSystem);
 }
 
 NTCamera * NTScene::GetMainCamera()

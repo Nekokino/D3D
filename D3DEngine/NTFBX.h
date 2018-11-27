@@ -172,6 +172,7 @@ public:
 public:
 	// 기본 데이터
 	void LoadFbx(const wchar_t* _Path);
+	void LoadFbxBone(const wchar_t* _Path);
 
 private:
 	void CalBoneCount(FbxNode* _Node);

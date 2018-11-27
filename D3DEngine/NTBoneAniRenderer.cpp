@@ -28,6 +28,18 @@ void NTBoneAniRenderer::SetFbx(const wchar_t * _Name)
 	InitMesh();
 }
 
+NTMAT NTBoneAniRenderer::GetBoneMat(const wchar_t * _Name)
+{
+	NTFbxBiBoneData* Bone = FbxMesh->FindBone(_Name);
+
+	return CurAniBoneData[Bone->Index];
+}
+
+NTMAT NTBoneAniRenderer::GetWorldBoneMat(const wchar_t * _Name)
+{
+	return GetBoneMat(_Name) * GetTransform()->GetWorldMatrix();
+}
+
 void NTBoneAniRenderer::EndUpdate()
 {
 	if (FbxMesh == nullptr)
@@ -84,7 +96,8 @@ void NTBoneAniRenderer::EndUpdate()
 
 		DirectX::XMVECTOR Zero = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
 
-		CurAniMatData[i] = FbxMesh->Data.BoneVec[i]->OffsetMat * DirectX::XMMatrixAffineTransformation(S, Zero, Q, T);
+		CurAniBoneData[i] = DirectX::XMMatrixAffineTransformation(S, Zero, Q, T);
+		CurAniMatData[i] = FbxMesh->Data.BoneVec[i]->OffsetMat * CurAniBoneData[i];
 	}
 
 	BoneTex->SetPixel(&CurAniMatData[0], sizeof(NTMAT) * CurAniMatData.size());
@@ -127,7 +140,14 @@ void NTBoneAniRenderer::InitMesh()
 			case 0:
 				SetMaterial(L"Mesh3DMat", MatIdx);
 			case 1:
-				SetMaterial(L"DefferdAniMat", MatIdx);
+				if (0 != FbxMesh->Data.AniVec.size())
+				{
+					SetMaterial(L"DefferdAniMat", MatIdx);
+				}
+				else
+				{
+					SetMaterial(L"DefferdMat", MatIdx);
+				}
 			default:
 				break;
 			}
@@ -160,6 +180,7 @@ void NTBoneAniRenderer::InitMesh()
 
 	if (0 >= FbxMesh->Data.AniVec.size())
 	{
+		RndOpt.IsBoneAni = 0;
 		return;
 	}
 
@@ -167,6 +188,7 @@ void NTBoneAniRenderer::InitMesh()
 	BoneTex->Create((UINT)FbxMesh->Data.BoneVec.size() * 4, 1, D3D11_BIND_SHADER_RESOURCE, DXGI_FORMAT_R32G32B32A32_FLOAT, D3D11_USAGE_DYNAMIC);
 
 	CurAniMatData.resize(FbxMesh->Data.BoneVec.size());
+	CurAniBoneData.resize(FbxMesh->Data.BoneVec.size());
 }
 
 void NTBoneAniRenderer::Render(Autoptr<NTCamera> _Camera)

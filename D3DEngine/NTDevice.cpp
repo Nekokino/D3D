@@ -1027,6 +1027,20 @@ bool NTDevice::Create3DMesh()
 
 bool NTDevice::Create3DMaterial()
 {
+	///////////////////////////////////////////////// 디이버그 머티리얼
+
+	Autoptr<NTVertexShader> DbgVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DbgVtx", L"Shader", L"Dbg.fx", "VS_Dbg");
+	DbgVtx->AddLayoutClose("POSITION", 0, DXGI_FORMAT::DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	Autoptr<NTPixelShader> DbgPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"DbgPix", L"Shader", L"Dbg.fx", "PS_Dbg");
+
+	Autoptr<NTMaterial> DbgMat = ResourceSystem<NTMaterial>::Create(L"DbgMat");
+	DbgMat->SetVertexShader(L"DbgVtx");
+	DbgMat->SetPixelShader(L"DbgPix");
+	DbgMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////// 디이버그 머티리얼
+
+
 	////////////////////////////////////////////////////////////////// 디폴트 쉐이더 시작
 
 	Autoptr<NTVertexShader> DefaultVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"DefaultVtx", L"Shader", L"Default.fx", "VS_Default");

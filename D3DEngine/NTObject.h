@@ -16,7 +16,7 @@ class NTScene;
 class NTComponent;
 class NTTransform;
 class NTRenderSystem;
-class NT2DCollisionSystem;
+class NTCollisionSystem;
 class NTObject : public NTWinParent, public NTSceneParent, public NTSwitcher
 {
 public:
@@ -229,7 +229,7 @@ public:
 
 private:
 	void PushOverRenderer(NTRenderSystem* _RendSys);
-	void PushOverCollider2D(NT2DCollisionSystem* _2DColSys);
+	void PushOverCollider(NTCollisionSystem* _2DColSys, NTCollisionSystem* _3DColSys);
 
 private:
 	NTObject();

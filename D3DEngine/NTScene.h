@@ -3,7 +3,7 @@
 #include "NTWinParent.h"
 #include "NTSceneParent.h"
 #include "NTRenderSystem.h"
-#include "NT2DCollisionSystem.h"
+#include "NTCollisionSystem.h"
 
 #include <unordered_map>
 #include <list>
@@ -179,7 +179,8 @@ public:
 	NTRenderSystem RenderSystem;
 
 public:
-	NT2DCollisionSystem _2DCollsionSystem;
+	NTCollisionSystem _2DCollisionSystem;
+	NTCollisionSystem _3DCollisionSystem;
 
 public:
 	NTSceneSystem* SceneSystem;

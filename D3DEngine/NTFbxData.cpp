@@ -47,33 +47,41 @@ void NTFbxBinary::NTFbxConvert(NTFBX * _Data)
 		MeshVec.push_back(BiMeshData);
 	}
 
-	AniVec.resize(_Data->AniVec.size());
-
-	memcpy_s(&AniVec[0], sizeof(NTFbxAniInfo) * (UINT)_Data->AniVec.size(), &_Data->AniVec[0], sizeof(NTFbxAniInfo) * (UINT)_Data->AniVec.size());
-
-	BoneVec.resize(_Data->BoneVec.size());
-
-	for (size_t i = 0; i < _Data->BoneVec.size(); i++)
+	if (_Data->AniVec.size() > 0)
 	{
-		BoneVec[i] = new NTFbxBiBoneData();
+		AniVec.resize(_Data->AniVec.size());
 
-		BoneVec[i]->BoneMat = _Data->BoneVec[i]->BoneMat;
-		BoneVec[i]->OffsetMat = _Data->BoneVec[i]->OffsetMat;
-		BoneVec[i]->Depth = _Data->BoneVec[i]->Depth;
-		BoneVec[i]->Index = _Data->BoneVec[i]->Index;
-
-		memcpy_s(BoneVec[i]->Name, sizeof(wchar_t) * 512, _Data->BoneVec[i]->Name, sizeof(wchar_t) * 512);
-
-		BoneVec[i]->KeyFrameVec.resize(_Data->BoneVec[i]->KeyFrameVec.size());
-
-		if (_Data->BoneVec[i]->KeyFrameVec.size() == 0)
-		{
-			continue;
-		}
-
-		memcpy_s(&BoneVec[i]->KeyFrameVec[0], sizeof(NTKeyFrame) * (UINT)BoneVec[i]->KeyFrameVec.size(), &_Data->BoneVec[i]->KeyFrameVec[0], sizeof(NTKeyFrame) * (UINT)BoneVec[i]->KeyFrameVec.size());
-
+		memcpy_s(&AniVec[0], sizeof(NTFbxAniInfo) * (UINT)_Data->AniVec.size(), &_Data->AniVec[0], sizeof(NTFbxAniInfo) * (UINT)_Data->AniVec.size());
 	}
+
+	if (_Data->BoneVec.size() > 0)
+	{
+		BoneVec.resize(_Data->BoneVec.size());
+
+		for (size_t i = 0; i < _Data->BoneVec.size(); i++)
+		{
+			BoneVec[i] = new NTFbxBiBoneData();
+
+			BoneVec[i]->BoneMat = _Data->BoneVec[i]->BoneMat;
+			BoneVec[i]->OffsetMat = _Data->BoneVec[i]->OffsetMat;
+			BoneVec[i]->Depth = _Data->BoneVec[i]->Depth;
+			BoneVec[i]->Index = _Data->BoneVec[i]->Index;
+
+			memcpy_s(BoneVec[i]->Name, sizeof(wchar_t) * 512, _Data->BoneVec[i]->Name, sizeof(wchar_t) * 512);
+
+			BoneVec[i]->KeyFrameVec.resize(_Data->BoneVec[i]->KeyFrameVec.size());
+
+			if (_Data->BoneVec[i]->KeyFrameVec.size() == 0)
+			{
+				continue;
+			}
+
+			memcpy_s(&BoneVec[i]->KeyFrameVec[0], sizeof(NTKeyFrame) * (UINT)BoneVec[i]->KeyFrameVec.size(), &_Data->BoneVec[i]->KeyFrameVec[0], sizeof(NTKeyFrame) * (UINT)BoneVec[i]->KeyFrameVec.size());
+
+		}
+	}
+
+	
 }
 
 void NTFbxBinary::SaveNTFbx(const wchar_t * _Path)
@@ -112,14 +120,22 @@ void NTFbxBinary::SaveNTFbx(const wchar_t * _Path)
 
 		Stream.Write(MatSize);
 
-		Stream.Write(&MeshVec[MeshIdx]->MatVec[0], sizeof(NTFbxMatData) * (UINT)MeshVec[MeshIdx]->MatVec.size());
+		if (MatSize != 0)
+		{
+			Stream.Write(&MeshVec[MeshIdx]->MatVec[0], sizeof(NTFbxMatData) * (UINT)MeshVec[MeshIdx]->MatVec.size());
+		}
+		
 	}
 
 	int AniSize = (int)AniVec.size();
 	
 	Stream.Write(AniSize);
 
-	Stream.Write(&AniVec[0], sizeof(NTFbxAniInfo) * (UINT)AniSize);
+	if (AniSize != 0)
+	{
+		Stream.Write(&AniVec[0], sizeof(NTFbxAniInfo) * (UINT)AniSize);
+	}
+	
 
 	int BoneSize = (int)BoneVec.size();
 
@@ -149,6 +165,11 @@ void NTFbxBinary::LoadNTFbx(const wchar_t * _Path)
 
 	int MeshSize;
 	Stream.Read(MeshSize);
+
+	if (MeshSize == 0)
+	{
+		return;
+	}
 	MeshVec.resize(MeshSize);
 
 	for (size_t MeshIdx = 0; MeshIdx < MeshVec.size(); MeshIdx++)
@@ -181,36 +202,48 @@ void NTFbxBinary::LoadNTFbx(const wchar_t * _Path)
 
 		int MatSize;
 		Stream.Read(MatSize);
-		MeshVec[MeshIdx]->MatVec.resize(MatSize);
-		Stream.Read(&MeshVec[MeshIdx]->MatVec[0], sizeof(NTFbxMatData) * (UINT)MatSize);
+		if (MatSize != 0)
+		{
+			MeshVec[MeshIdx]->MatVec.resize(MatSize);
+			Stream.Read(&MeshVec[MeshIdx]->MatVec[0], sizeof(NTFbxMatData) * (UINT)MatSize);
+		}
+		
 	}
 
 	int AniSize;
 	Stream.Read(AniSize);
-	AniVec.resize(AniSize);
-	Stream.Read(&AniVec[0], sizeof(NTFbxAniInfo) * (UINT)AniSize);
+	if (AniSize != 0)
+	{
+		AniVec.resize(AniSize);
+		Stream.Read(&AniVec[0], sizeof(NTFbxAniInfo) * (UINT)AniSize);
+	}
+
 
 	int BoneSize;
 	Stream.Read(BoneSize);
-	BoneVec.resize(BoneSize);
-
-	for (int i = 0; i < BoneSize; i++)
+	if (BoneSize != 0)
 	{
-		BoneVec[i] = new NTFbxBiBoneData();
+		BoneVec.resize(BoneSize);
 
-		Stream.Read(BoneVec[i]->Name, sizeof(wchar_t) * 512);
-		Stream.Read(BoneVec[i]->BoneMat);
-		Stream.Read(BoneVec[i]->OffsetMat);
-		Stream.Read(BoneVec[i]->Depth);
-		Stream.Read(BoneVec[i]->Index);
-
-		int FrameSize;
-		Stream.Read(FrameSize);
-
-		if (0 < FrameSize)
+		for (int i = 0; i < BoneSize; i++)
 		{
-			BoneVec[i]->KeyFrameVec.resize(FrameSize);
-			Stream.Read(&(BoneVec[i]->KeyFrameVec[0]), sizeof(NTKeyFrame) * FrameSize);
+			BoneVec[i] = new NTFbxBiBoneData();
+
+			Stream.Read(BoneVec[i]->Name, sizeof(wchar_t) * 512);
+			BoneMap.insert(std::map<std::wstring, NTFbxBiBoneData*>::value_type(BoneVec[i]->Name, BoneVec[i]));
+			Stream.Read(BoneVec[i]->BoneMat);
+			Stream.Read(BoneVec[i]->OffsetMat);
+			Stream.Read(BoneVec[i]->Depth);
+			Stream.Read(BoneVec[i]->Index);
+
+			int FrameSize;
+			Stream.Read(FrameSize);
+
+			if (0 < FrameSize)
+			{
+				BoneVec[i]->KeyFrameVec.resize(FrameSize);
+				Stream.Read(&(BoneVec[i]->KeyFrameVec[0]), sizeof(NTKeyFrame) * FrameSize);
+			}
 		}
 	}
 }
@@ -235,4 +268,17 @@ bool NTFbxData::Load(LOADMODE _Mode)
 void NTFbxData::SaveBinaryData(const wchar_t* _Path)
 {
 	Data.SaveNTFbx(_Path);
+}
+
+NTFbxBiBoneData * NTFbxData::FindBone(const wchar_t * _Name)
+{
+	std::map<std::wstring, NTFbxBiBoneData*>::iterator Iter = Data.BoneMap.find(_Name);
+
+	if (Iter != Data.BoneMap.end())
+	{
+		return Iter->second;
+	}
+
+	tassert(true);
+	return nullptr;
 }

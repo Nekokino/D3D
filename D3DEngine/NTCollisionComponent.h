@@ -50,6 +50,28 @@ public:
 	virtual ~_2DColFigure() {}
 };
 
+class NTSphereData : public NTCollisionFigure
+{
+public:
+	DirectX::BoundingSphere Sphere;
+
+public:
+	NTSphereData() {}
+	virtual ~NTSphereData() {}
+};
+
+class NTRayData : public NTCollisionFigure
+{
+public:
+	NTVEC Origin;
+	NTVEC Direction;
+	float Dis;
+
+public:
+	NTRayData() {}
+	~NTRayData() {}
+};
+
 class NTCollisionFunction
 {
 public:
@@ -143,15 +165,51 @@ public:
 	{
 		return C2RFigure(_Right, _Left);
 	}
+
+	static bool S2SFigure(NTCollisionFigure* _Left, NTCollisionFigure* _Right)
+	{
+#ifdef _DEBUG
+		if (nullptr == _Left || nullptr == _Right)
+		{
+			return false;
+		}
+		if (_Left->Type != COLTYPE::CT_3D_SPHERE || _Right->Type != COLTYPE::CT_3D_SPHERE)
+		{
+			return false;
+		}
+#endif
+		return MathSystem::S2SCol(((NTSphereData*)_Left)->Sphere, ((NTSphereData*)_Right)->Sphere);
+	}
+
+	static bool S2RayFigure(NTCollisionFigure* _Left, NTCollisionFigure* _Right)
+	{
+#ifdef _DEBUG
+		if (nullptr == _Left || nullptr == _Right)
+		{
+			return false;
+		}
+		if (_Left->Type != COLTYPE::CT_3D_SPHERE || _Right->Type != COLTYPE::CT_3D_RAY)
+		{
+			return false;
+		}
+#endif
+		NTRayData* Data = (NTRayData*)_Right;
+		return MathSystem::S2RayCol(((NTSphereData*)_Left)->Sphere, Data->Origin, Data->Direction, Data->Dis);
+	}
+
+	static bool Ray2SFigure(NTCollisionFigure* _Left, NTCollisionFigure* _Right)
+	{
+		return S2RayFigure(_Right, _Left);
+	}
 };
 
 class WinCore;
-class NT2DCollisionSystem;
+class NTCollisionSystem;
 class NTCollisionComponent : public NTStCom
 {
 public:
 	friend WinCore;
-	friend NT2DCollisionSystem;
+	friend NTCollisionSystem;
 
 private:
 	static void CollsionInit();
@@ -182,7 +240,9 @@ protected:
 	}
 
 public:
-	bool ColCheck(NTCollisionComponent* _Col);
+	void ColCheck(NTCollisionComponent* _Col);
+	bool FigureCheck(NTCollisionFigure* _Figure);
+
 
 	void ClearSet();
 

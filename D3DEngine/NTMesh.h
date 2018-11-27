@@ -9,6 +9,9 @@ public:
 	UINT VtxSize;
 	UINT VtxCount;
 	D3D11_BUFFER_DESC BufDesc = D3D11_BUFFER_DESC();
+
+	void SetVtxData(void* _VtxMem, UINT _VtxSize);
+
 	NTVertexBuffer() : VtxBuf(nullptr) {}
 	~NTVertexBuffer()
 	{
@@ -61,6 +64,8 @@ public:
 	void Render(UINT _StartIdx = 0, UINT _EndIdx = 1, UINT* _Off = nullptr);
 
 	void UpdateAndRender(UINT _Vtx, UINT _Sub);
+
+	void SetVtxData(UINT _BufIdx, void* _VtxMem, UINT _VtxSize);
 
 public:
 	NTMesh();

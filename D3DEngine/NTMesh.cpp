@@ -133,3 +133,26 @@ void NTMesh::UpdateAndRender(UINT _Vtx, UINT _Sub)
 	NTWinShortCut::GetContext()->IASetIndexBuffer(IdxBufVec[_Sub]->IdxBuf, IdxBufVec[_Sub]->IdxFormat, 0);
 	NTWinShortCut::GetContext()->DrawIndexed(IdxBufVec[_Sub]->IdxCount, 0, 0);
 }
+
+void NTMesh::SetVtxData(UINT _BufIdx, void* _VtxMem, UINT _VtxSize)
+{
+	if (VtxBufInfoVec.size() <= _BufIdx)
+	{
+		tassert(true);
+
+		return;
+	}
+
+	VtxBufInfoVec[_BufIdx]->SetVtxData(_VtxMem, _VtxSize);
+}
+
+void NTVertexBuffer::SetVtxData(void * _VtxMem, UINT _VtxSize)
+{
+	D3D11_MAPPED_SUBRESOURCE Sub = {};
+
+	NTWinShortCut::GetContext()->Map(VtxBuf, 0, D3D11_MAP_WRITE_DISCARD, 0, &Sub);
+
+	memcpy(Sub.pData, &_VtxMem, _VtxSize);
+
+	NTWinShortCut::GetContext()->Unmap(VtxBuf, 0);
+}

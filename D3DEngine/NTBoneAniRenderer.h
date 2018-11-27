@@ -21,9 +21,14 @@ public:
 	void SetFbx(const wchar_t* _Name);
 
 public:
+	std::vector<NTMAT> CurAniBoneData;
 	std::vector<NTMAT> CurAniMatData;
 
 	Autoptr<NTTexture> BoneTex;
+
+public:
+	NTMAT GetBoneMat(const wchar_t* _Name);
+	NTMAT GetWorldBoneMat(const wchar_t* _Name);
 
 public:
 	void EndUpdate();

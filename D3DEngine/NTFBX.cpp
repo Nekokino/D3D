@@ -184,6 +184,47 @@ void NTFbxLoader::LoadFbx(const wchar_t * _Path)
 	Manager->Destroy();
 }
 
+void NTFbxLoader::LoadFbxBone(const wchar_t * _Path)
+{
+	NewFbx = new NTFBX();
+
+	// Fbx로딩을 위한 포인터
+	Manager = FbxManager::Create();
+
+	// OS와 시스템에 맞는 버전 세팅
+	FbxIOSettings* SetP = FbxIOSettings::Create(Manager, IOSROOT);
+	Manager->SetIOSettings(SetP);
+
+	// 메쉬 정보 기본 클래스
+	Scene = FbxScene::Create(Manager, "");
+
+	// 로드하기 위한 객체
+	FbxImporter* Importer = FbxImporter::Create(Manager, "");
+
+	// 문자 인코딩
+	Importer->Initialize(CW2A(_Path, CP_UTF8).m_psz, -1, Manager->GetIOSettings());
+	Importer->Import(Scene);
+
+	if (Scene->GetGlobalSettings().GetAxisSystem() != FbxAxisSystem::eMax)
+	{
+		Scene->GetGlobalSettings().SetAxisSystem(FbxAxisSystem::eMax);
+	}
+
+	CalBoneCount(Scene->GetRootNode());
+
+	NewFbx->BoneVec.reserve(BoneCount);
+
+	// 삼각화
+	Triangulate(Scene->GetRootNode());
+
+	LoadBone(Scene->GetRootNode(), 0, nullptr);
+
+	Importer->Destroy();
+	Scene->Destroy();
+	SetP->Destroy();
+	Manager->Destroy();
+}
+
 void NTFbxLoader::CalBoneCount(FbxNode * _Node)
 {
 	FbxNodeAttribute* Attr = _Node->GetNodeAttribute();

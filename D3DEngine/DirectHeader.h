@@ -2,6 +2,7 @@
 
 #include <d3d11.h>
 #include <d3dcompiler.h>
+#include <DirectXCollision.h>
 #include <DirectXPackedVector.h>
 
 #pragma comment(lib, "d3d11")
@@ -223,7 +224,8 @@ public:
 	{
 		NTVEC2 Vec2;
 		NTVEC3 Vec3;
-		DirectX::XMFLOAT4 DVec;
+		DirectX::XMFLOAT4 DVec4;
+		DirectX::XMFLOAT3 DVec3;
 		float s[4];
 		struct
 		{
@@ -249,16 +251,16 @@ public:
 	};
 
 public:
-	NTVEC() : DVec(0.0f, 0.0f, 0.0f, 0.0f) {}
-	NTVEC(float _Value) : DVec(_Value, _Value, _Value, _Value) {}
-	NTVEC(float _x, float _y) : DVec(_x, _y, 0.0f, 0.0f) {}
-	NTVEC(float _x, float _y, float _z) : DVec(_x, _y, _z, 0.0f) {}
-	NTVEC(float _x, float _y, float _z, float _w) : DVec(_x, _y, _z, _w) {}
-	NTVEC(const NTVEC2& _Other) : DVec(_Other.x, _Other.y, 0.0f, 0.0f) {}
+	NTVEC() : DVec4(0.0f, 0.0f, 0.0f, 0.0f) {}
+	NTVEC(float _Value) : DVec4(_Value, _Value, _Value, _Value) {}
+	NTVEC(float _x, float _y) : DVec4(_x, _y, 0.0f, 0.0f) {}
+	NTVEC(float _x, float _y, float _z) : DVec4(_x, _y, _z, 0.0f) {}
+	NTVEC(float _x, float _y, float _z, float _w) : DVec4(_x, _y, _z, _w) {}
+	NTVEC(const NTVEC2& _Other) : DVec4(_Other.x, _Other.y, 0.0f, 0.0f) {}
 	NTVEC(const NTVEC2& _Value1, const NTVEC2& _Value2) : Pos(_Value1), Size(_Value2) {}
-	NTVEC(const NTVEC3& _Other) : DVec(_Other.x, _Other.y, _Other.z, 0.0f) {}
-	NTVEC(const NTVEC& _Other) : DVec(_Other.x, _Other.y, _Other.z, _Other.w) {}
-	NTVEC(const DirectX::XMVECTOR& _Other) { DirectX::XMStoreFloat4(&DVec, _Other); } // DVec에 _Other의 값을 저장.
+	NTVEC(const NTVEC3& _Other) : DVec4(_Other.x, _Other.y, _Other.z, 0.0f) {}
+	NTVEC(const NTVEC& _Other) : DVec4(_Other.x, _Other.y, _Other.z, _Other.w) {}
+	NTVEC(const DirectX::XMVECTOR& _Other) { DirectX::XMStoreFloat4(&DVec4, _Other); } // DVec에 _Other의 값을 저장.
 	
 public: // for NTRECT
 	float Left() const
@@ -388,7 +390,7 @@ public:
 
 	NTVEC& operator=(const NTVEC& _Other)
 	{
-		DVec = _Other.DVec;
+		DVec4 = _Other.DVec4;
 		return *this;
 	}
 
@@ -399,7 +401,7 @@ public:
 
 	NTVEC& operator=(const DirectX::XMVECTOR& _Other)
 	{
-		DirectX::XMStoreFloat4(&DVec, _Other);
+		DirectX::XMStoreFloat4(&DVec4, _Other);
 		return *this;
 	}
 
@@ -415,12 +417,12 @@ public:
 
 	operator DirectX::XMVECTOR() const
 	{
-		return DirectX::XMLoadFloat4(&DVec); // float4형식을 xmvector형식으로 변환해서 내보내줌
+		return DirectX::XMLoadFloat4(&DVec4); // float4형식을 xmvector형식으로 변환해서 내보내줌
 	}
 
 	operator NTVEC2() const
 	{
-		return{ DVec.x, DVec.y };
+		return{ DVec4.x, DVec4.y };
 	}
 
 public:
@@ -583,7 +585,19 @@ public:
 		NTMAT Mat = *this;
 		Mat = DirectX::XMMatrixTranspose(Mat);
 		return Mat;
+	}
 
+	NTMAT& Inverse()
+	{
+		*this = DirectX::XMMatrixInverse(nullptr, *this);
+		return *this;
+	}
+
+	NTMAT RVInverse()
+	{
+		NTMAT Return = *this;
+		Return.Inverse();
+		return Return;
 	}
 
 	void ViewAtLH(const NTVEC& _Pos, const NTVEC& _LookAt, const NTVEC& _Up)

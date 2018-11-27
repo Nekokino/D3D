@@ -1,6 +1,7 @@
 #pragma once
 #include "DirectHeader.h"
 #include "FW1FontWrapper.h"
+#include "NTMesh.h"
 #include <list>
 #include <string>
 
@@ -35,6 +36,8 @@ public:
 	static void DrawCircle(const NTCIRCLE& _Circle, float _Border = 1);
 	static void DrawFont(wchar_t* _Str, NTVEC2 _Pos, float _Size, UINT _Color, FW1_TEXT_FLAG _Flag = FW1_TEXT_FLAG::FW1_TOP);
 	static void DrawLog(wchar_t* _Str, NTVEC Color = NTVEC::ONE);
+
+	static void DrawDbgMesh(Autoptr<NTMesh> _Mesh);
 
 public:
 	static void RenderLog();

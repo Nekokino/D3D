@@ -76,6 +76,7 @@ public:
 		}
 	}
 };
+
 class NTFbxData : public NTResource
 {
 public:
@@ -84,6 +85,7 @@ public:
 public:
 	bool Load(LOADMODE _Mode = LOADMODE::BIMODE);
 	void SaveBinaryData(const wchar_t* _Path);
+	NTFbxBiBoneData* FindBone(const wchar_t* _Name);
 public:
 	NTFbxData();
 	~NTFbxData();

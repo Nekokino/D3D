@@ -152,6 +152,16 @@ public:
 		return false;
 	}
 
+	static bool S2SCol(const DirectX::BoundingSphere& _Left, const DirectX::BoundingSphere& _Right)
+	{
+		return _Left.Intersects(_Right);
+	}
+
+	static bool S2RayCol(const DirectX::BoundingSphere& _Left, NTVEC _Origin, NTVEC _Dir, float _Dis)
+	{
+		return _Left.Intersects(_Origin, _Dir, _Dis);
+	}
+
 private:
 	MathSystem();
 	~MathSystem();

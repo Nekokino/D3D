@@ -181,7 +181,8 @@
     <ClInclude Include="MathSystem.h" />
     <ClInclude Include="NT2DCollision.h" />
     <ClInclude Include="NT2DCollisionBase.h" />
-    <ClInclude Include="NT2DCollisionSystem.h" />
+    <ClInclude Include="NT3DCollisionBase.h" />
+    <ClInclude Include="NTCollisionSystem.h" />
     <ClInclude Include="NT3DGrid.h" />
     <ClInclude Include="NT3DMeshRenderer.h" />
     <ClInclude Include="NT3DRectRenderer.h" />
@@ -207,6 +208,7 @@
     <ClInclude Include="NTObject.h" />
     <ClInclude Include="NTObjectParent.h" />
     <ClInclude Include="NTPixelShader.h" />
+    <ClInclude Include="NTRay.h" />
     <ClInclude Include="NTReadStream.h" />
     <ClInclude Include="NTRenderer.h" />
     <ClInclude Include="NTRenderSystem.h" />
@@ -222,6 +224,7 @@
     <ClInclude Include="NTSoundDevice.h" />
     <ClInclude Include="NTSoundPlayer.h" />
     <ClInclude Include="NTSpFrameAnimator.h" />
+    <ClInclude Include="NTSphere.h" />
     <ClInclude Include="NTSpRenderer.h" />
     <ClInclude Include="NTStCom.h" />
     <ClInclude Include="NTSubTransform.h" />
@@ -250,7 +253,8 @@
     <ClCompile Include="MathSystem.cpp" />
     <ClCompile Include="NT2DCollision.cpp" />
     <ClCompile Include="NT2DCollisionBase.cpp" />
-    <ClCompile Include="NT2DCollisionSystem.cpp" />
+    <ClCompile Include="NT3DCollisionBase.cpp" />
+    <ClCompile Include="NTCollisionSystem.cpp" />
     <ClCompile Include="NT3DGrid.cpp" />
     <ClCompile Include="NT3DMeshRenderer.cpp" />
     <ClCompile Include="NT3DRectRenderer.cpp" />
@@ -274,6 +278,7 @@
     <ClCompile Include="NTMultiRenderTarget.cpp" />
     <ClCompile Include="NTObject.cpp" />
     <ClCompile Include="NTPixelShader.cpp" />
+    <ClCompile Include="NTRay.cpp" />
     <ClCompile Include="NTReadStream.cpp" />
     <ClCompile Include="NTRenderer.cpp" />
     <ClCompile Include="NTRenderSystem.cpp" />
@@ -288,6 +293,7 @@
     <ClCompile Include="NTSoundDevice.cpp" />
     <ClCompile Include="NTSoundPlayer.cpp" />
     <ClCompile Include="NTSpFrameAnimator.cpp" />
+    <ClCompile Include="NTSphere.cpp" />
     <ClCompile Include="NTSpRenderer.cpp" />
     <ClCompile Include="NTStCom.cpp" />
     <ClCompile Include="NTSubTransform.cpp" />
