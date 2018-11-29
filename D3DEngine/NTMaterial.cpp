@@ -4,7 +4,7 @@
 #include "NTVertexShader.h"
 #include "ResourceSystem.h"
 #include "NTSampler.h"
-#include "NTTexture.h"
+#include "NTMultiTexture.h"
 #include "NTRenderTarget.h"
 
 
@@ -17,7 +17,7 @@ NTMaterial::~NTMaterial()
 {
 }
 
-NTMaterial::NTMaterial(const NTMaterial & _Other) : NTResource(_Other), VertexShader(_Other.VertexShader), PixelShader(_Other.PixelShader), Blend(_Other.Blend), TexData(_Other.TexData), TextureMap(_Other.TextureMap), SamplerMap(_Other.SamplerMap)
+NTMaterial::NTMaterial(const NTMaterial & _Other) : NTResource(_Other), VertexShader(_Other.VertexShader), PixelShader(_Other.PixelShader), Blend(_Other.Blend), TexData(_Other.TexData), TextureMap(_Other.TextureMap), SamplerMap(_Other.SamplerMap), IsOriginal(false)
 {
 	
 
@@ -93,6 +93,10 @@ void NTMaterial::AddTextureData(TEXTYPE _Type, UINT _TexSlot, const wchar_t * _T
 	{
 		SetTargetTexture(_TexSlot, _TexName);
 	}
+	else if (_Type == TEXTYPE::TT_MULTI)
+	{
+		SetMultiTexture(_TexSlot, _TexName);
+	}
 	else
 	{
 		SetTexture(_TexSlot, _TexName);
@@ -151,6 +155,28 @@ void NTMaterial::SetTargetTexture(unsigned int _Slot, const wchar_t * _TexName)
 	}
 }
 
+void NTMaterial::SetMultiTexture(unsigned int _Slot, const wchar_t * _TexName)
+{
+	Autoptr<NTMultiTexture> Find = ResourceSystem<NTMultiTexture>::Find(_TexName);
+
+	if (nullptr == Find)
+	{
+		tassert(true);
+		return;
+	}
+
+	std::unordered_map<unsigned int, Autoptr<NTMultiTexture>>::iterator FindIter = MultiTextureMap.find(_Slot);
+
+	if (FindIter == MultiTextureMap.end())
+	{
+		MultiTextureMap.insert(std::unordered_map<unsigned int, Autoptr<NTMultiTexture>>::value_type(_Slot, Find));
+	}
+	else
+	{
+		FindIter->second = Find;
+	}
+}
+
 void NTMaterial::SetSampler(unsigned int _Slot, const wchar_t * _SmpName)
 {
 	Autoptr<NTSampler> Smp = ResourceSystem<NTSampler>::Find(_SmpName);
@@ -165,7 +191,7 @@ void NTMaterial::SetSampler(unsigned int _Slot, const wchar_t * _SmpName)
 
 	if (FindIter == SamplerMap.end())
 	{
-		TextureMap.insert(std::unordered_map<unsigned int, Autoptr<NTSampler>>::value_type(_Slot, Smp));
+		SamplerMap.insert(std::unordered_map<unsigned int, Autoptr<NTSampler>>::value_type(_Slot, Smp));
 	}
 	else
 	{
@@ -191,6 +217,13 @@ void NTMaterial::TextureUpdate()
 	{
 		TexStartIter->second->Update(TexStartIter->first);
 	}
+
+	MultiTexStartIter = MultiTextureMap.begin();
+	MultiTexEndIter = MultiTextureMap.end();
+	for (; MultiTexStartIter != MultiTexEndIter; ++MultiTexStartIter)
+	{
+		MultiTexStartIter->second->Update(MultiTexStartIter->first);
+	}
 }
 
 void NTMaterial::ResetTexture()
@@ -201,6 +234,14 @@ void NTMaterial::ResetTexture()
 	for (; TexStartIter != TexEndIter; ++TexStartIter)
 	{
 		TexStartIter->second->Reset(TexStartIter->first);
+	}
+
+	MultiTexStartIter = MultiTextureMap.begin();
+	MultiTexEndIter = MultiTextureMap.end();
+
+	for (; MultiTexStartIter != MultiTexEndIter; ++MultiTexStartIter)
+	{
+		MultiTexStartIter->second->Reset(MultiTexStartIter->first);
 	}
 }
 

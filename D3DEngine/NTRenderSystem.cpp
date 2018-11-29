@@ -37,6 +37,14 @@ void NTRenderSystem::ResetSampler()
 	Sampler->Update(5);
 	Sampler->Update(6);
 	Sampler->Update(7);
+	Sampler->Update(8);
+	Sampler->Update(9);
+	Sampler->Update(10);
+	Sampler->Update(11);
+	Sampler->Update(12);
+	Sampler->Update(13);
+	Sampler->Update(14);
+	Sampler->Update(15);
 }
 
 void NTRenderSystem::Render()
@@ -170,21 +178,6 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 	DefferdTarget->Clear();
 	DefferdTarget->OMSet();
 
-	Autoptr<NTMaterial> DefferdMat = ResourceSystem<NTMaterial>::Find(L"DefferdMat");
-	Autoptr<NTMaterial> DefferdAniMat = ResourceSystem<NTMaterial>::Find(L"DefferdAniMat");
-
-	if (nullptr == DefferdAniMat)
-	{
-		tassert(true);
-		return;
-	}
-
-	if (DefferdMat == nullptr)
-	{
-		tassert(true);
-		return;
-	}
-
 	ListStartIter = GroupFindIter->second.begin();
 	ListEndIter = GroupFindIter->second.end();
 
@@ -204,15 +197,7 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 						(*ListStartIter)->Render(_Camera);
 						(*ListStartIter)->MaterialTextureNSamplerUpdate(j);
 						(*ListStartIter)->MaterialConstBufferUpdate(j);
-
-						if (1 == (*ListStartIter)->RndOpt.IsBoneAni)
-						{
-							DefferdAniMat->Update();
-						}
-						else
-						{
-							DefferdMat->Update();
-						}
+						(*ListStartIter)->MaterialUpdate(j);
 						(*ListStartIter)->MeshUpdate(i);
 					}
 				}
@@ -225,16 +210,7 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 					(*ListStartIter)->Render(_Camera);
 					(*ListStartIter)->MaterialTextureNSamplerUpdate((*ListStartIter)->DrawDataVec[i].Mat);
 					(*ListStartIter)->MaterialConstBufferUpdate((*ListStartIter)->DrawDataVec[i].Mat);
-
-					if (1 == (*ListStartIter)->RndOpt.IsBoneAni)
-					{
-						DefferdAniMat->Update();
-					}
-					else
-					{
-						DefferdMat->Update();
-					}
-
+					(*ListStartIter)->MaterialUpdate((*ListStartIter)->DrawDataVec[i].Mat);
 					(*ListStartIter)->TargetMeshUpdate((*ListStartIter)->DrawDataVec[i].Mesh, (*ListStartIter)->DrawDataVec[i].Vtx, (*ListStartIter)->DrawDataVec[i].Sub);
 				}
 			}

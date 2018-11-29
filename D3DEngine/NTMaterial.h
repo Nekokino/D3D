@@ -10,6 +10,7 @@ enum TEXTYPE
 	TT_BUMP,
 	TT_TARGET,
 	TT_SPEC,
+	TT_MULTI,
 };
 
 class TextureData
@@ -29,6 +30,7 @@ public:
 
 class NTTexture;
 class NTSampler;
+class NTMultiTexture;
 class NTMaterial : public NTResource
 {
 public:
@@ -72,6 +74,10 @@ private:
 	std::unordered_map<unsigned int, Autoptr<NTTexture>> TextureMap;
 	std::unordered_map<unsigned int, Autoptr<NTTexture>>::iterator TexStartIter;
 	std::unordered_map<unsigned int, Autoptr<NTTexture>>::iterator TexEndIter;
+
+	std::unordered_map<unsigned int, Autoptr<NTMultiTexture>> MultiTextureMap;
+	std::unordered_map<unsigned int, Autoptr<NTMultiTexture>>::iterator MultiTexStartIter;
+	std::unordered_map<unsigned int, Autoptr<NTMultiTexture>>::iterator MultiTexEndIter;
 	
 	std::unordered_map<unsigned int, Autoptr<NTSampler>> SamplerMap;
 	std::unordered_map<unsigned int, Autoptr<NTSampler>>::iterator SmpStartIter;
@@ -80,6 +86,7 @@ private:
 public:
 	void SetTexture(unsigned int _Slot, const wchar_t* _TexName);
 	void SetTargetTexture(unsigned int _Slot, const wchar_t* _TexName);
+	void SetMultiTexture(unsigned int _Slot, const wchar_t* _TexName);
 	void SetSampler(unsigned int _Slot, const wchar_t* _SmpName);
 	unsigned int SetTextureData(TextureData* _Data);
 

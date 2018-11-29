@@ -67,26 +67,5 @@ void NTRay::CollisionFigureUpdate()
 
 void NTRay::DbgRender()
 {
-//	NTVEC ArrPos[2] = {};
-//	DWORD Idx[2] = { 0, 1 };
-//
-//	ArrPos[0] = Ray->Origin;
-//	ArrPos[1] = Ray->Direction * Ray->Dis;
-////	ArrPos[1].z *= -1.0f;
-//	ArrPos[1] += Ray->Origin;
-//
-//	ArrPos[0].w = 0.0f;
-//	ArrPos[1].w = 0.0f;
-//
-//	ArrPos[0] = Cam->GetProjection().MulZero(ArrPos[0]);
-//	ArrPos[1] = Cam->GetProjection().MulZero(ArrPos[1]);
-//
-//
-//
-//
-//	Autoptr<NTMesh> Mesh = new NTMesh();
-//
-//	Mesh->Create(2, (UINT)sizeof(NTVEC), D3D11_USAGE_DYNAMIC, ArrPos, 2, (UINT)IDX32::MemberSize(), D3D11_USAGE_DEFAULT, Idx, IDX32::GetFormat(), D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-//
-//	DebugFunc::DrawDbgMesh(Mesh);
+	
 }

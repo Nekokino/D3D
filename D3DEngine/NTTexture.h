@@ -21,6 +21,7 @@
 class NTTexture : public NTResource
 {
 private:
+	friend class NTMultiTexture;
 	DirectX::ScratchImage Image;
 	ID3D11Texture2D* Tex2D;
 

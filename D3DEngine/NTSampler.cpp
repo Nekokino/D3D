@@ -26,6 +26,16 @@ bool NTSampler::Create()
 	return true;
 }
 
+bool NTSampler::Create(D3D11_FILTER _Filter, D3D11_TEXTURE_ADDRESS_MODE AddressU, D3D11_TEXTURE_ADDRESS_MODE AddressV, D3D11_TEXTURE_ADDRESS_MODE AddressW, FLOAT MipLodBias, UINT MaxAnisotropy, D3D11_COMPARISON_FUNC ComparisonFunc, NTCOLOR BorderColor, FLOAT MinLOD, FLOAT MaxLOD)
+{
+	if (false == Set(_Filter, AddressU, AddressV, AddressW, MipLodBias, MaxAnisotropy, ComparisonFunc, BorderColor, MinLOD, MaxLOD))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool NTSampler::Set(D3D11_FILTER Filter,
 	D3D11_TEXTURE_ADDRESS_MODE AddressU,
 	D3D11_TEXTURE_ADDRESS_MODE AddressV,

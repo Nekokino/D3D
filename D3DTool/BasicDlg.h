@@ -60,4 +60,5 @@ public:
 
 		return nullptr;
 	}
+	afx_msg void OnBnClickedTerrain();
 };

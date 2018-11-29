@@ -20,6 +20,9 @@
 #include <NTThread.h>
 #include <NTSphere.h>
 #include <NTRay.h>
+#include <NT3DTerrainRenderer.h>
+#include <NTTexture.h>
+#include <NTMultiTexture.h>
 
 
 
@@ -50,6 +53,7 @@ BEGIN_MESSAGE_MAP(BasicDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_LOAD, &BasicDlg::OnBnClickedLoad)
 	ON_BN_CLICKED(IDC_CREATE, &BasicDlg::OnBnClickedCreate)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_BONETREE, &BasicDlg::OnTvnSelchangedBonetree)
+	ON_BN_CLICKED(IDC_TERRAIN, &BasicDlg::OnBnClickedTerrain)
 END_MESSAGE_MAP()
 
 
@@ -74,6 +78,19 @@ BOOL BasicDlg::OnInitDialog()
 
 	ResourceSystem<NTTexture>::Load(L"Texture", L"rock2.png");
 	ResourceSystem<NTTexture>::Load(L"Texture", L"rock2_bump.png");
+
+	ResourceSystem<NTTexture>::Load(L"Texture", L"Tile01.png");
+	ResourceSystem<NTTexture>::Load(L"Texture", L"Tile01_Bump.png");
+
+	ResourceSystem<NTTexture>::Load(L"Texture", L"Splatting.png");
+
+	Autoptr<NTMultiTexture> MultiTex = ResourceSystem<NTMultiTexture>::Create(L"Floor01");
+	MultiTex->CreateMultiTexture(D3D11_USAGE::D3D11_USAGE_DEFAULT, L"rock2.png", L"rock2_bump.png");
+
+	Autoptr<NTMultiTexture> MultiTex2 = ResourceSystem<NTMultiTexture>::Create(L"Floor01_01");
+	MultiTex2->CreateMultiTexture(D3D11_USAGE::D3D11_USAGE_DEFAULT, L"Tile01.png", L"Tile01_Bump.png");
+
+	
 
 	NTFbxLoader FBXLoader;
 
@@ -137,7 +154,7 @@ BOOL BasicDlg::OnInitDialog()
 	//SphereLeftMesh->SetMaterial(L"VertexLightMat");
 	SphereLeftMesh->SetMesh(L"Sphere");
 	SphereLeftMesh->RndOpt.IsLight = 1;
-	SphereLeftMesh->SetMaterial(L"Mesh3DMat");
+	SphereLeftMesh->SetMaterial(L"DefferdMat");
 	SphereLeftMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_COLOR, 0, L"rock2.png");
 	SphereLeftMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_BUMP, 1, L"rock2_bump.png");
 
@@ -195,10 +212,6 @@ void BasicDlg::OnBnClickedCreate()
 	
 	TestAniRenderer->SetFbx(L"Monster3.NTFBX");
 
-	//HTREEITEM FolderItem = ResTree.InsertItem(FindData.cFileName, _ParentItem);
-	//ResTree.SetItemData(FolderItem, 0);
-	//GetResource(FindData.cFileName, FolderItem);
-
 	NTFbxLoader FbxBoneLoader;
 	FbxBoneLoader.LoadFbxBone((PathSystem::FindPathString(L"Mesh") + L"Monster3.FBX").c_str());
 
@@ -225,7 +238,7 @@ void BasicDlg::OnBnClickedCreate()
 	Autoptr<NT3DMeshRenderer> BoneSphereMesh = BoneSphere->AddComponent<NT3DMeshRenderer>();
 	BoneSphereMesh->SetMesh(L"Sphere");
 	BoneSphereMesh->RndOpt.IsLight = 1;
-	BoneSphereMesh->SetMaterial(L"Mesh3DMat");
+	BoneSphereMesh->SetMaterial(L"DefferdMat");
 	BoneSphereMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_COLOR, 0, L"rock2.png");
 	BoneSphereMesh->GetMaterial()->AddTextureData(TEXTYPE::TT_BUMP, 1, L"rock2_bump.png");
 
@@ -236,9 +249,7 @@ void BasicDlg::OnBnClickedCreate()
 
 void BasicDlg::ColTest(NTCollisionComponent * _Left, NTCollisionComponent * _Right)
 {
-	int a = 0;
-
-	// 레이 스피어 충돌 확인해볼것,.
+	int a = 0; // 충돌 확인용 임시 함수입니다.
 }
 
 
@@ -257,4 +268,23 @@ void BasicDlg::OnTvnSelchangedBonetree(NMHDR *pNMHDR, LRESULT *pResult)
 	UpdateData(FALSE);
 
 	*pResult = 0;
+}
+
+
+void BasicDlg::OnBnClickedTerrain()
+{
+	UINT X = 64;
+	UINT Y = 64;
+
+	Autoptr<NTScene> TabScene = NTWinShortCut::GetMainSceneSystem().FindScene(SceneName.GetString());
+
+	Autoptr<NTObject> TerrainObj = TabScene->CreateObject(L"Terrain", 0);
+	TerrainObj->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, 0.0f));
+	TerrainObj->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
+
+	Autoptr<NT3DTerrainRenderer> TerrainRenderer = TerrainObj->AddComponent<NT3DTerrainRenderer>();
+	TerrainRenderer->CreateTerrain(64, 64);
+	TerrainRenderer->SetRasterState(L"SNONE");
+	TerrainRenderer->SetBaseTexture(L"Floor01");
+	TerrainRenderer->AddSplattingTexture(L"Floor01_01", L"Splatting.png");
 }

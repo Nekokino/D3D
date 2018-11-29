@@ -14,6 +14,7 @@
 #include "NTTexture.h"
 #include "NTSampler.h"
 #include "NTMultiRenderTarget.h"
+#include "NT3DTerrainRenderer.h"
 
 
 #define CIRCLE 10
@@ -534,6 +535,8 @@ bool NTDevice::Create3DDefault()
 	ResourceSystem<NTFont>::Create(L"궁서", L"궁서");
 	ResourceSystem<NTSampler>::Create(L"DefaultSampler");
 
+	ResourceSystem<NTSampler>::Create(L"TerrainSmp", D3D11_FILTER::D3D11_FILTER_MIN_MAG_MIP_LINEAR, D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP, D3D11_TEXTURE_ADDRESS_MODE::D3D11_TEXTURE_ADDRESS_WRAP);
+
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<MatrixData>(L"MatData", D3D11_USAGE_DYNAMIC, 10);
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<RenderOption>(L"RenderOption", D3D11_USAGE_DYNAMIC, 11);
 	NTWinShortCut::GetMainDevice().CreateConstBuffer<NTLight::LightCBData>(L"LightData", D3D11_USAGE_DYNAMIC, 12);
@@ -725,10 +728,20 @@ bool NTDevice::Create3DMesh()
 	Arr3DVtx[2].Uv = NTVEC2(0.0f, 1.0f);
 	Arr3DVtx[3].Uv = NTVEC2(1.0f, 1.0f);
 
-	Arr3DVtx[0].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
-	Arr3DVtx[1].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
-	Arr3DVtx[2].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
-	Arr3DVtx[3].Normal = NTVEC(0.0f, 0.0f, -1.0f, 1.0f);
+	Arr3DVtx[0].Normal = NTVEC(0.0f, 0.0f, -1.0f, 0.0f);
+	Arr3DVtx[1].Normal = NTVEC(0.0f, 0.0f, -1.0f, 0.0f);
+	Arr3DVtx[2].Normal = NTVEC(0.0f, 0.0f, -1.0f, 0.0f);
+	Arr3DVtx[3].Normal = NTVEC(0.0f, 0.0f, -1.0f, 0.0f);
+
+	Arr3DVtx[0].Tangent = NTVEC(1.0f, 0.0f, 0.0f, 0.0f);
+	Arr3DVtx[1].Tangent = NTVEC(1.0f, 0.0f, 0.0f, 0.0f);
+	Arr3DVtx[2].Tangent = NTVEC(1.0f, 0.0f, 0.0f, 0.0f);
+	Arr3DVtx[3].Tangent = NTVEC(1.0f, 0.0f, 0.0f, 0.0f);
+
+	Arr3DVtx[0].BiNormal = NTVEC(0.0f, -1.0f, 0.0f, 0.0f);
+	Arr3DVtx[1].BiNormal = NTVEC(0.0f, -1.0f, 0.0f, 0.0f);
+	Arr3DVtx[2].BiNormal = NTVEC(0.0f, -1.0f, 0.0f, 0.0f);
+	Arr3DVtx[3].BiNormal = NTVEC(0.0f, -1.0f, 0.0f, 0.0f);
 
 	IDX16 ArrColorIdx[2] = {};
 
@@ -1240,6 +1253,26 @@ bool NTDevice::Create3DMaterial()
 	VolumeMat->SetBlend(L"Volume");
 
 	///////////////////////////////////////////////////////////////////// 볼륨메쉬
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 터레인
+
+	Autoptr<NTVertexShader> TerrainDefferdVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"TerrainDefferdVtx", L"Shader", L"TerrainDefferd.fx", "VS_TerrainDefferd");
+	TerrainDefferdVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	TerrainDefferdVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdVtx->AddLayout("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdVtx->AddLayout("TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdVtx->AddLayoutClose("BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTPixelShader> TerrainDefferdPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"TerrainDefferdPix", L"Shader", L"TerrainDefferd.fx", "PS_TerrainDefferd");
+	TerrainDefferdPix->CreateConstBuffer<TerrainFloorData>(L"TerrainFloorData", D3D11_USAGE_DYNAMIC, 0);
+
+	Autoptr<NTMaterial> TerrainDefferdMat = ResourceSystem<NTMaterial>::Create(L"TerrainDefferdMat");
+	TerrainDefferdMat->SetVertexShader(L"TerrainDefferdVtx");
+	TerrainDefferdMat->SetPixelShader(L"TerrainDefferdPix");
+	TerrainDefferdMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////////////////////////// 디퍼드 터레인
 
 
 	return true;

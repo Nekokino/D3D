@@ -182,6 +182,7 @@
     <ClInclude Include="NT2DCollision.h" />
     <ClInclude Include="NT2DCollisionBase.h" />
     <ClInclude Include="NT3DCollisionBase.h" />
+    <ClInclude Include="NT3DTerrainRenderer.h" />
     <ClInclude Include="NTCollisionSystem.h" />
     <ClInclude Include="NT3DGrid.h" />
     <ClInclude Include="NT3DMeshRenderer.h" />
@@ -204,6 +205,7 @@
     <ClInclude Include="NTMaterial.h" />
     <ClInclude Include="NTMesh.h" />
     <ClInclude Include="NTMultiRenderTarget.h" />
+    <ClInclude Include="NTMultiTexture.h" />
     <ClInclude Include="NTNameTag.h" />
     <ClInclude Include="NTObject.h" />
     <ClInclude Include="NTObjectParent.h" />
@@ -254,6 +256,7 @@
     <ClCompile Include="NT2DCollision.cpp" />
     <ClCompile Include="NT2DCollisionBase.cpp" />
     <ClCompile Include="NT3DCollisionBase.cpp" />
+    <ClCompile Include="NT3DTerrainRenderer.cpp" />
     <ClCompile Include="NTCollisionSystem.cpp" />
     <ClCompile Include="NT3DGrid.cpp" />
     <ClCompile Include="NT3DMeshRenderer.cpp" />
@@ -276,6 +279,7 @@
     <ClCompile Include="NTMaterial.cpp" />
     <ClCompile Include="NTMesh.cpp" />
     <ClCompile Include="NTMultiRenderTarget.cpp" />
+    <ClCompile Include="NTMultiTexture.cpp" />
     <ClCompile Include="NTObject.cpp" />
     <ClCompile Include="NTPixelShader.cpp" />
     <ClCompile Include="NTRay.cpp" />

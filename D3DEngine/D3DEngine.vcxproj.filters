@@ -222,6 +222,12 @@
     <ClInclude Include="NTRay.h">
       <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\3D</Filter>
     </ClInclude>
+    <ClInclude Include="NT3DTerrainRenderer.h">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="NTMultiTexture.h">
+      <Filter>04 Resource\Resource\02 Texture</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -411,6 +417,12 @@
     </ClCompile>
     <ClCompile Include="NTSphere.cpp">
       <Filter>05 Object\Component\EngineComponent\03 Collision\Sub\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NT3DTerrainRenderer.cpp">
+      <Filter>05 Object\Component\EngineComponent\02 Render\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="NTMultiTexture.cpp">
+      <Filter>04 Resource\Resource\02 Texture</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

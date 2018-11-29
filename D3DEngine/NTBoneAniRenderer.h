@@ -21,8 +21,8 @@ public:
 	void SetFbx(const wchar_t* _Name);
 
 public:
-	std::vector<NTMAT> CurAniBoneData;
-	std::vector<NTMAT> CurAniMatData;
+	std::vector<NTMAT> CurAniBoneData; // 애니메이션 만들기 전 본행렬
+	std::vector<NTMAT> CurAniMatData; // 애니메이션 적용을 위한 행렬
 
 	Autoptr<NTTexture> BoneTex;
 

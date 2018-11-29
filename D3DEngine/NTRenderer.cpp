@@ -29,7 +29,7 @@ bool NTRenderer::Init(int _Order)
 
 Autoptr<NTMaterial> NTRenderer::GetMaterial(int _Index)
 {
-	if (MaterialVec[_Index]->IsOriginal == true)
+	if (MaterialVec[_Index]->IsOriginal)
 	{
 		MaterialVec[_Index] = MaterialVec[_Index]->Clone();
 	}

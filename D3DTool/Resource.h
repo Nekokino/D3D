@@ -10,6 +10,7 @@
 #define IDC_LOAD                        1002
 #define IDC_CREATE                      1003
 #define IDC_BONETREE                    1004
+#define IDC_TERRAIN                     1005
 
 // Next default values for new objects
 // 

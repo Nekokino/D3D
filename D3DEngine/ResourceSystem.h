@@ -101,6 +101,23 @@ public:
 		return NewRes;
 	}
 
+	template<typename V1, typename V2, typename V3>
+	static Autoptr<Res> Create(const wchar_t* _Name, V1 _1, V2 _2, V3 _3)
+	{
+		Res* NewRes = new Res();
+		NewRes->SetType();
+		NewRes->SetName(_Name);
+
+		if (false == NewRes->Create(_1, _2, _3))
+		{
+			delete NewRes;
+			return nullptr;
+		}
+
+		ResMap.insert(std::unordered_map<std::wstring, Autoptr<Res>>::value_type(_Name, NewRes));
+		return NewRes;
+	}
+
 	template<typename V1, typename V2, typename V3, typename V4>
 	static Autoptr<Res> Create(const wchar_t* _Name, V1 _1, V2 _2, V3 _3, V4 _4)
 	{
