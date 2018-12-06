@@ -4,6 +4,7 @@
 #include "NTTexture.h"
 #include "ResourceSystem.h"
 #include "DirectValueHeader.h"
+#include "NTCamera.h"
 
 NTBoneAniRenderer::NTBoneAniRenderer() : UpdateTime(0.0f), FrameCount(30), CurTime(0.0f), ClipIndex(0)
 {

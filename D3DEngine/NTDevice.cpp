@@ -15,6 +15,9 @@
 #include "NTSampler.h"
 #include "NTMultiRenderTarget.h"
 #include "NT3DTerrainRenderer.h"
+#include "NTDomainShader.h"
+#include "NTHullShader.h"
+#include "NTGeometryShader.h"
 
 
 #define CIRCLE 10
@@ -77,6 +80,7 @@ void NTDevice::ResetContext()
 	Context->GSSetShader(nullptr, nullptr, 0);
 	Context->CSSetShader(nullptr, nullptr, 0);
 	Context->PSSetShader(nullptr, nullptr, 0);
+	Context->DSSetShader(nullptr, nullptr, 0);
 }
 
 void NTDevice::OMSet()
@@ -750,6 +754,8 @@ bool NTDevice::Create3DMesh()
 
 	ResourceSystem<NTMesh>::Create(L"Rect3DMesh", 4, (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, Arr3DVtx, 6, (UINT)IDX16::MemberSize(), D3D11_USAGE_DYNAMIC, ArrColorIdx, IDX16::GetFormat());
 
+	ResourceSystem<NTMesh>::Create(L"TesRect", 4, (UINT)Vtx3D::TypeSize(), D3D11_USAGE_DYNAMIC, Arr3DVtx, 6, (UINT)IDX16::MemberSize(), D3D11_USAGE_DYNAMIC, ArrColorIdx, IDX16::GetFormat(), D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
+
 #pragma endregion
 
 #pragma region 3DCubeMesh
@@ -1273,6 +1279,59 @@ bool NTDevice::Create3DMaterial()
 	TerrainDefferdMat->SetBlend(L"AlphaBlend");
 
 	///////////////////////////////////////////////////////////////////// 디퍼드 터레인
+
+	///////////////////////////////////////////////////////////////////// 테셀레이션 터레인
+
+	Autoptr<NTVertexShader> TerrainDefferdTesVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"TerrainDefferdTesVtx", L"Shader", L"TerrainDefferd_Tes.fx", "VS_TerrainDefferd");
+	TerrainDefferdTesVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdTesVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	TerrainDefferdTesVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdTesVtx->AddLayout("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdTesVtx->AddLayout("TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TerrainDefferdTesVtx->AddLayoutClose("BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTHullShader> TerrainDefferdTesHul = ResourceSystem<NTHullShader>::LoadFromKey(L"TerrainDefferdTesHul", L"Shader", L"TerrainDefferd_Tes.fx", "HS_TerrainDefferd");
+
+	Autoptr<NTDomainShader> TerrainDefferdTesDom = ResourceSystem<NTDomainShader>::LoadFromKey(L"TerrainDefferdTesDom", L"Shader", L"TerrainDefferd_Tes.fx", "DS_TerrainDefferd");
+
+	Autoptr<NTPixelShader> TerrainDefferdTesPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"TerrainDefferdTesPix", L"Shader", L"TerrainDefferd_Tes.fx", "PS_TerrainDefferd");
+	TerrainDefferdTesPix->CreateConstBuffer<TerrainFloorData>(L"TerrainFloorData", D3D11_USAGE_DYNAMIC, 0);
+
+	Autoptr<NTMaterial> TerrainDefferdTesMat = ResourceSystem<NTMaterial>::Create(L"TerrainDefferdTesMat");
+	TerrainDefferdTesMat->SetVertexShader(L"TerrainDefferdTesVtx");
+	TerrainDefferdTesMat->SetPixelShader(L"TerrainDefferdTesPix");
+	TerrainDefferdTesMat->SetDomainShader(L"TerrainDefferdTesDom");
+	TerrainDefferdTesMat->SetHullShader(L"TerrainDefferdTesHul");
+	//TerrainDefferdTesMat->SetGeometryShader(L"TerrainDefferdPix");
+	TerrainDefferdTesMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////////////////////////// 테셀레이션 터레인
+
+	///////////////////////////////////////////////////////////////////// 테셀레이션 테스트용
+
+	Autoptr<NTVertexShader> TesTestVtx = ResourceSystem<NTVertexShader>::LoadFromKey(L"TesTestVtx", L"Shader", L"TesTest.fx", "VS_TesTest");
+	TesTestVtx->AddLayout("POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TesTestVtx->AddLayout("TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0);
+	TesTestVtx->AddLayout("COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TesTestVtx->AddLayout("NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TesTestVtx->AddLayout("TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	TesTestVtx->AddLayoutClose("BINORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+
+	Autoptr<NTHullShader> TesTestHul = ResourceSystem<NTHullShader>::LoadFromKey(L"TesTestHul", L"Shader", L"TesTest.fx", "HS_TesTest");
+
+	Autoptr<NTDomainShader> TesTestDom = ResourceSystem<NTDomainShader>::LoadFromKey(L"TesTestDom", L"Shader", L"TesTest.fx", "DS_TesTest");
+
+	Autoptr<NTPixelShader> TesTestPix = ResourceSystem<NTPixelShader>::LoadFromKey(L"TesTestPix", L"Shader", L"TesTest.fx", "PS_TesTest");
+
+	Autoptr<NTMaterial> TesTestMat = ResourceSystem<NTMaterial>::Create(L"TesTestMat");
+	TesTestMat->SetVertexShader(L"TesTestVtx");
+	TesTestMat->SetPixelShader(L"TesTestPix");
+	TesTestMat->SetDomainShader(L"TesTestDom");
+	TesTestMat->SetHullShader(L"TesTestHul");
+	//TerrainDefferdTesMat->SetGeometryShader(L"TerrainDefferdPix");
+	TesTestMat->SetBlend(L"AlphaBlend");
+
+	///////////////////////////////////////////////////////////////////// 테셀레이션 테스트용
 
 
 	return true;

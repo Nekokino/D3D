@@ -176,6 +176,7 @@ void DebugFunc::TargetDebug()
 			MatData.Projection = Proj;
 			MatData.World = World;
 			MatData.WV = World * View;
+			MatData.VP = View * Proj;
 			MatData.WVP = World * View * Proj;
 			MatData.TransposeAll();
 

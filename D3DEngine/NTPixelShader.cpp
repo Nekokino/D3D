@@ -5,7 +5,7 @@
 
 NTPixelShader::NTPixelShader()
 {
-	Type = ST_PX;
+	Type = ST_PS;
 }
 
 

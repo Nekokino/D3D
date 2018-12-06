@@ -47,7 +47,9 @@ public:
 		return{ GetWidth(), GetHeight() };
 	}
 
-	NTCOLOR GetPixel(int _X, int _Y);
+	NTCOLOR GetPixel(int _X, int _Y); // bgra 0 ~ 255
+	NTCOLOR GetPixel2(int _X, int _Y); // rgba 0.0f ~ 1.0f
+
 
 	void SetPixel(void* _Src, size_t _Size);
 

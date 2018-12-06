@@ -4,6 +4,7 @@
 
 #include "StlAssist.h"
 #include "RefNAutoptr.h"
+#include "DirectHeader.h"
 
 enum KEY_ERROR
 {

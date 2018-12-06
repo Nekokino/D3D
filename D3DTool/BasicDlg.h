@@ -7,6 +7,7 @@
 
 class NTCollisionComponent;
 class NTBone;
+class NT3DTerrainRenderer;
 class BasicDlg : public TabDlgBase
 {
 	DECLARE_DYNAMIC(BasicDlg)
@@ -36,6 +37,7 @@ public:
 	afx_msg void OnTvnSelchangedBonetree(NMHDR *pNMHDR, LRESULT *pResult);
 
 	Autoptr<MoveTest> MT;
+	Autoptr<NT3DTerrainRenderer> TerrainRenderer;
 
 	HTREEITEM FindTreeItem(const CString& _Name, CTreeCtrl& _Tree, HTREEITEM _Root)
 	{

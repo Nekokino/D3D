@@ -132,10 +132,10 @@ PS_MergeOut PS_DefferdMerge(VS_DefferdLightOut _In)
     Diffuse.w = 1.0f;
     Specular.w = 0.0f;
 
-    if (Out.MergeColor.a != 0.0f)
-    {
-        Out.MergeColor.rgb = float3(0.2f, 0.2f, 0.8f) * Color.a;
-    }
+    //if (Out.MergeColor.a != 0.0f)
+    //{
+    //    Out.MergeColor.rgb = float3(0.2f, 0.2f, 0.8f) * Color.a;
+    //}
 
 
     Out.MergeColor.rgb += Color.rgb * Diffuse.rgb + Specular.rgb;

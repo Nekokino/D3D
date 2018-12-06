@@ -91,6 +91,7 @@ public:
 	}
 
 	Autoptr<NTMaterial> GetMaterial(int _Index = 0);
+	Autoptr<NTMesh> GetMesh(size_t _Index = 0);
 
 public:
 	virtual bool Init(int _Order = 0);

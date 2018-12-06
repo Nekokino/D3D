@@ -4,7 +4,9 @@ cbuffer TransformBuffer : register(b10)
     matrix View;
     matrix Projection;
     matrix WV;
+    matrix VP;
     matrix WVP;
+    float4 CameraPos;
 }
 
 class TexData

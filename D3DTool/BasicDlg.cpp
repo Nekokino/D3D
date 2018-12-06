@@ -23,6 +23,7 @@
 #include <NT3DTerrainRenderer.h>
 #include <NTTexture.h>
 #include <NTMultiTexture.h>
+#include <NTTraceCamera.h>
 
 
 
@@ -114,25 +115,38 @@ BOOL BasicDlg::OnInitDialog()
 	TabScene->GetMainCamera()->SetFar(10000.0f);
 	TabScene->GetMainCamera()->GetNTObject()->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, -50.0f));
 
-	//Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
-	//Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
+	Autoptr<NTObject> Light = TabScene->CreateObject(L"PixLight", 0);
+	Autoptr<NTLight> PP = Light->AddComponent<NTLight>();
 
-	//PP->SetLightType(NTLight::LightType::Point);
-	//PP->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
-	//PP->PushLightLayer(0, 1, 2, 3, 4, 5);
 
-	//Autoptr<NTObject> Light2 = TabScene->CreateObject(L"PixLight2", 0);
-	//Autoptr<NTLight> a = Light2->AddComponent<NTLight>();
-	//a->SetLightType(NTLight::LightType::Point);
-	//a->GetTransform()->SetWorldPosition(NTVEC(30.0f, 0.0f, 0.0f));
-	//a->GetTransform()->SetWorldScale(NTVEC(30.0f, 30.0f, 30.0f));
-	//a->PushLightLayer(0, 1, 2, 3, 4, 5);
+	PP->SetLightType(NTLight::LightType::Point);
+	PP->GetTransform()->SetWorldScale(NTVEC(100.0f, 100.0f, 100.0f));
+	PP->GetTransform()->SetWorldPosition(NTVEC(cosf(MathSystem::D2R * 30.0f) * 30.0f + 30.0f, 0.0f, -sinf(MathSystem::D2R * 30.0f) * 30.0f + 30.0f));
+	PP->PushLightLayer(0, 1, 2, 3, 4, 5);
+	PP->Data.Color.Diffuse = NTVEC(0.0f, 1.0f, 0.0f);
+
+	Autoptr<NTObject> Light1 = TabScene->CreateObject(L"PixLight2", 0);
+	Autoptr<NTLight> t = Light1->AddComponent<NTLight>();
+	t->SetLightType(NTLight::LightType::Point);
+	t->GetTransform()->SetWorldPosition(NTVEC(0.0f + 30.0f, 0.0f, 30.0f + 30.0f));
+	t->GetTransform()->SetWorldScale(NTVEC(100.0f, 100.0f, 100.0f));
+	t->PushLightLayer(0, 1, 2, 3, 4, 5);
+	t->Data.Color.Diffuse = NTVEC(0.0f, 0.0f, 1.0f);
+
+	Autoptr<NTObject> Light2 = TabScene->CreateObject(L"PixLight2", 0);
+	Autoptr<NTLight> a = Light2->AddComponent<NTLight>();
+	a->SetLightType(NTLight::LightType::Point);
+	a->GetTransform()->SetWorldPosition(NTVEC(-cosf(MathSystem::D2R * 30.0f) * 30.0f + 30.0f, 0.0f, -sinf(MathSystem::D2R * 30.0f) * 30.0f + 30.0f));
+	a->GetTransform()->SetWorldScale(NTVEC(100.0f, 100.0f, 100.0f));
+	a->PushLightLayer(0, 1, 2, 3, 4, 5);
+	a->Data.Color.Diffuse = NTVEC(1.0f, 0.0f, 0.0f);
 
 	Autoptr<NTObject> Light3 = TabScene->CreateObject(L"PixLight3", 0);
 	Autoptr<NTLight> b = Light3->AddComponent<NTLight>();
 	b->SetLightType(NTLight::LightType::Dir);
 	b->GetTransform()->SetWorldRotation(NTVEC(90.0f, 0.0f, 0.0f));
 	b->PushLightLayer(0, 1, 2, 3, 4, 5);
+	b->Data.Color.Diffuse = NTVEC(1.0f);
 
 	//Autoptr<NTObject> Obj01 = TabScene->CreateObject(L"Obj01", 0);
 	//Obj01->GetTransform()->SetLocalScale(NTVEC(1000.0f, 1000.0f, 1000.0f));
@@ -176,6 +190,17 @@ BOOL BasicDlg::OnInitDialog()
 
 	ColLeft->EnterFunc(this, &BasicDlg::ColTest);
 	ColRight->EnterFunc(this, &BasicDlg::ColTest);
+
+	Autoptr<NTObject> TesRect = TabScene->CreateObject(L"TesRect", 0);
+	Autoptr<NT3DMeshRenderer> TesRectRenderer = TesRect->AddComponent<NT3DMeshRenderer>();
+	TesRectRenderer->RndOpt.IsDefferdOrForward = 0;
+	TesRectRenderer->RndOpt.IsLight = 1;
+	TesRectRenderer->GetTransform()->SetWorldScale(NTVEC::ONE * 10.0f);
+	TesRectRenderer->SetRasterState(L"WNONE");
+	TesRectRenderer->SetMaterial(L"TesTestMat");
+	TesRectRenderer->SetMesh(L"TesRect");
+	TesRectRenderer->GetMaterial()->AddTextureData(TEXTYPE::TT_COLOR, 0, L"rock2.png");
+	TesRectRenderer->GetMaterial()->AddTextureData(TEXTYPE::TT_BUMP, 1, L"rock2_bump.png");
 	
 	
 
@@ -245,6 +270,12 @@ void BasicDlg::OnBnClickedCreate()
 	MT = BoneSphere->AddComponent<MoveTest>();
 
 	MT->SetAniRenderer(TestAniRenderer);
+	Autoptr<NTTraceCamera> TCam = TabScene->GetMainCamera()->GetComponent<NTTraceCamera>();
+
+	/*TCam->Terrain = TerrainRenderer;
+	TCam->SetTrace(TestAniRenderer->GetTransform());*/
+	
+	
 }
 
 void BasicDlg::ColTest(NTCollisionComponent * _Left, NTCollisionComponent * _Right)
@@ -273,8 +304,6 @@ void BasicDlg::OnTvnSelchangedBonetree(NMHDR *pNMHDR, LRESULT *pResult)
 
 void BasicDlg::OnBnClickedTerrain()
 {
-	UINT X = 64;
-	UINT Y = 64;
 
 	Autoptr<NTScene> TabScene = NTWinShortCut::GetMainSceneSystem().FindScene(SceneName.GetString());
 
@@ -282,9 +311,9 @@ void BasicDlg::OnBnClickedTerrain()
 	TerrainObj->GetTransform()->SetLocalPosition(NTVEC(0.0f, 0.0f, 0.0f));
 	TerrainObj->GetTransform()->SetLocalScale(NTVEC(10.0f, 10.0f, 10.0f));
 
-	Autoptr<NT3DTerrainRenderer> TerrainRenderer = TerrainObj->AddComponent<NT3DTerrainRenderer>();
-	TerrainRenderer->CreateTerrain(64, 64);
-	TerrainRenderer->SetRasterState(L"SNONE");
+	TerrainRenderer = TerrainObj->AddComponent<NT3DTerrainRenderer>();
+	TerrainRenderer->CreateTerrain(64, 64, L"Splatting.png", 3.0f);
+	//TerrainRenderer->SetRasterState(L"SBACK");
 	TerrainRenderer->SetBaseTexture(L"Floor01");
 	TerrainRenderer->AddSplattingTexture(L"Floor01_01", L"Splatting.png");
 }

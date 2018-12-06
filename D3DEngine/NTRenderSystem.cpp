@@ -150,6 +150,7 @@ void NTRenderSystem::Render_Forward(Autoptr<NTCamera> _Camera, std::map<int, std
 						(*ListStartIter)->MaterialConstBufferUpdate(j);
 						(*ListStartIter)->MaterialUpdate(j);
 						(*ListStartIter)->MeshUpdate(j);
+						NTWinShortCut::GetMainDevice().ResetContext();
 					}
 				}
 			}
@@ -167,6 +168,7 @@ void NTRenderSystem::Render_Forward(Autoptr<NTCamera> _Camera, std::map<int, std
 			}
 
 			(*ListStartIter)->RenderAfterUpdate();
+			NTWinShortCut::GetMainDevice().ResetContext();
 		}
 	}
 	
@@ -199,6 +201,7 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 						(*ListStartIter)->MaterialConstBufferUpdate(j);
 						(*ListStartIter)->MaterialUpdate(j);
 						(*ListStartIter)->MeshUpdate(i);
+						NTWinShortCut::GetMainDevice().ResetContext();
 					}
 				}
 			}
@@ -212,6 +215,7 @@ void NTRenderSystem::Render_Defferd(Autoptr<NTCamera> _Camera, std::map<int, std
 					(*ListStartIter)->MaterialConstBufferUpdate((*ListStartIter)->DrawDataVec[i].Mat);
 					(*ListStartIter)->MaterialUpdate((*ListStartIter)->DrawDataVec[i].Mat);
 					(*ListStartIter)->TargetMeshUpdate((*ListStartIter)->DrawDataVec[i].Mesh, (*ListStartIter)->DrawDataVec[i].Vtx, (*ListStartIter)->DrawDataVec[i].Sub);
+					NTWinShortCut::GetMainDevice().ResetContext();
 				}
 			}
 			(*ListStartIter)->RenderAfterUpdate();
@@ -347,13 +351,14 @@ void NTRenderSystem::LightCheck(Autoptr<NTCamera> _Camera, int _Group)
 	Data.LightCount = Count;
 
 	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_VS);
-	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_PX);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<NTLight::LightCBData>(L"LightData", Data, STYPE::ST_PS);
 
 	return;
 }
 
 void NTRenderSystem::Render_Defferd_Light(Autoptr<NTCamera> _Cam, int _Group)
 {
+	NTWinShortCut::GetMainDevice().ResetContext();
 	Autoptr<NTMultiRenderTarget> LightTarget = ResourceSystem<NTMultiRenderTarget>::Find(L"Light");
 	LightTarget->Clear();
 	LightTarget->OMSet();

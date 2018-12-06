@@ -51,11 +51,11 @@ public:
 
 private:
 	LightType Type;
-	LightData Data;
-
 	std::set<int> RenderGroup;
 
 public:
+	LightData Data;
+
 	MatrixData MatData;
 	Autoptr<NTMesh> LightMesh;
 	Autoptr<NTMaterial> LightMat;

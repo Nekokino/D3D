@@ -2,6 +2,9 @@
 #include "NTResource.h"
 #include "NTVertexShader.h"
 #include "NTPixelShader.h"
+#include "NTHullShader.h"
+#include "NTGeometryShader.h"
+#include "NTDomainShader.h"
 #include "NTBlend.h"
 
 enum TEXTYPE
@@ -40,6 +43,9 @@ public:
 private:
 	Autoptr<NTVertexShader> VertexShader;
 	Autoptr<NTPixelShader> PixelShader;
+	Autoptr<NTHullShader> HullShader;
+	Autoptr<NTGeometryShader> GeometryShader;
+	Autoptr<NTDomainShader> DomainShader;
 	Autoptr<NTBlend> Blend;
 
 	bool IsOriginal;
@@ -58,6 +64,9 @@ public:
 public:
 	bool SetVertexShader(const wchar_t* _VertexName);
 	bool SetPixelShader(const wchar_t* _PixelName);
+	bool SetDomainShader(const wchar_t* _DomainName);
+	bool SetGeometryShader(const wchar_t* _GeometryName);
+	bool SetHullShader(const wchar_t* _HullName);
 	bool SetBlend(const wchar_t* _BlendName);
 
 public:

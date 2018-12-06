@@ -35,6 +35,10 @@ NTTexture::~NTTexture()
 
 NTCOLOR NTTexture::GetPixel(int _X, int _Y)
 {
+	if (GetWidth() <= _X || GetHeight() <= _Y)
+	{
+		return NTVEC::ZERO;
+	}
 	size_t Size = DirectHelper::GetFormatSize(Image.GetMetadata().format);
 	CustomColor Color;
 	uint8_t* Tmp = Image.GetPixels();
@@ -44,6 +48,24 @@ NTCOLOR NTTexture::GetPixel(int _X, int _Y)
 	memcpy_s(&Color, Size, Tmp, Size);
 
 	NTCOLOR Return = { (float)Color.b, (float)Color.g, (float)Color.r, (float)Color.a };
+	return Return;
+}
+
+NTCOLOR NTTexture::GetPixel2(int _X, int _Y)
+{
+	if (GetWidth() <= _X || GetHeight() <= _Y)
+	{
+		return NTVEC::ZERO;
+	}
+	size_t Size = DirectHelper::GetFormatSize(Image.GetMetadata().format);
+	CustomColor Color;
+	uint8_t* Tmp = Image.GetPixels();
+
+	Tmp += ((Image.GetMetadata().width * _Y) + _X) * Size;
+
+	memcpy_s(&Color, Size, Tmp, Size);
+
+	NTCOLOR Return = { (float)(Color.r / 255.0f), (float)(Color.g / 255.0f), (float)(Color.b / 255.0f), (float)(Color.r / 255.0f) };
 	return Return;
 }
 

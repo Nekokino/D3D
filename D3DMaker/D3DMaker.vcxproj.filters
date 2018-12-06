@@ -3,9 +3,11 @@
   <ItemGroup>
     <ClInclude Include="NTFreeCamera.h" />
     <ClInclude Include="MoveTest.h" />
+    <ClInclude Include="NTTraceCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NTFreeCamera.cpp" />
     <ClCompile Include="MoveTest.cpp" />
+    <ClCompile Include="NTTraceCamera.cpp" />
   </ItemGroup>
 </Project>

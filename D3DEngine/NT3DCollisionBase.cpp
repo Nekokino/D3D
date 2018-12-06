@@ -1,6 +1,7 @@
 #include "PreCom.h"
 #include "NT3DCollisionBase.h"
 #include "NTScene.h"
+#include "NTMesh.h"
 
 NT3DCollisionBase::NT3DCollisionBase()
 {

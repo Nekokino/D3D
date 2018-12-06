@@ -228,6 +228,15 @@
     <ClInclude Include="NTMultiTexture.h">
       <Filter>04 Resource\Resource\02 Texture</Filter>
     </ClInclude>
+    <ClInclude Include="NTGeometryShader.h">
+      <Filter>04 Resource\Resource\04 Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="NTHullShader.h">
+      <Filter>04 Resource\Resource\04 Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="NTDomainShader.h">
+      <Filter>04 Resource\Resource\04 Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DirectHeader.cpp">
@@ -423,6 +432,15 @@
     </ClCompile>
     <ClCompile Include="NTMultiTexture.cpp">
       <Filter>04 Resource\Resource\02 Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="NTGeometryShader.cpp">
+      <Filter>04 Resource\Resource\04 Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="NTHullShader.cpp">
+      <Filter>04 Resource\Resource\04 Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="NTDomainShader.cpp">
+      <Filter>04 Resource\Resource\04 Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

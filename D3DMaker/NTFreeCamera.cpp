@@ -165,7 +165,7 @@ void NTFreeCamera::MainUpdate()
 
 	if (true == InputSystem::IsPressed(L"FreeCamRotKey"))
 	{
-		Transform->SetLocalAccRotation(NTVEC(InputSystem::GetMouseDir().y * RotSpeed * TimeSystem::DeltaTime(), InputSystem::GetMouseDir().x * RotSpeed * TimeSystem::DeltaTime()));
+		Transform->SetLocalAccRotation(NTVEC(InputSystem::GetMouseDir().y * RotSpeed * 0.1f * TimeSystem::DeltaTime(), InputSystem::GetMouseDir().x * RotSpeed * 0.1f * TimeSystem::DeltaTime()));
 	}
 
 	wchar_t Arr[256] = {};

@@ -17,7 +17,9 @@ NTMaterial::~NTMaterial()
 {
 }
 
-NTMaterial::NTMaterial(const NTMaterial & _Other) : NTResource(_Other), VertexShader(_Other.VertexShader), PixelShader(_Other.PixelShader), Blend(_Other.Blend), TexData(_Other.TexData), TextureMap(_Other.TextureMap), SamplerMap(_Other.SamplerMap), IsOriginal(false)
+NTMaterial::NTMaterial(const NTMaterial & _Other) : NTResource(_Other), VertexShader(_Other.VertexShader), PixelShader(_Other.PixelShader), Blend(_Other.Blend)
+, TexData(_Other.TexData), TextureMap(_Other.TextureMap), SamplerMap(_Other.SamplerMap), IsOriginal(false), HullShader(_Other.HullShader), GeometryShader(_Other.GeometryShader),
+DomainShader(_Other.DomainShader)
 {
 	
 
@@ -49,6 +51,45 @@ bool NTMaterial::SetPixelShader(const wchar_t* _PixelName)
 	return true;
 }
 
+bool NTMaterial::SetDomainShader(const wchar_t * _DomainName)
+{
+	DomainShader = ResourceSystem<NTDomainShader>::Find(_DomainName);
+	tassert(nullptr == DomainShader);
+
+	if (nullptr == DomainShader)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool NTMaterial::SetGeometryShader(const wchar_t * _GeometryName)
+{
+	GeometryShader = ResourceSystem<NTGeometryShader>::Find(_GeometryName);
+	tassert(nullptr == GeometryShader);
+
+	if (nullptr == GeometryShader)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool NTMaterial::SetHullShader(const wchar_t * _HullName)
+{
+	HullShader = ResourceSystem<NTHullShader>::Find(_HullName);
+	tassert(nullptr == HullShader);
+
+	if (nullptr == HullShader)
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool NTMaterial::SetBlend(const wchar_t* _BlendName)
 {
 	Blend = ResourceSystem<NTBlend>::Find(_BlendName);
@@ -73,6 +114,21 @@ void NTMaterial::Update()
 	if (nullptr != PixelShader)
 	{
 		PixelShader->Update();
+	}
+
+	if (nullptr != HullShader)
+	{
+		HullShader->Update();
+	}
+
+	if (nullptr != GeometryShader)
+	{
+		GeometryShader->Update();
+	}
+
+	if (nullptr != DomainShader)
+	{
+		DomainShader->Update();
 	}
 
 	if (nullptr != Blend)

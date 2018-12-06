@@ -6,7 +6,7 @@
 
 NTVertexShader::NTVertexShader() : Offset(0)
 {
-	Type = ST_PX;
+	Type = ST_PS;
 }
 
 

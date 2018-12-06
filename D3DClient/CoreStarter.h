@@ -1,6 +1,5 @@
 #pragma once
 #include <WinCore.h>
-#include <RefNAutoptr.h>
 
 class CoreStarter : public WinCore::WinCoreBuilder
 {

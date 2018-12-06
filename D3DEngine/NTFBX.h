@@ -19,6 +19,8 @@
 	#endif
 #endif
 
+
+
 class NTKeyFrame
 {
 public:

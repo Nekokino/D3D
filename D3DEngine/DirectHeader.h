@@ -658,7 +658,9 @@ public:
 	NTMAT View;
 	NTMAT Projection;
 	NTMAT WV;
+	NTMAT VP;
 	NTMAT WVP;
+	NTVEC CameraPos;
 
 public:
 	void TransposeAll()
@@ -667,6 +669,7 @@ public:
 		View.Transpose();
 		Projection.Transpose();
 		WV.Transpose();
+		VP.Transpose();
 		WVP.Transpose();
 	}
 };
@@ -675,5 +678,9 @@ enum STYPE
 {
 	ST_NONE,
 	ST_VS,
-	ST_PX,
+	ST_HS,
+	ST_DS,
+	ST_GS,
+	ST_PS,
+	ST_CS,
 };

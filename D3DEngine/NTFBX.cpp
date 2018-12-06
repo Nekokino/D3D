@@ -1,8 +1,8 @@
-#include "NTFBX.h"
 #include "PreCom.h"
 #include "DirectValueHeader.h"
 #include <atlstr.h>
 #include <algorithm>
+#include "NTFBX.h"
 
 FbxAMatrix NTFbxLoader::MatReflect;
 

@@ -8,6 +8,7 @@ class NTMesh;
 class NTMaterial;
 class NTTransform;
 class NTRenderSystem;
+class NTMultiRenderTarget;
 class NTCamera final : public NTStCom
 {
 public:

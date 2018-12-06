@@ -72,7 +72,7 @@ void NTLight::SetLightType(LightType _Type)
 
 void NTLight::LightRender(Autoptr<NTCamera> _Cam)
 {
-	NTWinShortCut::GetMainDevice().SetConstBuffer<LightData>(L"DefferdLightData", Data, STYPE::ST_PX);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<LightData>(L"DefferdLightData", Data, STYPE::ST_PS);
 
 	if (nullptr == LightMat || nullptr == LightMesh)
 	{
@@ -98,7 +98,7 @@ void NTLight::LightRender(Autoptr<NTCamera> _Cam)
 		MatData.TransposeAll();
 
 		NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
-		NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PX);
+		NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PS);
 
 		NTWinShortCut::GetMainDevice().SetRasterState(L"SFRONT");
 		NTWinShortCut::GetMainDevice().SetDepthStencilState(L"BackStencil", 1);

@@ -37,6 +37,17 @@ Autoptr<NTMaterial> NTRenderer::GetMaterial(int _Index)
 	return MaterialVec[_Index];
 }
 
+Autoptr<NTMesh> NTRenderer::GetMesh(size_t _Index)
+{
+	if (MeshVec.size() <= _Index)
+	{
+		tassert(true);
+		return nullptr;
+	}
+
+	return MeshVec[_Index];
+}
+
 void NTRenderer::AddDrawData(UINT _Mesh, UINT _Vtx, UINT _Sub, UINT _Mat)
 {
 	DrawDataVec.push_back({ _Mesh, _Vtx, _Sub, _Mat });
@@ -137,13 +148,18 @@ void NTRenderer::TransformUpdate(Autoptr<NTCamera> _Cam)
 	MatData.View = _Cam->GetView().RVTranspose();
 	MatData.Projection = _Cam->GetProjection().RVTranspose();
 	MatData.WV = (Transform->GetWorldMatrixConst() * _Cam->GetView()).RVTranspose();
+	MatData.VP = (_Cam->GetView() * _Cam->GetProjection()).RVTranspose();
 	MatData.WVP = (Transform->GetWorldMatrixConst() * _Cam->GetView() * _Cam->GetProjection()).RVTranspose();
+	MatData.CameraPos = _Cam->GetTransform()->GetWorldPosition();
 }
 
 void NTRenderer::TransformConstBufferUpdate()
 {
 	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_VS);
-	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PX);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_PS);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_DS);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_HS);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<MatrixData>(L"MatData", MatData, STYPE::ST_GS);
 }
 
 void NTRenderer::MaterialConstBufferUpdate(int _Index)
@@ -154,7 +170,7 @@ void NTRenderer::MaterialConstBufferUpdate(int _Index)
 	}
 
 	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_VS);
-	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_PX);
+	NTWinShortCut::GetMainDevice().SetConstBuffer<RenderOption>(L"RenderOption", RndOpt, STYPE::ST_PS);
 }
 
 void NTRenderer::MaterialTextureNSamplerUpdate(int _Index)

@@ -235,19 +235,11 @@ public:
 		memcpy(Sub.pData, &_Data, sizeof(BufType));
 		Context->Unmap(Buf->CB, 0);
 
-		switch (_Type)
-		{
-		case ST_NONE:
-			break;
-		case ST_VS:
-			Context->VSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
-			break;
-		case ST_PX:
-			Context->PSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
-			break;
-		default:
-			break;
-		}
+		Context->VSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
+		Context->PSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
+		Context->DSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
+		Context->HSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
+		Context->GSSetConstantBuffers(Buf->Reg, 1, &Buf->CB);
 	}
 
 	bool CreateConstBuffer(GlobalConstBuffer* _Buf);
